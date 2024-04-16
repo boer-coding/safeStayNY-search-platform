@@ -31,7 +31,7 @@ export function RecommendationPage() {
   const [neighborhoodGroup, setNeighborhoodGroup] = useState("Any");
   const [neighborhood, setNeighborhood] = useState("Any");
   const [accommodates, setAccommodates] = useState(1);
-  const [stayLength, setStayLength] = useState(1);
+  const [stayLength, setStayLength] = useState(2);
 
   //additional filters
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
@@ -48,58 +48,65 @@ export function RecommendationPage() {
   const handleNeighborhoodGroupChange = (event) => {
     setNeighborhoodGroup(event.target.value);
     // If 'Any' is selected for neighborhoodGroup, set neighborhood to 'Any' as well
-    // if (event.target.value === "Any") {
-    //   setNeighborhood("Any");
-    // }
+    if (event.target.value === "Any") {
+      setNeighborhood("Any");
+    }
   };
   const handleNeighborhoodChange = (event) => {
     setNeighborhood(event.target.value);
   };
   const handleAccommodatesChange = (event) => {
-    setAccommodates(event.target.value);
+    const value = event.target.value;
+    setAccommodates(value === "8+" ? 8 : value);
   };
   const handleStayLengthChange = (event) => {
-    setStayLength(event.target.value);
+    const value = event.target.value;
+    setStayLength(value === "8+" ? 8 : value);
   };
   const handleRoomTypeChange = (event) => {
-    console.log("rommtype changed");
+    // console.log("rommtype changed");
     setRoomType(event.target.value);
   };
-  const handlePriceChange = (event) => {
-    setPriceRange(event.target.value);
+  // const handlePriceChange = (event) => {
+  //   // const value = event.target.value;
+  //   // setPriceRange(value === "1000+" ? 1000 : value);
+  //   setPriceRange(event.target.value);
+  // };
+  const handlePriceChange = (event, newValue) => {
+    // newValue is an array: [minPrice, maxPrice]
+    setPriceRange(newValue);
   };
+
   const handleBedsChange = (event) => {
-    setBeds(event.target.value);
+    const value = event.target.value;
+    setBeds(value === "8+" ? 8 : value);
   };
   const handleBathroomsChange = (event) => {
-    setBathrooms(event.target.value);
+    const value = event.target.value;
+    setBathrooms(value === "8+" ? 8 : value);
   };
 
-  //   console.log("fetch recs");
-  useEffect(() => {
-    // if (neighborhoodGroup === "Any" || !neighborhoodGroup) {
-    //   setNeighborhoods([]);
-    //   return;
-    // }
-    const fetchNeighborhoods = async () => {
-      //   const url = `http://${config.server_host}:${
-      //     config.server_port
-      //   }/neighborhood_list?neighborhoodGroup=${encodeURIComponent(
-      //     neighborhoodGroup
-      //   )}`;
-      const url = `http://${config.server_host}:${config.server_port}/neighborhoods`;
+  //fetch neighborhoods base on neighborhood group
+  const fetchNeighborhoods = async () => {
+    const url = `http://${config.server_host}:${
+      config.server_port
+    }/neighborhoods?neighborhoodGroup=${encodeURIComponent(neighborhoodGroup)}`;
+    // const url = `http://${config.server_host}:${config.server_port}/neighborhoods`;
 
-      try {
-        const response = await fetch(url);
-        const data = await response.json();
+    try {
+      const response = await fetch(url);
+      const data = await response.json();
+      if (Array.isArray(data)) {
         setNeighborhoods(data);
-      } catch (error) {
-        console.error("Failed to fetch neighborhood list", error);
+      } else {
+        console.error("Received data is not an array:", data);
       }
-    };
-    fetchNeighborhoods();
-  }, [neighborhoodGroup]);
+    } catch (error) {
+      console.error("Failed to fetch neighborhood list", error);
+    }
+  };
 
+  //fetch recommendation listing base on filters
   const search = () => {
     console.log("Search initiated with filters:", {
       neighborhoodGroup,
@@ -145,16 +152,7 @@ export function RecommendationPage() {
 
   //fetch recs based on filter
   useEffect(() => {
-    // console.log("trying to fetch recs");
-    // fetch(`http://${config.server_host}:${config.server_port}/recommendation`)
-    //   .then((res) => res.json())
-    //   .then((resJson) => {
-    //     const recommendationData = resJson.map((a) => ({
-    //       id: a.listing_id,
-    //       ...a,
-    //     }));
-    //     setRecommendation(recommendationData);
-    //   });
+    fetchNeighborhoods();
     search();
   }, [
     neighborhoodGroup,
@@ -239,11 +237,9 @@ export function RecommendationPage() {
               onChange={handleNeighborhoodChange}
             >
               <MenuItem value={"Any"}>Any</MenuItem>
-              <MenuItem value={"Chelsea"}>Any</MenuItem>
-              <MenuItem value={"SoHo"}>Any</MenuItem>
-              {neighborhoodData.map((nb) => (
-                <MenuItem key={nb} value={nb}>
-                  {nb}
+              {neighborhoodData.map((item, index) => (
+                <MenuItem key={`${item.neighborhood}-${index}`} value={item}>
+                  {item}
                 </MenuItem>
               ))}
             </Select>
@@ -300,14 +296,23 @@ export function RecommendationPage() {
           {showAdvancedFilters && (
             <>
               <Grid item xs={12}>
-                <p>Price</p>
+                <Typography>
+                  Price range: ${price[0]} - $
+                  {price[1] === 1000 ? "1000+" : `${price[1]}`}
+                </Typography>
                 <Slider
                   value={price}
-                  min={1}
-                  max={100000}
-                  step={10}
                   onChange={handlePriceChange}
                   valueLabelDisplay="auto"
+                  min={1}
+                  max={1000}
+                  marks={[
+                    { value: 1, label: "$1" },
+                    { value: 250, label: "$250" },
+                    { value: 500, label: "$500" },
+                    { value: 750, label: "$750" },
+                    { value: 1000, label: "$1000+" },
+                  ]}
                 />
               </Grid>
               <Grid container spacing={6}>
