@@ -418,7 +418,7 @@ const recommendation_work = async function (req, res) {
     neighborhoodGroup = "Manhattan",
     neighborhood = "SoHo",
     accommodates = 1,
-    stayLength = 1,
+    stayLength = 2,
     roomType = "Private room", //should be optional, hardcoded for now
     priceLow = 0,
     priceHigh = 100000,
@@ -488,12 +488,12 @@ const recommendation = async function (req, res) {
     neighborhoodGroup = "Any",
     neighborhood = "Any",
     accommodates = 1,
-    stayLength = 1,
+    stayLength = 2,
     roomType = null, //should be optional, hardcoded for now
     priceLow = 0,
     priceHigh = 100000,
-    beds = 1, //should be optional, hardcoded for now
-    bathrooms = 1, //should be optional, hardcoded for now
+    beds = null, //should be optional, hardcoded for now
+    bathrooms = null, //should be optional, hardcoded for now
   } = req.query;
 
   console.log("Received query params:", req.query);
@@ -547,11 +547,11 @@ WHERE
     params.push(roomType);
   }
   if (beds) {
-    optionalFilters.push(`a.beds = ?`);
+    optionalFilters.push(`a.beds >= ?`);
     params.push(beds);
   }
   if (bathrooms) {
-    optionalFilters.push(`a.bathrooms = ?`);
+    optionalFilters.push(`a.bathrooms >= ?`);
     params.push(bathrooms);
   }
 
@@ -561,8 +561,17 @@ WHERE
   }
 
   // Add the price range condition
-  query += ` AND a.price BETWEEN ? AND ?`;
-  params.push(priceLow, priceHigh);
+  let priceCondition = "";
+
+  if (priceHigh >= 1000) {
+    priceCondition = "AND a.price >= ? ";
+    params.push(priceLow);
+  } else {
+    priceCondition = "AND a.price BETWEEN ? AND ?";
+    params.push(priceLow, priceHigh);
+  }
+
+  query += priceCondition;
 
   // Add the ORDER BY clause
   query += ` ORDER BY safety.safety_score DESC, a.price ASC;`;
@@ -577,51 +586,34 @@ WHERE
   });
 };
 
-// need to fix, return nb list based on nb_group Route 11: GET /neighborhood_list
-const neighborhood_list = async function (req, res) {
-  const { neighborhoodGroup = "" } = req.query;
-  let query;
+// return neighborhood list based on nb_group selected Route 11: GET /neighborhood_list
+const neighborhoods = async function (req, res) {
+  // console.log("Received neighborhoodGroup params:", req.query);
   const queryParams = [];
-  if (neighborhoodGroup === "Any" || neighborhoodGroup === "") {
-    query = `
-    SELECT neighborhood 
-    FROM location 
-    ORDER BY neighborhood;`;
-  } else {
-    query = `
-    SELECT neighborhood
-    FROM location 
-    WHERE neighborhood_group=?
-    ORDER BY neighborhood;
-    `;
-    queryParams = [neighborhoodGroup];
+  const { neighborhoodGroup = "Any" } = req.query;
+
+  let query = `
+  SELECT DISTINCT l.neighborhood
+  FROM location l JOIN  airbnb a ON a.location_id=l.location_id`;
+  if (neighborhoodGroup !== "Any" || neighborhoodGroup !== "") {
+    queryParams.push(neighborhoodGroup);
+    query += " WHERE neighborhood_group = ?";
   }
 
+  query += " ORDER BY l.neighborhood;";
+  // console.log("final nblist query:", query);
+
   connection.query(query, queryParams, (err, data) => {
-    if (err || data.length === 0) {
-      console.log(err);
-      res.status(500).json({ error: "Internal server error or no data found" });
-    } else {
-      res.json(data.map((item) => item.neighborhood));
-      // res.json(data);
+    if (err) {
+      console.error("SQL Error:", err);
+      res.status(500).json({ error: "Internal server error" });
+      return;
     }
-  });
-};
-
-// WORKING Route 12: GET /neighborhoods
-const neighborhoods = async function (req, res) {
-  const query = `
-    SELECT DISTINCT neighborhood 
-    FROM location 
-    ORDER BY neighborhood;`;
-
-  connection.query(query, (err, data) => {
-    if (err || data.length === 0) {
-      console.log(err);
-      res.status(500).json({ error: "Internal server error or no data found" });
-    } else {
-      res.json(data.map((item) => item.neighborhood));
+    if (data.length === 0) {
+      res.status(404).json({ error: "No neighborhoods found" });
+      return;
     }
+    res.json(data.map((item) => item.neighborhood));
   });
 };
 
@@ -637,6 +629,5 @@ module.exports = {
   search_airbnb,
   list_host,
   recommendation,
-  neighborhood_list,
   neighborhoods,
 };

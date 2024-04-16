@@ -23,7 +23,6 @@ app.get("/top_albums", routes.top_albums);
 app.get("/search_airbnb", routes.search_airbnb);
 app.get("/list_host", routes.list_host);
 app.get("/recommendation", routes.recommendation);
-app.get("/neighborhood_list", routes.neighborhood_list);
 app.get("/neighborhoods", routes.neighborhoods);
 
 app.listen(config.server_port, () => {
