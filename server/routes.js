@@ -617,6 +617,111 @@ const neighborhoods = async function (req, res) {
   });
 };
 
+
+const crime = async function (req, res) {
+  console.log("Received query params:", req.query);
+  const {
+    neighborhoodGroup = "Any",
+    neighborhood = "Any",
+    accommodates = 1,
+    stayLength = 2,
+    roomType = null, //should be optional, hardcoded for now
+    priceLow = 0,
+    priceHigh = 100000,
+    beds = null, //should be optional, hardcoded for now
+    bathrooms = null, //should be optional, hardcoded for now
+  } = req.query;
+
+  console.log("Received query params:", req.query);
+
+  let query = `SELECT
+  a.listing_id,
+  a.listing_des,
+  l.neighborhood,
+  a.price,
+  a.room_type,
+  a.accommodates,
+  a.bathrooms,
+  a.beds,
+  a.mini_nights,
+  a.max_nights,
+  safety.safety_score
+FROM
+  airbnb a
+JOIN
+  location l ON a.location_id = l.location_id
+JOIN
+  (SELECT
+      l.location_id,
+      1 / (1 + COUNT(al.arrest_date)) AS safety_score
+    FROM
+      location l
+    LEFT JOIN
+      arrest_list al ON l.location_id = al.location_id
+    GROUP BY
+      l.location_id) AS safety
+  ON l.location_id = safety.location_id
+WHERE
+  a.accommodates >= ?
+  AND ? BETWEEN a.mini_nights AND a.max_nights
+`;
+
+  let params = [accommodates, stayLength];
+
+  // Optional filters
+  const optionalFilters = [];
+  if (neighborhoodGroup && neighborhoodGroup !== "Any") {
+    optionalFilters.push(`l.neighborhood_group = ?`);
+    params.push(neighborhoodGroup);
+  }
+  if (neighborhood && neighborhood !== "Any") {
+    optionalFilters.push(`l.neighborhood = ?`);
+    params.push(neighborhood);
+  }
+  if (roomType) {
+    optionalFilters.push(`a.room_type = ?`);
+    params.push(roomType);
+  }
+  if (beds) {
+    optionalFilters.push(`a.beds >= ?`);
+    params.push(beds);
+  }
+  if (bathrooms) {
+    optionalFilters.push(`a.bathrooms >= ?`);
+    params.push(bathrooms);
+  }
+
+  // Add the optional filters to the query if they exist
+  if (optionalFilters.length > 0) {
+    query += ` AND ${optionalFilters.join(" AND ")}`;
+  }
+
+  // Add the price range condition
+  let priceCondition = "";
+
+  if (priceHigh >= 1000) {
+    priceCondition = "AND a.price >= ? ";
+    params.push(priceLow);
+  } else {
+    priceCondition = "AND a.price BETWEEN ? AND ?";
+    params.push(priceLow, priceHigh);
+  }
+
+  query += priceCondition;
+
+  // Add the ORDER BY clause
+  query += ` ORDER BY safety.safety_score DESC, a.price ASC;`;
+
+  connection.query(query, params, (err, data) => {
+    if (err || data.length === 0) {
+      console.log(err);
+      res.json([]);
+    } else {
+      res.json(data);
+    }
+  });
+};
+
 module.exports = {
   author,
   random,
