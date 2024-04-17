@@ -209,15 +209,7 @@ export function CrimePage() {
         >
           Search
         </Button>
-        <h2>Recommended Stays</h2>
-        <DataGrid
-          rows={crimeData}
-          columns={columns}
-          pageSize={pageSize}
-          rowsPerPageOptions={[5, 10, 25]}
-          onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
-          autoHeight
-        />
+        
       </Container>
     </div>
   );

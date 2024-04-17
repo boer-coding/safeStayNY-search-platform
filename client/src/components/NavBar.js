@@ -34,7 +34,7 @@ export default function NavBar() {
         <Toolbar disableGutters>
           <img src={logo} alt="logo" style={{ marginRight: "10px", height: "55px" }} />
           <NavText href="/" text="SafeStayNY" isMain />
-          <NavText href="/albums" text="Crime" />
+          <NavText href="/crime" text="Crime" />
           <NavText href="/hosts" text="Host" />
           <NavText href="/recommendations" text="Recommendations" />
         </Toolbar>
