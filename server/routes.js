@@ -476,6 +476,7 @@ const star_host1 = async function (req, res) {
 } 
 };
 
+
 // WORKING Route 10: GET /recommendation
 const recommendation_work = async function (req, res) {
   console.log("Received query params:", req.query);
@@ -771,6 +772,8 @@ module.exports = {
   top_songs,
   top_albums,
   star_host,
+  listing,
   recommendation,
   neighborhoods,
+  crime,
 }
