@@ -5,17 +5,41 @@ import { createTheme } from "@mui/material/styles";
 
 import NavBar from "./components/NavBar";
 import HomePage from "./pages/HomePage";
-import {HostPage} from "./pages/HostPage";
-import {RecommendationPage} from "./pages/RecommendationPage";
+import { HostPage } from "./pages/HostPage";
+import { RecommendationPage } from "./pages/RecommendationPage";
 import { CrimePage } from "./pages/CrimePage";
-
 
 export const theme = createTheme({
   palette: {
     primary: {
-      main: '#ff9800',
+      main: "#bbdefb",
     },
-    secondary: cyan,
+    secondary: {
+      main: "#f06292",
+    },
+    background: {
+      default: "#f6efe3", // Applies to the background of the <body>
+    },
+  },
+  components: {
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          backgroundColor: "#829baf",
+          color: "white", // White text
+          "&:hover": {
+            backgroundColor: "#687785",
+          },
+        },
+      },
+    },
+    MuiLink: {
+      styleOverrides: {
+        root: {
+          color: "#5f8a66", // Your desired color for all Link components
+        },
+      },
+    },
   },
 });
 

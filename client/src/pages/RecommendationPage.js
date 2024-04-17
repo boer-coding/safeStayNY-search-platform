@@ -42,6 +42,7 @@ export function RecommendationPage() {
 
   //redirects
   const [selectedListingId, setSelectedListingId] = useState(null);
+  const [selectedNeighborhood, setSelectedNeighborhood] = useState(null);
 
   //handleChange
   const handleNeighborhoodGroupChange = (event) => {
@@ -172,6 +173,11 @@ export function RecommendationPage() {
       headerName: "Neighborhood",
       width: 300,
       renderCell: (params) => params.row.neighborhood,
+      // renderCell: (params) => (
+      //   <Link onClick={() => setSelectedNeighborhood(params.row.neighborhood)}>
+      //     {params.value}
+      //   </Link>
+      // ),
     },
     {
       field: "crime.crime_rate",

@@ -1,6 +1,13 @@
-import { AppBar, Container, Toolbar, Typography } from "@mui/material";
+import {
+  AppBar,
+  Container,
+  Toolbar,
+  Typography,
+  IconButton,
+  Icon,
+} from "@mui/material";
 import { NavLink } from "react-router-dom";
-import logo from './logo.svg';
+import logo from "./logo.svg";
 
 function NavText({ href, text, isMain }) {
   return (
@@ -32,7 +39,11 @@ export default function NavBar() {
     <AppBar position="static">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
-          <img src={logo} alt="logo" style={{ marginRight: "10px", height: "55px" }} />
+          <img
+            src={logo}
+            alt="logo"
+            style={{ marginRight: "10px", height: "55px" }}
+          />
           <NavText href="/" text="SafeStayNY" isMain />
           <NavText href="/crime" text="Crime" />
           <NavText href="/hosts" text="Host" />
