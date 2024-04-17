@@ -780,6 +780,32 @@ FROM arrest_list al JOIN location l ON al.location_id = l.location_id JOIN suspe
   });
 };
 
+const top_5_neighbors = async function (req, res) {
+  const result =  [
+    {
+      "neighborhood": "Belle Harbor",
+      "neighborhood_group": "Queens"
+    },
+    {
+      "neighborhood": "Lighthouse Hill",
+      "neighborhood_group": "Staten Island"
+    },
+    {
+      "neighborhood": "Breezy Point",
+      "neighborhood_group": "Queens"
+    },
+    {
+      "neighborhood": "Shore Acres",
+      "neighborhood_group": "Staten Island"
+    },
+    {
+      "neighborhood": "Fort Wadsworth",
+      "neighborhood_group": "Staten Island"
+    }
+  ];
+  res.send(result);
+}
+
 module.exports = {
   author,
   random,
@@ -795,4 +821,5 @@ module.exports = {
   recommendation,
   neighborhoods,
   crime,
+  top_5_neighbors
 }
