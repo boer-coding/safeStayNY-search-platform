@@ -482,13 +482,13 @@ const star_host = async function (req, res) {
 // host page pop up
 const host_listing = async function (req, res) {
   // TODO (TASK 7): implement a route that given an album_id, returns all songs on that album ordered by track number (ascending)
-  const host = req.params.host_id;
-
+  const hostId = req.query.host_id;
+  
   connection.query(
     `
     SELECT listing_id, listing_des, listing_url
     FROM airbnb
-    WHERE host_id = "${host}"
+    WHERE host_id = '${hostId}'
 
 `,
     (err, data) => {
@@ -776,7 +776,7 @@ FROM arrest_list al JOIN location l ON al.location_id = l.location_id JOIN suspe
   query += `
   GROUP BY ofns_type;`;
   console.log(query);
-  
+
   connection.query(query, params, (err, data) => {
     if (err || data.length === 0) {
       console.log(err);
