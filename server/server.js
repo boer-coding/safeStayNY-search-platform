@@ -20,7 +20,7 @@ app.get("/albums", routes.albums);
 app.get("/album_songs/:album_id", routes.album_songs);
 app.get("/top_songs", routes.top_songs);
 app.get("/top_albums", routes.top_albums);
-app.get("/list_host", routes.list_host);
+app.get("/star_host", routes.star_host);
 app.get("/recommendation", routes.recommendation);
 app.get("/neighborhoods", routes.neighborhoods);
 

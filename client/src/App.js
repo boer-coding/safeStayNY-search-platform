@@ -34,7 +34,7 @@ export default function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/albums" element={<AlbumsPage />} />
           <Route path="/albums/:album_id" element={<AlbumInfoPage />} />
-          <Route path="/list_host" element={<HostPage />} />
+          <Route path="/star_host" element={<HostPage />} />
           <Route path="/recommendation" element={<RecommendationPage />} />
         </Routes>
       </BrowserRouter>

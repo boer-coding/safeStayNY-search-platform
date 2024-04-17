@@ -38,7 +38,7 @@ export default function NavBar() {
         <Toolbar disableGutters>
           <NavText href="/" text="SWIFTIFY" isMain />
           <NavText href="/albums" text="ALBUMS" />
-          <NavText href="/songs" text="SONGS" />
+          <NavText href="/star_host" text="HOST" />
           <NavText href="/recommendation" text="RECOMMENDATION" />
         </Toolbar>
       </Container>
