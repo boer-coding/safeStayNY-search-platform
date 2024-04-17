@@ -91,7 +91,7 @@ export default function ListingCard({ listingId, handleClose }) {
           <strong>
             <strong />
             <a
-              href={`http://${config.server_host}:3000/list_host`}
+              href={`http://${config.server_host}:3000/star_host`}
               target="_blank"
               rel="noopener noreferrer"
             >

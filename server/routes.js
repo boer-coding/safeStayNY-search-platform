@@ -291,6 +291,7 @@ const top_albums = async function (req, res) {
   }
 };
 
+// host page
 const star_host = async function (req, res) {
   // TODO (TASK 11): return the top albums ordered by aggregate number of plays of all songs on the album (descending), with optional pagination (as in route 7)
   // Hint: you will need to use a JOIN and aggregation to get the total plays of songs in an album
@@ -375,6 +376,28 @@ const star_host = async function (req, res) {
 } 
 };
 
+// host page pop up
+const host_listing = async function (req, res) {
+  // TODO (TASK 7): implement a route that given an album_id, returns all songs on that album ordered by track number (ascending)
+  const host = req.params.host_id;
+
+  connection.query(
+    `
+    SELECT listing_id, listing_des, listing_url
+    FROM airbnb
+    WHERE host_id = "${host}"
+
+`,
+    (err, data) => {
+      if (err || data.length === 0) {
+        console.log(err);
+        res.json([]);
+      } else {
+        res.json(data);
+      }
+    }
+  );
+};
 
 // WORKING Route 10: GET /recommendation
 const recommendation_work = async function (req, res) {
@@ -671,6 +694,7 @@ module.exports = {
   top_songs,
   top_albums,
   star_host,
+  host_listing,
   listing,
   recommendation,
   neighborhoods,

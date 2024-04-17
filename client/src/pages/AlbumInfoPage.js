@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Container, Link, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 
-import SongCard from '../components/SongCard';
+import HostListing from '../components/HostListing';
 import { formatDuration, formatReleaseDate } from '../helpers/formatter';
 const config = require('../config.json');
 
@@ -26,7 +26,7 @@ export default function AlbumInfoPage() {
 
   return (
     <Container>
-      {selectedSongId && <SongCard songId={selectedSongId} handleClose={() => setSelectedSongId(null)} />}
+      {selectedSongId && <HostListing songId={selectedSongId} handleClose={() => setSelectedSongId(null)} />}
       <Stack direction='row' justify='center'>
         <img
           key={albumData.album_id}

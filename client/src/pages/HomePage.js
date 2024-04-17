@@ -3,7 +3,7 @@ import { Container, Divider, Link } from '@mui/material';
 import { NavLink } from 'react-router-dom';
 
 import LazyTable from '../components/LazyTable';
-import SongCard from '../components/SongCard';
+import HostListing from '../components/HostListing';
 const config = require('../config.json');
 
 export default function HomePage() {
@@ -75,8 +75,8 @@ export default function HomePage() {
 
   return (
     <Container>
-      {/* SongCard is a custom component that we made. selectedSongId && <SongCard .../> makes use of short-circuit logic to only render the SongCard if a non-null song is selected */}
-      {selectedSongId && <SongCard songId={selectedSongId} handleClose={() => setSelectedSongId(null)} />}
+      {/* HostListing is a custom component that we made. selectedSongId && <HostListing .../> makes use of short-circuit logic to only render the HostListing if a non-null song is selected */}
+      {selectedSongId && <HostListing songId={selectedSongId} handleClose={() => setSelectedSongId(null)} />}
       <h2>Check out your song of the day:&nbsp;
         <Link onClick={() => setSelectedSongId(songOfTheDay.song_id)}>{songOfTheDay.title}</Link>
       </h2>

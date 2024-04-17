@@ -10,7 +10,7 @@ import {
   Link,
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
-import SongCard from "../components/SongCard";
+import HostListing from "../components/HostListing";
 
 
 const config = require("../config.json");
@@ -71,11 +71,6 @@ export function HostPage() {
     fetchHosts();
   };
 
-  // Open popup when host_id is clicked
-  const handleHostIdClick = (hostId) => {
-    setSelectedHostId(hostId);
-  };
-
   const columns=[
     { field: "host_id", headerName: "Host ID", width: 160, renderCell: (params) => (
       <Link onClick={() => setSelectedHostId(params.row.host_id)}>{params.value}</Link>
@@ -89,7 +84,7 @@ export function HostPage() {
 
   return (
     <Container>
-      {selectedHostId && <SongCard songId={selectedHostId} handleClose={() => setSelectedHostId(null)} />}
+      {selectedHostId && <HostListing hostId={selectedHostId} handleClose={() => setSelectedHostId(null)} />}
       <h2>Filters</h2>
         <Grid item xs={3}>
           <FormControl fullWidth>

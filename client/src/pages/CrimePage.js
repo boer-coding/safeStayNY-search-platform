@@ -15,7 +15,7 @@ import {
   Typography,
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
-// import SongCard from "../components/SongCard";
+// import HostListing from "../components/HostListing";
 
 const config = require("../config.json");
 
@@ -186,7 +186,7 @@ export function CrimePage() {
   return (
     <Container>
       {/* {setSelectedRecommendationId && (
-        <SongCard
+        <HostListing
           songId={selectedRecommendationId}
           handleClose={() => setSelectedRecommendationId(null)}
         />
