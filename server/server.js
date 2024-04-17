@@ -24,6 +24,7 @@ app.get("/search_airbnb", routes.search_airbnb);
 app.get("/list_host", routes.list_host);
 app.get("/recommendation", routes.recommendation);
 app.get("/neighborhoods", routes.neighborhoods);
+app.get("/crime", routes.crime);
 
 app.listen(config.server_port, () => {
   console.log(
