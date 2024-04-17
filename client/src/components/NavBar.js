@@ -37,11 +37,13 @@ export default function NavBar() {
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           <NavText href="/" text="SWIFTIFY" isMain />
-          <NavText href="/albums" text="ALBUMS" />
+          <NavText href="/crime" text="CRIME" />  
           <NavText href="/star_host" text="HOST" />
           <NavText href="/recommendation" text="RECOMMENDATION" />
         </Toolbar>
       </Container>
     </AppBar>
   );
+
+  //
 }

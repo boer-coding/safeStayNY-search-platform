@@ -7,6 +7,7 @@ import NavBar from "./components/NavBar";
 import HomePage from "./pages/HomePage";
 import { RecommendationPage } from "./pages/RecommendationPage";
 import { HostPage } from "./pages/HostPage";
+import { CrimePage } from "./pages/CrimePage";
 
 import AlbumsPage from "./pages/AlbumsPage";
 import AlbumInfoPage from "./pages/AlbumInfoPage";
@@ -32,7 +33,7 @@ export default function App() {
         <NavBar />
         <Routes>
           <Route path="/" element={<HomePage />} />
-          <Route path="/albums" element={<AlbumsPage />} />
+          <Route path="/crime" element={<CrimePage/>} />
           <Route path="/albums/:album_id" element={<AlbumInfoPage />} />
           <Route path="/star_host" element={<HostPage />} />
           <Route path="/recommendation" element={<RecommendationPage />} />
@@ -40,4 +41,7 @@ export default function App() {
       </BrowserRouter>
     </ThemeProvider>
   );
+
+
+  //
 }
