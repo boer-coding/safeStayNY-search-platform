@@ -23,6 +23,8 @@ app.get("/top_albums", routes.top_albums);
 app.get("/star_host", routes.star_host);
 app.get("/recommendation", routes.recommendation);
 app.get("/neighborhoods", routes.neighborhoods);
+app.get("/listing", routes.listing);
+app.get("/crime", routes.crime);
 
 app.listen(config.server_port, () => {
   console.log(
