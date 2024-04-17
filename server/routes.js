@@ -18,24 +18,17 @@ connection.connect((err) => err && console.log(err));
 
 // Route 1: GET /author/:type
 const author = async function (req, res) {
-  // TODO (TASK 1): replace the values of name and pennKey with your own
-  const name = "Boer Liu, Ying Zhang";
-  const pennKey = "liuboer";
+  const name = "Yuqing Guo, Boer Liu, Hannah Luan, Ying Zhang";
 
-  // checks the value of type the request parameters
-  // note that parameters are required and are specified in server.js in the endpoint by a colon (e.g. /author/:type)
   if (req.params.type === "name") {
     // res.send returns data back to the requester via an HTTP response
     res.send(`Created by ${name}`);
-  } else if (req.params.type === "pennkey") {
-    // TODO (TASK 2): edit the else if condition to check if the request parameter is 'pennkey' and if so, send back response 'Created by [pennkey]'
-    res.send(`Created by ${pennKey}`);
   } else {
     // we can also send back an HTTP status code to indicate an improper request
     res
       .status(400)
       .send(
-        `'${req.params.type}' is not a valid author type. Valid types are 'name' and 'pennkey'.`
+        `'${req.params.type}' is not a valid author type. Valid type is 'name'.`
       );
   }
 };
@@ -787,6 +780,32 @@ FROM arrest_list al JOIN location l ON al.location_id = l.location_id JOIN suspe
   });
 };
 
+const top_5_neighbors = async function (req, res) {
+  const result =  [
+    {
+      "neighborhood": "Belle Harbor",
+      "neighborhood_group": "Queens"
+    },
+    {
+      "neighborhood": "Lighthouse Hill",
+      "neighborhood_group": "Staten Island"
+    },
+    {
+      "neighborhood": "Breezy Point",
+      "neighborhood_group": "Queens"
+    },
+    {
+      "neighborhood": "Shore Acres",
+      "neighborhood_group": "Staten Island"
+    },
+    {
+      "neighborhood": "Fort Wadsworth",
+      "neighborhood_group": "Staten Island"
+    }
+  ];
+  res.send(result);
+}
+
 module.exports = {
   author,
   random,
@@ -802,4 +821,5 @@ module.exports = {
   recommendation,
   neighborhoods,
   crime,
+  top_5_neighbors
 }
