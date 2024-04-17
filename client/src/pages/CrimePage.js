@@ -54,36 +54,6 @@ export function CrimePage() {
   const handleNeighborhoodChange = (event) => {
     setNeighborhood(event.target.value);
   };
-  const handleAccommodatesChange = (event) => {
-    const value = event.target.value;
-    setAccommodates(value === "8+" ? 8 : value);
-  };
-  const handleStayLengthChange = (event) => {
-    const value = event.target.value;
-    setStayLength(value === "8+" ? 8 : value);
-  };
-  const handleRoomTypeChange = (event) => {
-    // console.log("rommtype changed");
-    setRoomType(event.target.value);
-  };
-  // const handlePriceChange = (event) => {
-  //   // const value = event.target.value;
-  //   // setPriceRange(value === "1000+" ? 1000 : value);
-  //   setPriceRange(event.target.value);
-  // };
-  const handlePriceChange = (event, newValue) => {
-    // newValue is an array: [minPrice, maxPrice]
-    setPriceRange(newValue);
-  };
-
-  const handleBedsChange = (event) => {
-    const value = event.target.value;
-    setBeds(value === "8+" ? 8 : value);
-  };
-  const handleBathroomsChange = (event) => {
-    const value = event.target.value;
-    setBathrooms(value === "8+" ? 8 : value);
-  };
 
   //fetch neighborhoods base on neighborhood group
   const fetchNeighborhoods = async () => {
@@ -108,7 +78,6 @@ export function CrimePage() {
     console.log("Search initiated with filters:", {
       neighborhoodGroup,
       neighborhood
-
     });
     const queryParams = new URLSearchParams({
       neighborhoodGroup,
@@ -123,11 +92,11 @@ export function CrimePage() {
       .then((resJson) => {
         // DataGrid expects an array of objects with a unique id.
         // To accomplish this, we use a map with spread syntax (https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Spread_syntax)
-        const recommendationData = resJson.map((a) => ({
+        const crimeDataJson = resJson.map((a) => ({
           id: a.listing_id,
           ...a,
         }));
-        setRecommendation(recommendationData);
+        setCrimeData(crimeDataJson);
       })
       .catch((error) => {
         console.error("Failed to fetch recommendation", error);
@@ -141,13 +110,7 @@ export function CrimePage() {
   }, [
     neighborhoodGroup,
     neighborhood,
-    accommodates,
-    stayLength,
-    roomType,
-    price[0],
-    price[1],
-    beds,
-    bathrooms,
+    
   ]);
 
   const columns = [
