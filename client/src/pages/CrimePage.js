@@ -20,29 +20,28 @@ import { DataGrid } from "@mui/x-data-grid";
 const config = require("../config.json");
 
 //query neighborhood group, nb, accommodate, days, room-type, bed, bath
-export function RecommendationPage() {
+export function CrimePage() {
   const [pageSize, setPageSize] = useState(10);
 
   //state hooks for fetching
-  const [recommendationData, setRecommendation] = useState([]);
+  const [crimeData, setCrimeData] = useState([]);
   const [neighborhoodData, setNeighborhoods] = useState([]);
 
   //necessary filters
   const [neighborhoodGroup, setNeighborhoodGroup] = useState("Any");
   const [neighborhood, setNeighborhood] = useState("Any");
-  const [accommodates, setAccommodates] = useState(1);
-  const [stayLength, setStayLength] = useState(2);
+  //const [accommodates, setAccommodates] = useState(1);
+  //const [stayLength, setStayLength] = useState(2);
 
   //additional filters
-  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
-  const [roomType, setRoomType] = useState("");
-  const [price, setPriceRange] = useState([0, 100000]);
-  const [beds, setBeds] = useState("");
-  const [bathrooms, setBathrooms] = useState("");
+  //const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
+  //const [roomType, setRoomType] = useState("");
+  //const [price, setPriceRange] = useState([0, 100000]);
+  //const [beds, setBeds] = useState("");
+  //const [bathrooms, setBathrooms] = useState("");
 
   //redirects
-  const [selectedRecommendationId, setSelectedRecommendationId] =
-    useState(null);
+  //const [selectedRecommendationId, setSelectedRecommendationId] =    useState(null);
 
   //handleChange
   const handleNeighborhoodGroupChange = (event) => {
@@ -88,9 +87,7 @@ export function RecommendationPage() {
 
   //fetch neighborhoods base on neighborhood group
   const fetchNeighborhoods = async () => {
-    const url = `http://${config.server_host}:${
-      config.server_port
-    }/neighborhoods?neighborhoodGroup=${encodeURIComponent(neighborhoodGroup)}`;
+    const url = `http://${config.server_host}:${config.server_port}/neighborhoods?neighborhoodGroup=${encodeURIComponent(neighborhoodGroup)}`;
     // const url = `http://${config.server_host}:${config.server_port}/neighborhoods`;
 
     try {
@@ -110,29 +107,16 @@ export function RecommendationPage() {
   const search = () => {
     console.log("Search initiated with filters:", {
       neighborhoodGroup,
-      neighborhood,
-      accommodates,
-      stayLength,
-      roomType,
-      priceLow: price[0],
-      priceHigh: price[1],
-      beds,
-      bathrooms,
+      neighborhood
+
     });
     const queryParams = new URLSearchParams({
       neighborhoodGroup,
-      neighborhood,
-      accommodates,
-      stayLength,
-      roomType,
-      priceLow: price[0],
-      priceHigh: price[1],
-      beds,
-      bathrooms,
+      neighborhood
     });
 
     fetch(
-      `http://${config.server_host}:${config.server_port}/recommendation?
+      `http://${config.server_host}:${config.server_port}/crime?
         ${queryParams.toString()}`
     )
       .then((res) => res.json())
