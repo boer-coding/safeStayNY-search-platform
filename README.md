@@ -14,3 +14,11 @@
 
 - Neighborhood filter based on neighborhood group
 - bug fix for 8+ filters and price range 1000+
+- bug fix neighborhood_group selected and neighborhood=Any
+
+## 4.17.2024
+
+# athrala- Ying (Rita) Zhang - implemented Recommendation Page v3
+
+- update safety_score to crime_Rate
+- add lising card, a pop up page to display comprehensive listing info

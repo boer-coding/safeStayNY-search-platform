@@ -15,7 +15,7 @@ import {
   Typography,
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
-// import SongCard from "../components/SongCard";
+import ListingCard from "../components/ListingCard";
 
 const config = require("../config.json");
 
@@ -36,24 +36,20 @@ export function RecommendationPage() {
   //additional filters
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [roomType, setRoomType] = useState("");
-  const [price, setPriceRange] = useState([0, 100000]);
+  const [price, setPriceRange] = useState([1, 100000]);
   const [beds, setBeds] = useState("");
   const [bathrooms, setBathrooms] = useState("");
 
   //redirects
-  const [selectedRecommendationId, setSelectedRecommendationId] =
-    useState(null);
+  const [selectedListingId, setSelectedListingId] = useState(null);
 
   //handleChange
   const handleNeighborhoodGroupChange = (event) => {
     setNeighborhoodGroup(event.target.value);
-    // If 'Any' is selected for neighborhoodGroup, set neighborhood to 'Any' as well
-    if (event.target.value === "Any") {
-      setNeighborhood("Any");
-    }
   };
   const handleNeighborhoodChange = (event) => {
-    setNeighborhood(event.target.value);
+    const value = event.target.value;
+    setNeighborhood(value === "Any" ? "Any" : value);
   };
   const handleAccommodatesChange = (event) => {
     const value = event.target.value;
@@ -67,13 +63,8 @@ export function RecommendationPage() {
     // console.log("rommtype changed");
     setRoomType(event.target.value);
   };
-  // const handlePriceChange = (event) => {
-  //   // const value = event.target.value;
-  //   // setPriceRange(value === "1000+" ? 1000 : value);
-  //   setPriceRange(event.target.value);
-  // };
+
   const handlePriceChange = (event, newValue) => {
-    // newValue is an array: [minPrice, maxPrice]
     setPriceRange(newValue);
   };
 
@@ -91,7 +82,6 @@ export function RecommendationPage() {
     const url = `http://${config.server_host}:${
       config.server_port
     }/neighborhoods?neighborhoodGroup=${encodeURIComponent(neighborhoodGroup)}`;
-    // const url = `http://${config.server_host}:${config.server_port}/neighborhoods`;
 
     try {
       const response = await fetch(url);
@@ -150,31 +140,29 @@ export function RecommendationPage() {
       });
   };
 
-  //fetch recs based on filter
+  //always apply fetch neighborhoods
   useEffect(() => {
     fetchNeighborhoods();
-    search();
+    // search();
   }, [
     neighborhoodGroup,
-    neighborhood,
-    accommodates,
-    stayLength,
-    roomType,
-    price[0],
-    price[1],
-    beds,
-    bathrooms,
+    // neighborhood,
+    // accommodates,
+    // stayLength,
+    // roomType,
+    // price[0],
+    // price[1],
+    // beds,
+    // bathrooms,
   ]);
 
   const columns = [
     {
       field: "listing_des",
       headerName: "Recommended Stay",
-      width: 600,
+      width: 500,
       renderCell: (params) => (
-        <Link
-          onClick={() => setSelectedRecommendationId(params.row.listing_id)}
-        >
+        <Link onClick={() => setSelectedListingId(params.row.listing_id)}>
           {params.value}
         </Link>
       ),
@@ -182,31 +170,31 @@ export function RecommendationPage() {
     {
       field: "neighborhood,",
       headerName: "Neighborhood",
-      width: 180,
+      width: 300,
       renderCell: (params) => params.row.neighborhood,
     },
     {
-      field: "safety.safety_score",
-      headerName: "Safety",
+      field: "crime.crime_rate",
+      headerName: "Crime Rate",
       width: 180,
-      renderCell: (params) => params.row.safety_score,
+      renderCell: (params) => `${params.row.crime_rate.toFixed(2)}%`,
     },
     {
       field: "price,",
       headerName: "Price",
       width: 180,
-      renderCell: (params) => params.row.price,
+      renderCell: (params) => `$${params.row.price}`,
     },
   ];
 
   return (
     <Container>
-      {/* {setSelectedRecommendationId && (
-        <SongCard
-          songId={selectedRecommendationId}
-          handleClose={() => setSelectedRecommendationId(null)}
+      {selectedListingId && (
+        <ListingCard
+          listingId={selectedListingId}
+          handleClose={() => setSelectedListingId(null)}
         />
-      )} */}
+      )}
 
       <h2>Filters</h2>
       <Grid container spacing={6}>
@@ -238,7 +226,7 @@ export function RecommendationPage() {
             >
               <MenuItem value={"Any"}>Any</MenuItem>
               {neighborhoodData.map((item, index) => (
-                <MenuItem key={`${item.neighborhood}-${index}`} value={item}>
+                <MenuItem key={index} value={item}>
                   {item}
                 </MenuItem>
               ))}
@@ -296,10 +284,12 @@ export function RecommendationPage() {
           {showAdvancedFilters && (
             <>
               <Grid item xs={12}>
-                <Typography>
-                  Price range: ${price[0]} - $
-                  {price[1] === 1000 ? "1000+" : `${price[1]}`}
-                </Typography>
+                <div style={{ padding: "20px" }}>
+                  <Typography>
+                    Price range: ${price[0]} - $
+                    {price[1] === 1000 ? "1000+" : `${price[1]}`}
+                  </Typography>
+                </div>
                 <Slider
                   value={price}
                   onChange={handlePriceChange}
@@ -315,64 +305,66 @@ export function RecommendationPage() {
                   ]}
                 />
               </Grid>
-              <Grid container spacing={6}>
-                <Grid item xs={3}>
-                  <FormControl fullWidth>
-                    <InputLabel>Room Type</InputLabel>
-                    <Select
-                      value={roomType}
-                      label="Room Type"
-                      onChange={handleRoomTypeChange}
-                    >
-                      <MenuItem value={"Entire home/apt"}>
-                        Entire home/apt
-                      </MenuItem>
-                      <MenuItem value={"Hotel room"}>Hotel room</MenuItem>
-                      <MenuItem value={"Private room"}>Private room</MenuItem>
-                      <MenuItem value={"Shared room"}>Shared room</MenuItem>
-                    </Select>
-                  </FormControl>
-                </Grid>
+              <div style={{ padding: "20px" }}>
+                <Grid container spacing={6}>
+                  <Grid item xs={3}>
+                    <FormControl fullWidth>
+                      <InputLabel>Room Type</InputLabel>
+                      <Select
+                        value={roomType}
+                        label="Room Type"
+                        onChange={handleRoomTypeChange}
+                      >
+                        <MenuItem value={"Entire home/apt"}>
+                          Entire home/apt
+                        </MenuItem>
+                        <MenuItem value={"Hotel room"}>Hotel room</MenuItem>
+                        <MenuItem value={"Private room"}>Private room</MenuItem>
+                        <MenuItem value={"Shared room"}>Shared room</MenuItem>
+                      </Select>
+                    </FormControl>
+                  </Grid>
 
-                <Grid item xs={3}>
-                  <FormControl fullWidth>
-                    <InputLabel>Beds</InputLabel>
-                    <Select
-                      value={beds}
-                      label="Beds"
-                      onChange={handleBedsChange}
-                    >
-                      <MenuItem value={1}>1</MenuItem>
-                      <MenuItem value={2}>2</MenuItem>
-                      <MenuItem value={3}>3</MenuItem>
-                      <MenuItem value={4}>4</MenuItem>
-                      <MenuItem value={5}>5</MenuItem>
-                      <MenuItem value={6}>6</MenuItem>
-                      <MenuItem value={7}>7</MenuItem>
-                      <MenuItem value={"8+"}>8+</MenuItem>
-                    </Select>
-                  </FormControl>
+                  <Grid item xs={3}>
+                    <FormControl fullWidth>
+                      <InputLabel>Beds</InputLabel>
+                      <Select
+                        value={beds}
+                        label="Beds"
+                        onChange={handleBedsChange}
+                      >
+                        <MenuItem value={1}>1</MenuItem>
+                        <MenuItem value={2}>2</MenuItem>
+                        <MenuItem value={3}>3</MenuItem>
+                        <MenuItem value={4}>4</MenuItem>
+                        <MenuItem value={5}>5</MenuItem>
+                        <MenuItem value={6}>6</MenuItem>
+                        <MenuItem value={7}>7</MenuItem>
+                        <MenuItem value={"8+"}>8+</MenuItem>
+                      </Select>
+                    </FormControl>
+                  </Grid>
+                  <Grid item xs={3}>
+                    <FormControl fullWidth>
+                      <InputLabel>Bathrooms</InputLabel>
+                      <Select
+                        value={bathrooms}
+                        label="Bathrooms"
+                        onChange={handleBathroomsChange}
+                      >
+                        <MenuItem value={1}>1</MenuItem>
+                        <MenuItem value={2}>2</MenuItem>
+                        <MenuItem value={3}>3</MenuItem>
+                        <MenuItem value={4}>4</MenuItem>
+                        <MenuItem value={5}>5</MenuItem>
+                        <MenuItem value={6}>6</MenuItem>
+                        <MenuItem value={7}>7</MenuItem>
+                        <MenuItem value={"8+"}>8+</MenuItem>
+                      </Select>
+                    </FormControl>
+                  </Grid>
                 </Grid>
-                <Grid item xs={3}>
-                  <FormControl fullWidth>
-                    <InputLabel>Bathrooms</InputLabel>
-                    <Select
-                      value={bathrooms}
-                      label="Bathrooms"
-                      onChange={handleBathroomsChange}
-                    >
-                      <MenuItem value={1}>1</MenuItem>
-                      <MenuItem value={2}>2</MenuItem>
-                      <MenuItem value={3}>3</MenuItem>
-                      <MenuItem value={4}>4</MenuItem>
-                      <MenuItem value={5}>5</MenuItem>
-                      <MenuItem value={6}>6</MenuItem>
-                      <MenuItem value={7}>7</MenuItem>
-                      <MenuItem value={"8+"}>8+</MenuItem>
-                    </Select>
-                  </FormControl>
-                </Grid>
-              </Grid>
+              </div>
             </>
           )}
         </Grid>

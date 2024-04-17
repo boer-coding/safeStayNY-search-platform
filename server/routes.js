@@ -411,90 +411,29 @@ const list_host = async function (req, res) {
   );
 };
 
-// WORKING Route 10: GET /recommendation
-const recommendation_work = async function (req, res) {
-  console.log("Received query params:", req.query);
-  const {
-    neighborhoodGroup = "Manhattan",
-    neighborhood = "SoHo",
-    accommodates = 1,
-    stayLength = 2,
-    roomType = "Private room", //should be optional, hardcoded for now
-    priceLow = 0,
-    priceHigh = 100000,
-    beds = 1, //should be optional, hardcoded for now
-    bathrooms = 1, //should be optional, hardcoded for now
-  } = req.query;
-
-  console.log("Received query params:", req.query);
-  connection.query(
-    `
-      SELECT
-      a.listing_id,
-      a.listing_des,
-      l.neighborhood,
-      a.price,
-      a.room_type,
-      a.accommodates,
-      a.bathrooms,
-      a.beds,
-      a.mini_nights,
-      a.max_nights,
-      safety.safety_score
-    FROM
-      airbnb a
-    JOIN
-      location l ON a.location_id = l.location_id
-    JOIN
-      (SELECT
-          l.location_id,
-          1 / (1 + COUNT(a.arrest_date)) AS safety_score
-        FROM
-          location l
-        LEFT JOIN
-          arrest_list a ON l.location_id = a.location_id
-        GROUP BY
-          l.location_id) AS safety
-      ON l.location_id = safety.location_id
-    WHERE
-      l.neighborhood_group = '${neighborhoodGroup}'
-      AND (l.neighborhood = '${neighborhood}')
-      AND (a.accommodates >= ${accommodates})
-      AND ${stayLength} BETWEEN a.mini_nights AND a.max_nights
-      AND (a.room_type = '${roomType}')
-      AND a.price BETWEEN ${priceLow} AND ${priceHigh}
-      AND (a.beds >= ${beds})
-      AND (a.bathrooms >= ${bathrooms})
-        ORDER BY
-     safety.safety_score DESC,
-      a.price ASC;
-    `,
-
-    (err, data) => {
-      if (err || data.length === 0) {
-        console.log(err);
-        res.json([]);
-      } else {
-        res.json(data);
-      }
-    }
-  );
+const cleanParams = (params) => {
+  let cleaned = {};
+  for (let key in params) {
+    cleaned[key.trim()] = params[key].trim();
+  }
+  return cleaned;
 };
 
 // v2 working optimization-needed Route 10: GET /recommendation
 const recommendation = async function (req, res) {
+  const cleanQuery = cleanParams(req.query);
   console.log("Received query params:", req.query);
   const {
     neighborhoodGroup = "Any",
     neighborhood = "Any",
     accommodates = 1,
     stayLength = 2,
-    roomType = null, //should be optional, hardcoded for now
+    roomType = null,
     priceLow = 0,
     priceHigh = 100000,
-    beds = null, //should be optional, hardcoded for now
-    bathrooms = null, //should be optional, hardcoded for now
-  } = req.query;
+    beds = null,
+    bathrooms = null,
+  } = cleanQuery;
 
   console.log("Received query params:", req.query);
 
@@ -509,22 +448,19 @@ const recommendation = async function (req, res) {
   a.beds,
   a.mini_nights,
   a.max_nights,
-  safety.safety_score
+  crime.crime_rate
 FROM
   airbnb a
 JOIN
   location l ON a.location_id = l.location_id
 JOIN
   (SELECT
-      l.location_id,
-      1 / (1 + COUNT(al.arrest_date)) AS safety_score
+      c.location_id,
+      (c.count/total_arrests)*100 AS crime_rate
     FROM
-      location l
-    LEFT JOIN
-      arrest_list al ON l.location_id = al.location_id
-    GROUP BY
-      l.location_id) AS safety
-  ON l.location_id = safety.location_id
+      crime_count c, (SELECT SUM(count) AS total_arrests FROM crime_count)AS total
+    ) AS crime
+  ON l.location_id = crime.location_id
 WHERE
   a.accommodates >= ?
   AND ? BETWEEN a.mini_nights AND a.max_nights
@@ -534,11 +470,11 @@ WHERE
 
   // Optional filters
   const optionalFilters = [];
-  if (neighborhoodGroup && neighborhoodGroup !== "Any") {
+  if (neighborhoodGroup.trim() !== "Any" && neighborhoodGroup) {
     optionalFilters.push(`l.neighborhood_group = ?`);
-    params.push(neighborhoodGroup);
+    params.push(neighborhoodGroup.trim());
   }
-  if (neighborhood && neighborhood !== "Any") {
+  if (neighborhood !== "Any" && neighborhood) {
     optionalFilters.push(`l.neighborhood = ?`);
     params.push(neighborhood);
   }
@@ -574,8 +510,9 @@ WHERE
   query += priceCondition;
 
   // Add the ORDER BY clause
-  query += ` ORDER BY safety.safety_score DESC, a.price ASC;`;
+  query += ` ORDER BY crime.crime_rate ASC, a.price ASC;`;
 
+  console.log("final rec query: ", query);
   connection.query(query, params, (err, data) => {
     if (err || data.length === 0) {
       console.log(err);
@@ -586,7 +523,7 @@ WHERE
   });
 };
 
-// return neighborhood list based on nb_group selected Route 11: GET /neighborhood_list
+// return neighborhood list based on nb_group selected Route 11: GET /neighborhoods
 const neighborhoods = async function (req, res) {
   // console.log("Received neighborhoodGroup params:", req.query);
   const queryParams = [];
@@ -594,8 +531,9 @@ const neighborhoods = async function (req, res) {
 
   let query = `
   SELECT DISTINCT l.neighborhood
-  FROM location l JOIN  airbnb a ON a.location_id=l.location_id`;
-  if (neighborhoodGroup !== "Any" || neighborhoodGroup !== "") {
+  FROM location l JOIN  airbnb a ON a.location_id=l.location_id
+  `;
+  if (neighborhoodGroup !== "Any" && neighborhoodGroup) {
     queryParams.push(neighborhoodGroup);
     query += " WHERE neighborhood_group = ?";
   }
@@ -614,17 +552,38 @@ const neighborhoods = async function (req, res) {
       return;
     }
     res.json(data.map((item) => item.neighborhood));
+    // res.json(data);
   });
 };
 
+// return listing info based on listing_id selected Route 12: GET /listing
+const listing = async function (req, res) {
+  const listingId = req.query.listing_id;
+
+  console.log(listingId);
+
+  connection.query(
+    `
+  
+    SELECT room_type, beds, bathrooms, listing_url, host_id
+    FROM airbnb
+    WHERE listing_id = '${listingId}'
+    
+  `,
+    (err, data) => {
+      if (err || data.length === 0) {
+        console.log(err);
+        res.json([]);
+      } else {
+        res.json(data[0]);
+      }
+    }
+  );
+};
 
 const crime = async function (req, res) {
   console.log("Received query params:", req.query);
-  const {
-    neighborhoodGroup = "Any",
-    neighborhood = "Any",
-    
-  } = req.query;
+  const { neighborhoodGroup = "Any", neighborhood = "Any" } = req.query;
 
   console.log("Received query params:", req.query);
   console.log("1");
@@ -647,8 +606,12 @@ FROM arrest_list al JOIN location l ON al.location_id = l.location_id JOIN suspe
     optionalFilters.push(`l.neighborhood = ?`);
     params.push(neighborhood);
   }
-  console.log("optionalFilterlength: ", optionalFilters.length, " params: ",params)
-
+  console.log(
+    "optionalFilterlength: ",
+    optionalFilters.length,
+    " params: ",
+    params
+  );
 
   // Add the optional filters to the query if they exist
   if (optionalFilters.length > 0) {
@@ -656,10 +619,8 @@ FROM arrest_list al JOIN location l ON al.location_id = l.location_id JOIN suspe
     ${optionalFilters.join(" AND ")}`;
   }
 
-
-
   // Add the GROUP BY clause
-   query += `
+  query += `
   GROUP BY ofns_type;`;
   console.log(query);
 
@@ -686,5 +647,6 @@ module.exports = {
   list_host,
   recommendation,
   neighborhoods,
-  crime
+  listing,
+  crime,
 };
