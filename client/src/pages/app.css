@@ -1,0 +1,32 @@
+.container {
+    display: grid;
+    grid-template-columns: 0.618fr 0.382fr; /* Left and right side */
+    grid-template-rows: auto auto; /* Description, upper table, and lower table */
+    gap: 10px; /* Gap between sections */
+    height: 100vh; /* Full height of the viewport */
+  }
+  
+  .description {
+    grid-column: 1 / 2; /* Span one column */
+    grid-row: 2 / 4; /* Span two rows */
+    background-color: lightgray;
+    border: 1px solid gray;
+    padding: 20px;
+  }
+  
+  .upper-table {
+    grid-column: 2 / 3; /* Span one column */
+    grid-row: 1 / 2; /* Span both rows */
+    background-color: lightblue;
+    border: 1px solid gray;
+    padding: 20px;
+  }
+  
+  .lower-table {
+    grid-column: 2 / 3; /* Span one column */
+    grid-row: 2 / 4; /* Span both rows */
+    background-color: lightgreen;
+    border: 1px solid gray;
+    padding: 20px;
+  }
+  

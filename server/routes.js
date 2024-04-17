@@ -18,24 +18,17 @@ connection.connect((err) => err && console.log(err));
 
 // Route 1: GET /author/:type
 const author = async function (req, res) {
-  // TODO (TASK 1): replace the values of name and pennKey with your own
-  const name = "Boer Liu, Ying Zhang";
-  const pennKey = "liuboer";
+  const name = "Yuqing Guo, Boer Liu, Hannah Luan, Ying Zhang";
 
-  // checks the value of type the request parameters
-  // note that parameters are required and are specified in server.js in the endpoint by a colon (e.g. /author/:type)
   if (req.params.type === "name") {
     // res.send returns data back to the requester via an HTTP response
     res.send(`Created by ${name}`);
-  } else if (req.params.type === "pennkey") {
-    // TODO (TASK 2): edit the else if condition to check if the request parameter is 'pennkey' and if so, send back response 'Created by [pennkey]'
-    res.send(`Created by ${pennKey}`);
   } else {
     // we can also send back an HTTP status code to indicate an improper request
     res
       .status(400)
       .send(
-        `'${req.params.type}' is not a valid author type. Valid types are 'name' and 'pennkey'.`
+        `'${req.params.type}' is not a valid author type. Valid type is 'name'.`
       );
   }
 };
@@ -302,9 +295,11 @@ const star_host1 = async function (req, res) {
   console.log("Constructed SQL Query:", neighborhoodGroup);
   console.log("neighborhoodGroup Type", typeof neighborhoodGroup);
 
- 
   if (neighborhoodGroup === "Any" && neighborhood === "Any") {
-    console.log("Constructed SQL Query 1 neighborhoodGroup:", neighborhoodGroup);
+    console.log(
+      "Constructed SQL Query 1 neighborhoodGroup:",
+      neighborhoodGroup
+    );
     connection.query(
       `
       WITH host_ranking AS (
@@ -336,7 +331,11 @@ const star_host1 = async function (req, res) {
         }
       }
     );
-  } else if (neighborhoodGroup && neighborhoodGroup !== "Any" && neighborhood === "Any"){
+  } else if (
+    neighborhoodGroup &&
+    neighborhoodGroup !== "Any" &&
+    neighborhood === "Any"
+  ) {
     console.log("Constructed SQL Query 2:", req.query);
 
     connection.query(
@@ -364,12 +363,12 @@ const star_host1 = async function (req, res) {
         }
       }
     );
-} else if (neighborhood != "Any" && neighborhoodGroup != "Any"){
-  console.log("Constructed SQL Query 3:", req.query);
-  console.log("Constructed SQL Query 3:", req.query);
+  } else if (neighborhood != "Any" && neighborhoodGroup != "Any") {
+    console.log("Constructed SQL Query 3:", req.query);
+    console.log("Constructed SQL Query 3:", req.query);
 
-  connection.query(
-    `
+    connection.query(
+      `
     WITH host_ranking AS (
       SELECT host.host_id AS host_id, host_name, location_id, sum(review_num) AS review_count ,avg(review_rating) AS avg_rating
       FROM host JOIN airbnb ON host.host_id = airbnb.host_id
@@ -383,16 +382,16 @@ const star_host1 = async function (req, res) {
       WHERE neighborhood_group = ${neighborhoodGroup} AND neighborhood = ${neighborhood}
       ORDER BY review_count DESC, avg_rating DESC;
 `,
-    (err, data) => {
-      if (err || data.length === 0) {
-        console.log(err);
-        res.json([]);
-      } else {
-        res.json(data);
+      (err, data) => {
+        if (err || data.length === 0) {
+          console.log(err);
+          res.json([]);
+        } else {
+          res.json(data);
+        }
       }
-    }
-  );
-}
+    );
+  }
 };
 
 const star_host = async function (req, res) {
@@ -401,7 +400,7 @@ const star_host = async function (req, res) {
 
   const neighborhoodGroup = req.query.neighborhood_group ?? "Any";
   const neighborhood = req.query.neighborhood ?? "Any";
- 
+
   if (neighborhoodGroup == "Any" && neighborhood == "Any") {
     console.log("Constructed SQL Query 1:", req.query);
     connection.query(
@@ -448,35 +447,33 @@ const star_host = async function (req, res) {
     JOIN location ON host_ranking.location_id = location.location_id
 `;
 
-
-  // Optional filters
-  let params = [];
-  const optionalFilters = [];
-  if (neighborhoodGroup && neighborhoodGroup != "Any") {
-    optionalFilters.push(`neighborhood_group = ?`);
-    params.push(neighborhoodGroup);
-  }
-  if (neighborhood && neighborhood != "Any") {
-    optionalFilters.push(`neighborhood = ?`);
-    params.push(neighborhood);
-  }
-
-
-  // Add the optional filters to the query if they exist
-  if (optionalFilters.length > 0) {
-    query += ` WHERE ${optionalFilters.join(" AND ")}
-    ORDER BY review_count DESC, avg_rating DESC`;
-  }
-
-  connection.query(query,params, (err, data) => {
-    if (err || data.length === 0) {
-      console.log(err);
-      res.json([]);
-    } else {
-      res.json(data);
+    // Optional filters
+    let params = [];
+    const optionalFilters = [];
+    if (neighborhoodGroup && neighborhoodGroup != "Any") {
+      optionalFilters.push(`neighborhood_group = ?`);
+      params.push(neighborhoodGroup);
     }
-  });
-} 
+    if (neighborhood && neighborhood != "Any") {
+      optionalFilters.push(`neighborhood = ?`);
+      params.push(neighborhood);
+    }
+
+    // Add the optional filters to the query if they exist
+    if (optionalFilters.length > 0) {
+      query += ` WHERE ${optionalFilters.join(" AND ")}
+    ORDER BY review_count DESC, avg_rating DESC`;
+    }
+
+    connection.query(query, params, (err, data) => {
+      if (err || data.length === 0) {
+        console.log(err);
+        res.json([]);
+      } else {
+        res.json(data);
+      }
+    });
+  }
 };
 
 // host page pop up
@@ -502,74 +499,12 @@ const host_listing = async function (req, res) {
   );
 };
 
-// WORKING Route 10: GET /recommendation
-const recommendation_work = async function (req, res) {
-  console.log("Received query params:", req.query);
-  const {
-    neighborhoodGroup = "Manhattan",
-    neighborhood = "SoHo",
-    accommodates = 1,
-    stayLength = 2,
-    roomType = "Private room", //should be optional, hardcoded for now
-    priceLow = 0,
-    priceHigh = 100000,
-    beds = 1, //should be optional, hardcoded for now
-    bathrooms = 1, //should be optional, hardcoded for now
-  } = req.query;
-
-  console.log("Received query params:", req.query);
-  connection.query(
-    `
-      SELECT
-      a.listing_id,
-      a.listing_des,
-      l.neighborhood,
-      a.price,
-      a.room_type,
-      a.accommodates,
-      a.bathrooms,
-      a.beds,
-      a.mini_nights,
-      a.max_nights,
-      safety.safety_score
-    FROM
-      airbnb a
-    JOIN
-      location l ON a.location_id = l.location_id
-    JOIN
-      (SELECT
-          l.location_id,
-          1 / (1 + COUNT(a.arrest_date)) AS safety_score
-        FROM
-          location l
-        LEFT JOIN
-          arrest_list a ON l.location_id = a.location_id
-        GROUP BY
-          l.location_id) AS safety
-      ON l.location_id = safety.location_id
-    WHERE
-      l.neighborhood_group = '${neighborhoodGroup}'
-      AND (l.neighborhood = '${neighborhood}')
-      AND (a.accommodates >= ${accommodates})
-      AND ${stayLength} BETWEEN a.mini_nights AND a.max_nights
-      AND (a.room_type = '${roomType}')
-      AND a.price BETWEEN ${priceLow} AND ${priceHigh}
-      AND (a.beds >= ${beds})
-      AND (a.bathrooms >= ${bathrooms})
-        ORDER BY
-     safety.safety_score DESC,
-      a.price ASC;
-    `,
-
-    (err, data) => {
-      if (err || data.length === 0) {
-        console.log(err);
-        res.json([]);
-      } else {
-        res.json(data);
-      }
-    }
-  );
+const cleanParams = (params) => {
+  let cleaned = {};
+  for (let key in params) {
+    cleaned[key.trim()] = params[key].trim();
+  }
+  return cleaned;
 };
 
 // v2 working optimization-needed Route 10: GET /recommendation
@@ -750,7 +685,7 @@ FROM arrest_list al JOIN location l ON al.location_id = l.location_id JOIN suspe
 
   // Optional filters
   const optionalFilters = [];
-  console.log("neighborhoodGroup", neighborhoodGroup)
+  console.log("neighborhoodGroup", neighborhoodGroup);
   if (neighborhoodGroup && neighborhoodGroup !== "Any") {
     optionalFilters.push(`WHERE l.neighborhood_group = ?`);
     params.push(neighborhoodGroup);
@@ -787,6 +722,32 @@ FROM arrest_list al JOIN location l ON al.location_id = l.location_id JOIN suspe
   });
 };
 
+const top_5_neighbors = async function (req, res) {
+  const result = [
+    {
+      neighborhood: "Belle Harbor",
+      neighborhood_group: "Queens",
+    },
+    {
+      neighborhood: "Lighthouse Hill",
+      neighborhood_group: "Staten Island",
+    },
+    {
+      neighborhood: "Breezy Point",
+      neighborhood_group: "Queens",
+    },
+    {
+      neighborhood: "Shore Acres",
+      neighborhood_group: "Staten Island",
+    },
+    {
+      neighborhood: "Fort Wadsworth",
+      neighborhood_group: "Staten Island",
+    },
+  ];
+  res.send(result);
+};
+
 module.exports = {
   author,
   random,
@@ -802,4 +763,5 @@ module.exports = {
   recommendation,
   neighborhoods,
   crime,
-}
+  top_5_neighbors,
+};

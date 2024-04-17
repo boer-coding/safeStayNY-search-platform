@@ -1,30 +1,48 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { CssBaseline, ThemeProvider } from "@mui/material";
-import { indigo, amber } from "@mui/material/colors";
+import { cyan } from "@mui/material/colors";
 import { createTheme } from "@mui/material/styles";
 
 import NavBar from "./components/NavBar";
 import HomePage from "./pages/HomePage";
-import { RecommendationPage } from "./pages/RecommendationPage";
 import { HostPage } from "./pages/HostPage";
+import { RecommendationPage } from "./pages/RecommendationPage";
 import { CrimePage } from "./pages/CrimePage";
 
-import AlbumsPage from "./pages/AlbumsPage";
-import AlbumInfoPage from "./pages/AlbumInfoPage";
-
-// createTheme enables you to customize the look and feel of your app past the default
-// in this case, we only change the color scheme
 export const theme = createTheme({
   palette: {
-    primary: indigo,
-    secondary: amber,
+    primary: {
+      main: "#bbdefb",
+    },
+    secondary: {
+      main: "#f06292",
+    },
+    background: {
+      default: "#f6efe3", // Applies to the background of the <body>
+    },
+  },
+  components: {
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          backgroundColor: "#829baf",
+          color: "white", // White text
+          "&:hover": {
+            backgroundColor: "#687785",
+          },
+        },
+      },
+    },
+    MuiLink: {
+      styleOverrides: {
+        root: {
+          color: "#5f8a66", // Your desired color for all Link components
+        },
+      },
+    },
   },
 });
 
-// App is the root component of our application and as children contain all our pages
-// We use React Router's BrowserRouter and Routes components to define the pages for
-// our application, with each Route component representing a page and the common
-// NavBar component allowing us to navigate between pages (with hyperlinks)
 export default function App() {
   return (
     <ThemeProvider theme={theme}>
@@ -33,15 +51,11 @@ export default function App() {
         <NavBar />
         <Routes>
           <Route path="/" element={<HomePage />} />
-          <Route path="/crime" element={<CrimePage/>} />
-          <Route path="/albums/:album_id" element={<AlbumInfoPage />} />
-          <Route path="/star_host" element={<HostPage />} />
-          <Route path="/recommendation" element={<RecommendationPage />} />
+          <Route path="/hosts" element={<HostPage />} />
+          <Route path="/crime" element={<CrimePage />} />
+          <Route path="/recommendations" element={<RecommendationPage />} />
         </Routes>
       </BrowserRouter>
     </ThemeProvider>
   );
-
-
-  //
 }
