@@ -293,7 +293,7 @@ const top_albums = async function (req, res) {
 
 // host page
 // Route 8: GET /top_albums
-const star_host = async function (req, res) {
+const star_host1 = async function (req, res) {
   // TODO (TASK 11): return the top albums ordered by aggregate number of plays of all songs on the album (descending), with optional pagination (as in route 7)
   // Hint: you will need to use a JOIN and aggregation to get the total plays of songs in an album
 
@@ -395,7 +395,7 @@ const star_host = async function (req, res) {
 }
 };
 
-const star_host1 = async function (req, res) {
+const star_host = async function (req, res) {
   // TODO (TASK 11): return the top albums ordered by aggregate number of plays of all songs on the album (descending), with optional pagination (as in route 7)
   // Hint: you will need to use a JOIN and aggregation to get the total plays of songs in an album
 
@@ -776,7 +776,7 @@ FROM arrest_list al JOIN location l ON al.location_id = l.location_id JOIN suspe
   query += `
   GROUP BY ofns_type;`;
   console.log(query);
-
+  
   connection.query(query, params, (err, data) => {
     if (err || data.length === 0) {
       console.log(err);
