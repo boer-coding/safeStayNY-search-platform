@@ -18,7 +18,7 @@ export default function HomePage() {
       });
   }, [appAuthor]);
 
-  const top20Neighbors = [
+  const top5Neighbors = [
     {
       field: "neighborhood",
       headerName: "Neighborhood",
@@ -53,27 +53,13 @@ export default function HomePage() {
     },
   ];
 
-  const albumColumns = [
-    {
-      field: "title",
-      headerName: "Album Title",
-      renderCell: (row) => (
-        <NavLink to={`/albums/${row.album_id}`}>{row.title}</NavLink>
-      ),
-    },
-    {
-      field: "plays",
-      headerName: "Plays",
-    },
-  ];
-
   return (
     <Container>
       {/* list saftest neighbors */}
       <h2>Top 5 Safetest Neighbors:&nbsp;</h2>
       <LazyTable
-        route={`http://${config.server_host}:${config.server_port}/top_20_neighbors`}
-        columns={top20Neighbors}
+        route={`http://${config.server_host}:${config.server_port}/top_5_neighbors`}
+        columns={top5Neighbors}
         defaultPageSize={5}
         rowsPerPageOptions={[5, 10]}
       />
