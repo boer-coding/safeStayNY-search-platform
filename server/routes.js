@@ -291,7 +291,110 @@ const top_albums = async function (req, res) {
   }
 };
 
+// Route 8: GET /top_albums
 const star_host = async function (req, res) {
+  // TODO (TASK 11): return the top albums ordered by aggregate number of plays of all songs on the album (descending), with optional pagination (as in route 7)
+  // Hint: you will need to use a JOIN and aggregation to get the total plays of songs in an album
+
+  const neighborhoodGroup = req.query.neighborhood_group ?? "Any";
+  const neighborhood = req.query.neighborhood ?? "Any";
+  console.log("Constructed SQL Query:", neighborhoodGroup);
+  console.log("neighborhoodGroup Type", typeof neighborhoodGroup);
+
+ 
+  if (neighborhoodGroup === "Any" && neighborhood === "Any") {
+    console.log("Constructed SQL Query 1 neighborhoodGroup:", neighborhoodGroup);
+    connection.query(
+      `
+      WITH host_ranking AS (
+        SELECT host.host_id AS host_id, host_name, location_id, sum(review_num) AS review_count ,avg(review_rating) AS avg_rating
+        FROM host JOIN airbnb ON host.host_id = airbnb.host_id
+            JOIN review ON airbnb.review_id = review.review_id
+        GROUP BY host_id, host_name, location_id
+        ORDER BY review_count DESC, avg_rating DESC
+      )
+      SELECT host_id, host_name, neighborhood,neighborhood_group, review_count, avg_rating
+    FROM (
+        SELECT *,
+               ROW_NUMBER() OVER (PARTITION BY location_id ORDER BY review_count DESC, avg_rating DESC) AS rn
+        FROM host_ranking
+    ) AS ranked
+
+    JOIN crime_count ON crime_count.location_id = ranked.location_id
+    JOIN location ON ranked.location_id = location.location_id
+    WHERE rn = 1
+    ORDER BY crime_count.count;
+
+  `,
+      (err, data) => {
+        if (err || data.length === 0) {
+          console.log(err);
+          res.json([]);
+        } else {
+          res.json(data);
+        }
+      }
+    );
+  } else if (neighborhoodGroup && neighborhoodGroup !== "Any" && neighborhood === "Any"){
+    console.log("Constructed SQL Query 2:", req.query);
+
+    connection.query(
+      `
+      WITH host_ranking AS (
+        SELECT host.host_id AS host_id, host_name, location_id, sum(review_num) AS review_count ,avg(review_rating) AS avg_rating
+        FROM host JOIN airbnb ON host.host_id = airbnb.host_id
+            JOIN review ON airbnb.review_id = review.review_id
+        GROUP BY host_id, host_name, location_id
+        ORDER BY review_count DESC, avg_rating DESC
+        )
+        SELECT host_id, host_name, neighborhood,neighborhood_group, review_count, avg_rating
+        FROM host_ranking
+        JOIN location ON host_ranking.location_id = location.location_id
+        WHERE neighborhood_group = ${neighborhoodGroup}
+        ORDER BY review_count DESC, avg_rating DESC;
+
+  `,
+      (err, data) => {
+        if (err || data.length === 0) {
+          console.log(err);
+          res.json([]);
+        } else {
+          res.json(data);
+        }
+      }
+    );
+} else if (neighborhood != "Any" && neighborhoodGroup != "Any"){
+  console.log("Constructed SQL Query 3:", req.query);
+  console.log("Constructed SQL Query 3:", req.query);
+
+  connection.query(
+    `
+    WITH host_ranking AS (
+      SELECT host.host_id AS host_id, host_name, location_id, sum(review_num) AS review_count ,avg(review_rating) AS avg_rating
+      FROM host JOIN airbnb ON host.host_id = airbnb.host_id
+          JOIN review ON airbnb.review_id = review.review_id
+      GROUP BY host_id, host_name, location_id
+      ORDER BY review_count DESC, avg_rating DESC
+      )
+      SELECT host_id, host_name, neighborhood,neighborhood_group, review_count, avg_rating
+      FROM host_ranking
+      JOIN location ON host_ranking.location_id = location.location_id
+      WHERE neighborhood_group = ${neighborhoodGroup} AND neighborhood = ${neighborhood}
+      ORDER BY review_count DESC, avg_rating DESC;
+`,
+    (err, data) => {
+      if (err || data.length === 0) {
+        console.log(err);
+        res.json([]);
+      } else {
+        res.json(data);
+      }
+    }
+  );
+}
+};
+
+const star_host1 = async function (req, res) {
   // TODO (TASK 11): return the top albums ordered by aggregate number of plays of all songs on the album (descending), with optional pagination (as in route 7)
   // Hint: you will need to use a JOIN and aggregation to get the total plays of songs in an album
 
@@ -332,21 +435,19 @@ const star_host = async function (req, res) {
       }
     );
   } else {
-    let query = `
-    WITH host_ranking AS (
-      SELECT host.host_id AS host_id, host_name, location_id, sum(review_num) AS review_count ,avg(review_rating) AS avg_rating
-      FROM host JOIN airbnb ON host.host_id = airbnb.host_id
-          JOIN review ON airbnb.review_id = review.review_id
-      GROUP BY host_id, host_name, location_id
-      ORDER BY review_count DESC, avg_rating DESC
-      )
+    let query = `SELECT host.host_id AS host_id, host_name, location_id, sum(review_num) AS review_count ,avg(review_rating) AS avg_rating
+    FROM host JOIN airbnb ON host.host_id = airbnb.host_id
+        JOIN review ON airbnb.review_id = review.review_id
+    GROUP BY host_id, host_name, location_id
+    ORDER BY review_count DESC, avg_rating DESC
+    )
     SELECT host_id, host_name, neighborhood,neighborhood_group, review_count, avg_rating
     FROM host_ranking
     JOIN location ON host_ranking.location_id = location.location_id
 `;
 
+
   // Optional filters
-  let params = [];
   const optionalFilters = [];
   if (neighborhoodGroup && neighborhoodGroup != "Any") {
     optionalFilters.push(`neighborhood_group = ?`);
@@ -364,7 +465,7 @@ const star_host = async function (req, res) {
     ORDER BY review_count DESC, avg_rating DESC`;
   }
 
-  connection.query(query, params,(err, data) => {
+  connection.query(query, (err, data) => {
     if (err || data.length === 0) {
       console.log(err);
       res.json([]);
@@ -613,7 +714,6 @@ const crime = async function (req, res) {
   const { neighborhoodGroup = "Any", neighborhood = "Any" } = req.query;
 
   console.log("Received query params:", req.query);
-  console.log("1");
   let query = `With ranking as (SELECT location_id, COUNT(*) as count, RANK() OVER (ORDER By COUNT(*)) AS \`rank\`
   FROM arrest_list
   GROUP BY location_id
@@ -625,6 +725,7 @@ FROM arrest_list al JOIN location l ON al.location_id = l.location_id JOIN suspe
 
   // Optional filters
   const optionalFilters = [];
+  console.log("neighborhoodGroup", neighborhoodGroup)
   if (neighborhoodGroup && neighborhoodGroup !== "Any") {
     optionalFilters.push(`WHERE l.neighborhood_group = ?`);
     params.push(neighborhoodGroup);

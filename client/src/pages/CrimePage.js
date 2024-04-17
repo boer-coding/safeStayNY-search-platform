@@ -85,15 +85,14 @@ export function CrimePage() {
     });
 
     fetch(
-      `http://${config.server_host}:${config.server_port}/crime?
-        ${queryParams.toString()}`
+      `http://${config.server_host}:${config.server_port}/crime?${queryParams.toString()}`
     )
       .then((res) => res.json())
       .then((resJson) => {
         // DataGrid expects an array of objects with a unique id.
         // To accomplish this, we use a map with spread syntax (https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Spread_syntax)
         const crimeDataJson = resJson.map((a) => ({
-          id: a.listing_id,
+          id: a.location_id,
           ...a,
         }));
         setCrimeData(crimeDataJson);
@@ -102,6 +101,7 @@ export function CrimePage() {
         console.error("Failed to fetch recommendation", error);
       });
   };
+
 
   //fetch recs based on filter
   useEffect(() => {
@@ -120,7 +120,7 @@ export function CrimePage() {
       width: 600,
       renderCell: (params) => (
         <Link
-          onClick={() => setSelectedRecommendationId(params.row.listing_id)}
+          
         >
           {params.value}
         </Link>
@@ -130,19 +130,19 @@ export function CrimePage() {
       field: "neighborhood,",
       headerName: "Neighborhood",
       width: 180,
-      renderCell: (params) => params.row.neighborhood,
+      renderCell: (params) => params.row.location_id,
     },
     {
       field: "safety.safety_score",
       headerName: "Safety",
       width: 180,
-      renderCell: (params) => params.row.safety_score,
+      renderCell: (params) => params.row.ofns_type,
     },
     {
       field: "price,",
       headerName: "Price",
       width: 180,
-      renderCell: (params) => params.row.price,
+      renderCell: (params) => params.row.offense_count,
     },
   ];
 
@@ -193,136 +193,9 @@ export function CrimePage() {
           </FormControl>
         </Grid>
 
-        <Grid item xs={3}>
-          <FormControl fullWidth>
-            <InputLabel>Guests</InputLabel>
-            <Select
-              value={accommodates}
-              label="Guests"
-              onChange={handleAccommodatesChange}
-            >
-              <MenuItem value={1}>1</MenuItem>
-              <MenuItem value={2}>2</MenuItem>
-              <MenuItem value={3}>3</MenuItem>
-              <MenuItem value={4}>4</MenuItem>
-              <MenuItem value={5}>5</MenuItem>
-              <MenuItem value={6}>6</MenuItem>
-              <MenuItem value={7}>7</MenuItem>
-              <MenuItem value={"8+"}>8+</MenuItem>
-            </Select>
-          </FormControl>
-        </Grid>
+        
 
-        <Grid item xs={3}>
-          <FormControl fullWidth>
-            <InputLabel>Stay Length</InputLabel>
-            <Select
-              value={stayLength}
-              label="Stay Length"
-              onChange={handleStayLengthChange}
-            >
-              <MenuItem value={1}>1</MenuItem>
-              <MenuItem value={2}>2</MenuItem>
-              <MenuItem value={3}>3</MenuItem>
-              <MenuItem value={4}>4</MenuItem>
-              <MenuItem value={5}>5</MenuItem>
-              <MenuItem value={6}>6</MenuItem>
-              <MenuItem value={7}>7</MenuItem>
-              <MenuItem value={"8+"}>8+</MenuItem>
-            </Select>
-          </FormControl>
-        </Grid>
-
-        <Grid item xs={12}>
-          {/* <h3>Additional Filters</h3> */}
-          <Button onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}>
-            {showAdvancedFilters
-              ? "Hide Advanced Filters"
-              : "Show Advanced Filters"}
-          </Button>
-          {showAdvancedFilters && (
-            <>
-              <Grid item xs={12}>
-                <Typography>
-                  Price range: ${price[0]} - $
-                  {price[1] === 1000 ? "1000+" : `${price[1]}`}
-                </Typography>
-                <Slider
-                  value={price}
-                  onChange={handlePriceChange}
-                  valueLabelDisplay="auto"
-                  min={1}
-                  max={1000}
-                  marks={[
-                    { value: 1, label: "$1" },
-                    { value: 250, label: "$250" },
-                    { value: 500, label: "$500" },
-                    { value: 750, label: "$750" },
-                    { value: 1000, label: "$1000+" },
-                  ]}
-                />
-              </Grid>
-              <Grid container spacing={6}>
-                <Grid item xs={3}>
-                  <FormControl fullWidth>
-                    <InputLabel>Room Type</InputLabel>
-                    <Select
-                      value={roomType}
-                      label="Room Type"
-                      onChange={handleRoomTypeChange}
-                    >
-                      <MenuItem value={"Entire home/apt"}>
-                        Entire home/apt
-                      </MenuItem>
-                      <MenuItem value={"Hotel room"}>Hotel room</MenuItem>
-                      <MenuItem value={"Private room"}>Private room</MenuItem>
-                      <MenuItem value={"Shared room"}>Shared room</MenuItem>
-                    </Select>
-                  </FormControl>
-                </Grid>
-
-                <Grid item xs={3}>
-                  <FormControl fullWidth>
-                    <InputLabel>Beds</InputLabel>
-                    <Select
-                      value={beds}
-                      label="Beds"
-                      onChange={handleBedsChange}
-                    >
-                      <MenuItem value={1}>1</MenuItem>
-                      <MenuItem value={2}>2</MenuItem>
-                      <MenuItem value={3}>3</MenuItem>
-                      <MenuItem value={4}>4</MenuItem>
-                      <MenuItem value={5}>5</MenuItem>
-                      <MenuItem value={6}>6</MenuItem>
-                      <MenuItem value={7}>7</MenuItem>
-                      <MenuItem value={"8+"}>8+</MenuItem>
-                    </Select>
-                  </FormControl>
-                </Grid>
-                <Grid item xs={3}>
-                  <FormControl fullWidth>
-                    <InputLabel>Bathrooms</InputLabel>
-                    <Select
-                      value={bathrooms}
-                      label="Bathrooms"
-                      onChange={handleBathroomsChange}
-                    >
-                      <MenuItem value={1}>1</MenuItem>
-                      <MenuItem value={2}>2</MenuItem>
-                      <MenuItem value={3}>3</MenuItem>
-                      <MenuItem value={4}>4</MenuItem>
-                      <MenuItem value={5}>5</MenuItem>
-                      <MenuItem value={6}>6</MenuItem>
-                      <MenuItem value={7}>7</MenuItem>
-                      <MenuItem value={"8+"}>8+</MenuItem>
-                    </Select>
-                  </FormControl>
-                </Grid>
-              </Grid>
-            </>
-          )}
-        </Grid>
+        
       </Grid>
       <Button
         onClick={() => search()}
@@ -333,7 +206,7 @@ export function CrimePage() {
       <h2>Recommended Stays</h2>
       {/* Notice how similar the DataGrid component is to our LazyTable! What are the differences? */}
       <DataGrid
-        rows={recommendationData}
+        rows={crimeData}
         columns={columns}
         pageSize={pageSize}
         rowsPerPageOptions={[5, 10, 25]}
