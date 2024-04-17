@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import './app.css'; 
 import {
   Button,
   Checkbox,
@@ -147,72 +148,78 @@ export function CrimePage() {
   ];
 
   return (
-    <Container>
-      {/* {setSelectedRecommendationId && (
-        <HostListing
-          songId={selectedRecommendationId}
-          handleClose={() => setSelectedRecommendationId(null)}
+    <div className="container">
+      <div className="description">
+        
+        <h2>Description</h2>
+        <p>Here is description</p>
+        </div>
+      <div className="upper-table">
+        <h2>Top Crime type</h2>
+        
+        </div>
+      <div className="lower-table">
+        <h2>Demographic Statistics</h2>
+
+
+      </div>
+  
+      <Container>
+        <h2>Filters</h2>
+        <Grid container spacing={6}>
+          <Grid item xs={3}>
+            <FormControl fullWidth>
+              <InputLabel>Neighborhood Group</InputLabel>
+              <Select
+                value={neighborhoodGroup}
+                label="Neighborhood Group"
+                onChange={handleNeighborhoodGroupChange}
+              >
+                <MenuItem value={"Any"}>Any</MenuItem>
+                <MenuItem value={"Bronx"}>Bronx</MenuItem>
+                <MenuItem value={"Brooklyn"}>Brooklyn</MenuItem>
+                <MenuItem value={"Manhattan"}>Manhattan</MenuItem>
+                <MenuItem value={"Queens"}>Queens</MenuItem>
+                <MenuItem value={"Staten Island"}>Staten Island</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+  
+          <Grid item xs={3}>
+            <FormControl fullWidth>
+              <InputLabel>Neighborhood</InputLabel>
+              <Select
+                value={neighborhood}
+                label="Neighborhood"
+                onChange={handleNeighborhoodChange}
+              >
+                <MenuItem value={"Any"}>Any</MenuItem>
+                {neighborhoodData.map((item, index) => (
+                  <MenuItem key={`${item.neighborhood}-${index}`} value={item}>
+                    {item}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
+        </Grid>
+        <Button
+          onClick={() => search()}
+          style={{ left: "50%", transform: "translateX(-50%)" }}
+        >
+          Search
+        </Button>
+        <h2>Recommended Stays</h2>
+        <DataGrid
+          rows={crimeData}
+          columns={columns}
+          pageSize={pageSize}
+          rowsPerPageOptions={[5, 10, 25]}
+          onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
+          autoHeight
         />
-      )} */}
-
-      <h2>Filters</h2>
-      <Grid container spacing={6}>
-        <Grid item xs={3}>
-          <FormControl fullWidth>
-            <InputLabel>Neighborhood Group</InputLabel>
-            <Select
-              value={neighborhoodGroup}
-              label="Neighborhood Group"
-              onChange={handleNeighborhoodGroupChange}
-            >
-              <MenuItem value={"Any"}>Any</MenuItem>
-              <MenuItem value={"Bronx"}>Bronx</MenuItem>
-              <MenuItem value={"Brooklyn"}>Brooklyn</MenuItem>
-              <MenuItem value={"Manhattan"}>Manhattan</MenuItem>
-              <MenuItem value={"Queens"}>Queens</MenuItem>
-              <MenuItem value={"Staten Island"}>Staten Island</MenuItem>
-            </Select>
-          </FormControl>
-        </Grid>
-
-        <Grid item xs={3}>
-          <FormControl fullWidth>
-            <InputLabel>Neighborhood</InputLabel>
-            <Select
-              value={neighborhood}
-              label="Neighborhood"
-              onChange={handleNeighborhoodChange}
-            >
-              <MenuItem value={"Any"}>Any</MenuItem>
-              {neighborhoodData.map((item, index) => (
-                <MenuItem key={`${item.neighborhood}-${index}`} value={item}>
-                  {item}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </Grid>
-
-        
-
-        
-      </Grid>
-      <Button
-        onClick={() => search()}
-        style={{ left: "50%", transform: "translateX(-50%)" }}
-      >
-        Search
-      </Button>
-      <h2>Recommended Stays</h2>
-      {/* Notice how similar the DataGrid component is to our LazyTable! What are the differences? */}
-      <DataGrid
-        rows={crimeData}
-        columns={columns}
-        pageSize={pageSize}
-        rowsPerPageOptions={[5, 10, 25]}
-        onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
-        autoHeight
-      />
-    </Container>
+      </Container>
+    </div>
   );
+
 }
