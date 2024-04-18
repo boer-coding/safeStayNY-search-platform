@@ -22,7 +22,7 @@ app.get("/top_songs", routes.top_songs);
 app.get("/top_albums", routes.top_albums);
 app.get("/star_host", routes.star_host);
 app.get("/host_listing", routes.host_listing);
-app.get("/recommendation", routes.recommendation);
+app.get("/recommendations", routes.recommendation);
 app.get("/neighborhoods", routes.neighborhoods);
 app.get("/listing", routes.listing);
 app.get("/crime", routes.crime);

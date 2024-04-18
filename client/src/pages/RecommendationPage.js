@@ -16,6 +16,8 @@ import {
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import ListingCard from "../components/ListingCard";
+import NeighborhoodInfo from "../components/NeighborhoodInfo";
+// import { CrimePage } from "./CrimePage";
 
 const config = require("../config.json");
 
@@ -42,7 +44,7 @@ export function RecommendationPage() {
 
   //redirects
   const [selectedListingId, setSelectedListingId] = useState(null);
-  const [selectedNeighborhood, setSelectedNeighborhood] = useState(null);
+  // const [selectedNeighborhood, setSelectedNeighborhood] = useState(null);
 
   //handleChange
   const handleNeighborhoodGroupChange = (event) => {
@@ -123,7 +125,7 @@ export function RecommendationPage() {
     });
 
     fetch(
-      `http://${config.server_host}:${config.server_port}/recommendation?
+      `http://${config.server_host}:${config.server_port}/recommendations?
         ${queryParams.toString()}`
     )
       .then((res) => res.json())
@@ -172,23 +174,27 @@ export function RecommendationPage() {
       field: "neighborhood,",
       headerName: "Neighborhood",
       width: 300,
-      renderCell: (params) => params.row.neighborhood,
-      // renderCell: (params) => (
-      //   <Link onClick={() => setSelectedNeighborhood(params.row.neighborhood)}>
-      //     {params.value}
-      //   </Link>
-      // ),
+      // renderCell: (params) => params.row.neighborhood,
+      renderCell: (params) => {
+        console.log(params.row);
+        return (
+          <NeighborhoodInfo
+            neighborhood={params.row.neighborhood}
+            neighborhoodGroup={params.row.neighborhoodGroup}
+          />
+        );
+      },
     },
     {
       field: "crime.crime_rate",
       headerName: "Crime Rate",
-      width: 180,
+      width: 175,
       renderCell: (params) => `${params.row.crime_rate.toFixed(2)}%`,
     },
     {
       field: "price,",
       headerName: "Price",
-      width: 180,
+      width: 175,
       renderCell: (params) => `$${params.row.price}`,
     },
   ];
@@ -201,8 +207,9 @@ export function RecommendationPage() {
           handleClose={() => setSelectedListingId(null)}
         />
       )}
+      {/* {setNeighborhood && <href neighborhoodId={selectedNeighborhood} />} */}
 
-      <h2>Filters</h2>
+      <h2>Find Your Safe Stay at NY!</h2>
       <Grid container spacing={6}>
         <Grid item xs={3}>
           <FormControl fullWidth>
@@ -381,15 +388,29 @@ export function RecommendationPage() {
       >
         Search
       </Button>
-      <h2>Recommended Stays</h2>
+      <h2>Here is a list of stays ranked by crime rate:</h2>
       {/* Notice how similar the DataGrid component is to our LazyTable! What are the differences? */}
       <DataGrid
+        sx={{
+          "& .MuiDataGrid-columnHeaderTitle": {
+            // backgroundColor: "#677F6B",
+            // color: "#f5f7f9",
+
+            fontSize: "1rem",
+            fontWeight: "bold",
+          },
+        }}
         rows={recommendationData}
         columns={columns}
         pageSize={pageSize}
         rowsPerPageOptions={[5, 10, 25]}
-        onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
         autoHeight
+        // rows={recommendationData}
+        // columns={columns}
+        // pageSize={pageSize}
+        // rowsPerPageOptions={[5, 10, 25]}
+        // onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
+        // autoHeight
       />
     </Container>
   );

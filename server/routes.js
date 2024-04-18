@@ -477,7 +477,7 @@ const star_host = async function (req, res) {
 const host_listing = async function (req, res) {
   // TODO (TASK 7): implement a route that given an album_id, returns all songs on that album ordered by track number (ascending)
   const hostId = req.query.host_id;
-  
+
   connection.query(
     `
     SELECT listing_id, listing_des, listing_url
@@ -504,7 +504,7 @@ const cleanParams = (params) => {
   return cleaned;
 };
 
-// v2 working optimization-needed Route 10: GET /recommendation
+// v3 optimized Route 10: GET /recommendation
 const recommendation = async function (req, res) {
   const cleanQuery = cleanParams(req.query);
   console.log("Received query params:", req.query);
@@ -522,57 +522,82 @@ const recommendation = async function (req, res) {
 
   console.log("Received query params:", req.query);
 
-  let query = `SELECT
-  a.listing_id,
-  a.listing_des,
-  l.neighborhood,
-  a.price,
-  a.room_type,
-  a.accommodates,
-  a.bathrooms,
-  a.beds,
-  a.mini_nights,
-  a.max_nights,
-  crime.crime_rate
-FROM
-  airbnb a
-JOIN
-  location l ON a.location_id = l.location_id
-JOIN
-  (SELECT
-      c.location_id,
-      (c.count/total_arrests)*100 AS crime_rate
-    FROM
-      crime_count c, (SELECT SUM(count) AS total_arrests FROM crime_count)AS total
-    ) AS crime
-  ON l.location_id = crime.location_id
-WHERE
-  a.accommodates >= ?
-  AND ? BETWEEN a.mini_nights AND a.max_nights
-`;
+  //Store crime rate at each location in a CTE named CrimeRates
+  let query = `WITH TotalArrests AS (
+      SELECT SUM(count) AS total_arrests FROM crime_count
+  ),
+  CrimeRates AS (
+      SELECT
+          c.location_id,
+          (c.count / total_arrests) * 100 AS crime_rate
+      FROM
+          crime_count c,
+          TotalArrests
+  )
+  SELECT
+    airbnb_sub.listing_id,
+    airbnb_sub.listing_des,
+    location_sub.neighborhood,
+    airbnb_sub.price,
+    airbnb_sub.room_type,
+    airbnb_sub.accommodates,
+    airbnb_sub.bathrooms,
+    airbnb_sub.beds,
+    airbnb_sub.mini_nights,
+    airbnb_sub.max_nights,
+    CrimeRates.crime_rate
+  FROM
+      (SELECT * FROM location
+  `;
 
-  let params = [accommodates, stayLength];
-
-  // Optional filters
+  let params = [];
   const optionalFilters = [];
-  if (neighborhoodGroup.trim() !== "Any" && neighborhoodGroup) {
-    optionalFilters.push(`l.neighborhood_group = ?`);
-    params.push(neighborhoodGroup.trim());
+
+  //Pushing down selection for location to create a location_sub
+  if (neighborhoodGroup !== "Any" && neighborhoodGroup) {
+    optionalFilters.push(`neighborhood_group = ?`);
+    params.push(neighborhoodGroup);
   }
   if (neighborhood !== "Any" && neighborhood) {
-    optionalFilters.push(`l.neighborhood = ?`);
+    optionalFilters.push(`neighborhood = ?`);
     params.push(neighborhood);
   }
+
+  // Add the optional filters to the query if they exist
+  if (optionalFilters.length > 0) {
+    query += ` AND ${optionalFilters.join(" AND ")}`;
+    optionalFilters = [];
+  }
+
+  // Continue joining location_sub with CrimeRates CTE
+  query += `) AS location_sub
+    JOIN CrimeRates
+    ON location_sub.location_id = CrimeRates.location_id
+    JOIN (SELECT listing_id, 
+                listing_des, 
+                location_id,
+                price, 
+                room_type, 
+                accommodates, 
+                bathrooms, 
+                beds, 
+                mini_nights,
+                max_nights
+          FROM airbnb WHERE accommodates>=? 
+                        AND ? BETWEEN mini_nights AND max_nights`;
+  params.push(accommodates, stayLength);
+
+  // Pushing down additional selection for airbnb to create a airbnb_sub
   if (roomType) {
-    optionalFilters.push(`a.room_type = ?`);
+    optionalFilters.push(`room_type = ?`);
     params.push(roomType);
   }
   if (beds) {
-    optionalFilters.push(`a.beds >= ?`);
+    optionalFilters.push(`beds >= ?`);
     params.push(beds);
   }
   if (bathrooms) {
-    optionalFilters.push(`a.bathrooms >= ?`);
+    optionalFilters.push(`bathrooms >= ?`);
     params.push(bathrooms);
   }
 
@@ -585,19 +610,24 @@ WHERE
   let priceCondition = "";
 
   if (priceHigh >= 1000) {
-    priceCondition = "AND a.price >= ? ";
+    priceCondition = " AND price >= ? ";
     params.push(priceLow);
   } else {
-    priceCondition = "AND a.price BETWEEN ? AND ?";
+    priceCondition = " AND price BETWEEN ? AND ?";
     params.push(priceLow, priceHigh);
   }
-
   query += priceCondition;
 
-  // Add the ORDER BY clause
-  query += ` ORDER BY crime.crime_rate ASC, a.price ASC;`;
+  // Enclose airbnb_sub selection and join with location_sub's location_id
+  query += `) AS airbnb_sub
+  ON location_sub.location_id = airbnb_sub.location_id`;
 
+  // Add the ORDER BY clause
+  query += ` ORDER BY CrimeRates.crime_rate ASC, airbnb_sub.price ASC;`;
+
+  //Debug
   console.log("final rec query: ", query);
+
   connection.query(query, params, (err, data) => {
     if (err || data.length === 0) {
       console.log(err);
