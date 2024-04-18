@@ -1,24 +1,15 @@
 import { useEffect, useState } from "react";
-import { Box, Button, ButtonGroup, Modal } from "@mui/material";
-import {
-  ResponsiveContainer,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  RadarChart,
-  Radar,
-  PolarGrid,
-  PolarAngleAxis,
-  PolarRadiusAxis,
-} from "recharts";
+import { Box, Button, ButtonGroup, Modal, Link } from "@mui/material";
+
 import { NavLink } from "react-router-dom";
 
 import { formatDuration } from "../helpers/formatter";
+import HostListing from "./HostListing";
 const config = require("../config.json");
 
 export default function ListingCard({ listingId, handleClose }) {
   const [listingData, setListingData] = useState({});
+  const [showHostDetail, setShowHostDetail] = useState(false);
 
   useEffect(() => {
     console.log(listingId);
@@ -36,6 +27,10 @@ export default function ListingCard({ listingId, handleClose }) {
     fetchListing();
   }, [listingId]);
 
+  const handleViewHost = () => {
+    setShowHostDetail(true);
+  };
+
   //room type, beds, bath, url
   return (
     <Modal
@@ -50,10 +45,10 @@ export default function ListingCard({ listingId, handleClose }) {
       <Box
         p={3}
         style={{
-          background: "white",
+          background: "#e3f2fd",
           borderRadius: "16px",
-          border: "2px solid #000",
-          width: 600,
+          border: "2px solid #687785",
+          width: "400",
         }}
       >
         <h1>{listingData.listingId}</h1>
@@ -78,25 +73,25 @@ export default function ListingCard({ listingId, handleClose }) {
         <p>
           <strong>
             <strong />
-            <a
+            <Link
               href={listingData.listing_url}
               target="_blank"
               rel="noopener noreferrer"
             >
               View Listing
-            </a>
+            </Link>
           </strong>
         </p>
         <p>
           <strong>
             <strong />
-            <a
-              href={`http://${config.server_host}:3000/star_host`}
+            <Link
+              href={listingData.host_url}
               target="_blank"
               rel="noopener noreferrer"
             >
               View Host
-            </a>
+            </Link>
           </strong>
         </p>
 

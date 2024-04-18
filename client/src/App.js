@@ -36,10 +36,21 @@ export const theme = createTheme({
     MuiLink: {
       styleOverrides: {
         root: {
-          color: "#5f8a66", // Your desired color for all Link components
+          color: "#5f8a66",
+          "&:hover": {
+            color: "#4C6E51",
+            cursor: "pointer",
+          },
         },
       },
     },
+    // typography: {
+    //   h2: {
+    //     fontSize: "1.5rem", // Typical font-size for h2 in Material-UI
+    //     color: "tomato", // Custom color
+    //     fontWeight: 500, // Typical font-weight for h2
+    //   },
+    // },
   },
 });
 

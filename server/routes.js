@@ -9,6 +9,7 @@ const connection = mysql.createConnection({
   password: config.rds_password,
   port: config.rds_port,
   database: config.rds_db,
+  multipleStatements: true,
 });
 connection.connect((err) => err && console.log(err));
 
@@ -442,9 +443,9 @@ const star_host = async function (req, res) {
 };
 // host page pop up
 const host_listing = async function (req, res) {
-  // TODO (TASK 7): implement a route that given an album_id, returns all songs on that album ordered by track number (ascending)
   const hostId = req.query.host_id;
-  console.log("print", hostId)
+
+
   connection.query(
     `
     SELECT listing_id, listing_des, listing_url, host_name, host_url
@@ -472,7 +473,7 @@ const cleanParams = (params) => {
   return cleaned;
 };
 
-// v2 working optimization-needed Route 10: GET /recommendation
+// v3 optimized Route 10: GET /recommendation
 const recommendation = async function (req, res) {
   const cleanQuery = cleanParams(req.query);
   console.log("Received query params:", req.query);
@@ -490,34 +491,40 @@ const recommendation = async function (req, res) {
 
   console.log("Received query params:", req.query);
 
-  let query = `SELECT
-  a.listing_id,
-  a.listing_des,
-  l.neighborhood,
-  a.price,
-  a.room_type,
-  a.accommodates,
-  a.bathrooms,
-  a.beds,
-  a.mini_nights,
-  a.max_nights,
-  crime.crime_rate
-FROM
-  airbnb a
-JOIN
-  location l ON a.location_id = l.location_id
-JOIN
-  (SELECT
-      c.location_id,
-      (c.count/total_arrests)*100 AS crime_rate
-    FROM
-      crime_count c, (SELECT SUM(count) AS total_arrests FROM crime_count)AS total
-    ) AS crime
-  ON l.location_id = crime.location_id
-WHERE
-  a.accommodates >= ?
-  AND ? BETWEEN a.mini_nights AND a.max_nights
-`;
+  //Store crime rate at each location in a CTE named CrimeRates
+  let query = `WITH TotalArrests AS (
+      SELECT SUM(count) AS total_arrests FROM crime_count
+  ),
+  CrimeRates AS (
+      SELECT
+          c.location_id,
+          (c.count / total_arrests) * 100 AS crime_rate
+      FROM
+          crime_count c,
+          TotalArrests
+  )
+  SELECT
+      a.listing_id,
+      a.listing_des,
+      l.neighborhood,
+      a.price,
+      a.room_type,
+      a.accommodates,
+      a.bathrooms,
+      a.beds,
+      a.mini_nights,
+      a.max_nights,
+      crime.crime_rate
+  FROM
+      airbnb a
+  JOIN
+      location l ON a.location_id = l.location_id
+  JOIN
+      CrimeRates crime ON l.location_id = crime.location_id
+  WHERE
+      a.accommodates >= ?
+      AND ? BETWEEN a.mini_nights AND a.max_nights
+  `;
 
   let params = [accommodates, stayLength];
 
@@ -565,7 +572,9 @@ WHERE
   // Add the ORDER BY clause
   query += ` ORDER BY crime.crime_rate ASC, a.price ASC;`;
 
+  //Debug
   console.log("final rec query: ", query);
+
   connection.query(query, params, (err, data) => {
     if (err || data.length === 0) {
       console.log(err);
@@ -618,8 +627,8 @@ const listing = async function (req, res) {
   connection.query(
     `
   
-    SELECT room_type, beds, bathrooms, listing_url, host_id
-    FROM airbnb
+    SELECT room_type, beds, bathrooms, listing_url, host.host_id, host_url
+    FROM airbnb JOIN host ON airbnb.host_id=host.host_id
     WHERE listing_id = '${listingId}'
     
   `,
@@ -630,6 +639,46 @@ const listing = async function (req, res) {
       } else {
         res.json(data[0]);
       }
+    }
+  );
+};
+
+//return one feature listing from each of the 5 neighborhood group
+const feature_listing = async function (req, res) {
+  connection.query(
+    `
+    SELECT airbnb.listing_id, listing_des, neighborhood_group, listing_url 
+    FROM crime_count JOIN airbnb ON crime_count.location_id = airbnb.location_id
+    WHERE neighborhood_group = 'Bronx' 
+    ORDER BY count ASC, price ASC LIMIT 1;
+    SELECT airbnb.listing_id, listing_des, neighborhood_group, listing_url 
+    FROM crime_count JOIN airbnb ON crime_count.location_id = airbnb.location_id
+    WHERE neighborhood_group = 'Brooklyn' 
+    ORDER BY count ASC, price ASC LIMIT 1;
+    SELECT airbnb.listing_id, listing_des, neighborhood_group, listing_url 
+    FROM crime_count JOIN airbnb ON crime_count.location_id = airbnb.location_id
+    WHERE neighborhood_group = 'Manhattan' 
+    ORDER BY count ASC, price ASC LIMIT 1;
+    SELECT airbnb.listing_id, listing_des, neighborhood_group, listing_url 
+    FROM crime_count JOIN airbnb ON crime_count.location_id = airbnb.location_id
+    WHERE neighborhood_group = 'Queens' 
+    ORDER BY count ASC, price ASC LIMIT 1;
+    SELECT airbnb.listing_id, listing_des, neighborhood_group, listing_url 
+    FROM crime_count JOIN airbnb ON crime_count.location_id = airbnb.location_id
+    WHERE neighborhood_group = 'Staten Island' 
+    ORDER BY count ASC, price ASC LIMIT 1;
+    `,
+    (err, results) => {
+      if (err) {
+        console.error("Error executing query:", err);
+        return res.status(500).json({ error: "Internal server error" });
+      }
+      if (results.length === 0) {
+        console.log("No data found");
+        return res.status(404).json({ message: "No listings found" });
+      }
+      console.log("Query results:", results);
+      res.json(results);
     }
   );
 };
@@ -725,6 +774,7 @@ module.exports = {
   star_host,
   host_listing,
   listing,
+  feature_listing,
   recommendation,
   neighborhoods,
   crime,
