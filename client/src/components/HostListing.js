@@ -34,7 +34,8 @@ export default function HostListing({ hostId, handleClose }) {
         p={3}
         style={{ background: 'white', borderRadius: '16px', border: '2px solid #000', width: 600 }}
       >
-        <h2>Host Listings</h2>
+        <h2><a href={listingData.length > 0 ? listingData[0].host_url : '#'} target="_blank" rel="noopener noreferrer">{listingData.length > 0 ? listingData[0].host_name : 'Unknown'}</a> Listings</h2>
+
         {loading ? (
           <CircularProgress />
         ) : (

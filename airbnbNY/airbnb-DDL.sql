@@ -3,8 +3,11 @@ CREATE DATABASE project;
 USE project;
 
 CREATE TABLE host (
-    host_id   	INT,
-    host_name   VARCHAR(50)         NOT NULL,
+    host_id   	        INT,
+    host_name           VARCHAR(70)  NOT NULL,
+    join_since          VARCHAR(20)  NOT NULL,
+    super_host		    ENUM ('t','f')NOT NULL,
+    host_url            VARCHAR(200)  NOT NULL,
 	PRIMARY KEY (host_id)
 );
 

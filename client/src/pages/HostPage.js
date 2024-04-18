@@ -59,6 +59,7 @@ export function HostPage() {
       const data = await response.json();
 
       setHostData(data.map((host) => ({ id: host.host_id, ...host })));
+      console.log(data)
     } catch (error) {
       console.error("Failed to fetch host data", error);
     }
@@ -71,20 +72,14 @@ export function HostPage() {
   
   const columns = [
     
-    { field: "host_name", headerName: "Host Name", width: 200,
+    { field: "host_name", headerName: "Host Name", width: 500,
     renderCell: (params) => (
       <Link onClick={() => setSelectedHostId(params.row.host_id)}>
         {params.value}
       </Link>
     ), },
-    {
-      field: "neighborhood_group",
-      headerName: "Neighborhood Group",
-      width: 160,
-    },
-    { field: "neighborhood", headerName: "Neighborhood", width: 300 },
-    { field: "review_count", headerName: "Review Total", width: 160 },
-    { field: "avg_rating", headerName: "Average Rating", width: 180 },
+    { field: "review_count", headerName: "Review Total", width: 200 },
+    { field: "avg_rating", headerName: "Average Rating", width: 200 },
   ];
 
   return (
