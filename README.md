@@ -27,3 +27,8 @@ athrala- Ying Zhang - implemented Recommendation Page v3
 - add lising card, a pop up page to display comprehensive listing inf
 - add main theme color and icon
 - edit host page UI
+
+athrala- Ying Zhang - implemented Recommendation Page v4
+
+- /recommendation route query optimized
+- add 5 feature listings and images on the recommendation page

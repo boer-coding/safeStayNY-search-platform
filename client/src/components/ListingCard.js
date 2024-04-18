@@ -4,10 +4,12 @@ import { Box, Button, ButtonGroup, Modal, Link } from "@mui/material";
 import { NavLink } from "react-router-dom";
 
 import { formatDuration } from "../helpers/formatter";
+import HostListing from "./HostListing";
 const config = require("../config.json");
 
 export default function ListingCard({ listingId, handleClose }) {
   const [listingData, setListingData] = useState({});
+  const [showHostDetail, setShowHostDetail] = useState(false);
 
   useEffect(() => {
     console.log(listingId);
@@ -24,6 +26,10 @@ export default function ListingCard({ listingId, handleClose }) {
     };
     fetchListing();
   }, [listingId]);
+
+  const handleViewHost = () => {
+    setShowHostDetail(true);
+  };
 
   //room type, beds, bath, url
   return (
@@ -42,7 +48,7 @@ export default function ListingCard({ listingId, handleClose }) {
           background: "#e3f2fd",
           borderRadius: "16px",
           border: "2px solid #687785",
-          width: "300",
+          width: "400",
         }}
       >
         <h1>{listingData.listingId}</h1>
@@ -80,7 +86,7 @@ export default function ListingCard({ listingId, handleClose }) {
           <strong>
             <strong />
             <Link
-              href={`http://${config.server_host}:3000/star_host`}
+              href={listingData.host_url}
               target="_blank"
               rel="noopener noreferrer"
             >

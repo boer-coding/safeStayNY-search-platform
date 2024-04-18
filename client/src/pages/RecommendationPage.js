@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import {
   Button,
   Checkbox,
@@ -13,11 +13,17 @@ import {
   FormControl,
   InputLabel,
   Typography,
+  Paper,
+  Box,
+  useTheme,
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
+// import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+// import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ListingCard from "../components/ListingCard";
 import NeighborhoodInfo from "../components/NeighborhoodInfo";
 // import { CrimePage } from "./CrimePage";
+// import BronxImage from "./public/feature_listing/Bronx.jpeg";
 
 const config = require("../config.json");
 
@@ -28,6 +34,7 @@ export function RecommendationPage() {
   //state hooks for fetching
   const [recommendationData, setRecommendation] = useState([]);
   const [neighborhoodData, setNeighborhoods] = useState([]);
+  const [featuredListings, setFeaturedListings] = useState([]);
 
   //necessary filters
   const [neighborhoodGroup, setNeighborhoodGroup] = useState("Any");
@@ -45,6 +52,9 @@ export function RecommendationPage() {
   //redirects
   const [selectedListingId, setSelectedListingId] = useState(null);
   // const [selectedNeighborhood, setSelectedNeighborhood] = useState(null);
+
+  //content display
+  const [showResults, setShowResults] = useState(false);
 
   //handleChange
   const handleNeighborhoodGroupChange = (event) => {
@@ -99,6 +109,22 @@ export function RecommendationPage() {
     }
   };
 
+  //fetch one feature listing base on neighborhood group
+  const fetchFeatureListing = async () => {
+    fetch(`http://${config.server_host}:${config.server_port}/feature_listing`)
+      .then((res) => res.json())
+      .then((resJson) => {
+        const featuredListings = resJson.flat().map((airbnb) => ({
+          id: airbnb.listing_id,
+          ...airbnb,
+        }));
+        setFeaturedListings(featuredListings);
+      })
+      .catch((error) => {
+        console.error("Failed to fetch feature listing", error);
+      });
+  };
+
   //fetch recommendation listing base on filters
   const search = () => {
     console.log("Search initiated with filters:", {
@@ -137,6 +163,7 @@ export function RecommendationPage() {
           ...a,
         }));
         setRecommendation(recommendationData);
+        setShowResults(true);
       })
       .catch((error) => {
         console.error("Failed to fetch recommendation", error);
@@ -145,19 +172,9 @@ export function RecommendationPage() {
 
   //always apply fetch neighborhoods
   useEffect(() => {
+    fetchFeatureListing();
     fetchNeighborhoods();
-    // search();
-  }, [
-    neighborhoodGroup,
-    // neighborhood,
-    // accommodates,
-    // stayLength,
-    // roomType,
-    // price[0],
-    // price[1],
-    // beds,
-    // bathrooms,
-  ]);
+  }, [neighborhoodGroup]);
 
   const columns = [
     {
@@ -208,7 +225,6 @@ export function RecommendationPage() {
         />
       )}
       {/* {setNeighborhood && <href neighborhoodId={selectedNeighborhood} />} */}
-
       <h2>Find Your Safe Stay at NY!</h2>
       <Grid container spacing={6}>
         <Grid item xs={3}>
@@ -388,30 +404,68 @@ export function RecommendationPage() {
       >
         Search
       </Button>
-      <h2>Here is a list of stays ranked by crime rate:</h2>
-      {/* Notice how similar the DataGrid component is to our LazyTable! What are the differences? */}
-      <DataGrid
+      {/* dynamically show search results */}
+      {showResults && (
+        <>
+          <h2>Here is a list of stays ranked by crime rate:</h2>
+          <DataGrid
+            sx={{
+              "& .MuiDataGrid-columnHeaderTitle": {
+                color: "#526555",
+                fontSize: "1rem",
+                fontWeight: "bold",
+              },
+            }}
+            rows={recommendationData}
+            columns={columns}
+            pageSize={pageSize}
+            rowsPerPageOptions={[5, 10, 25]}
+            autoHeight
+          />
+        </>
+      )}
+      {/* show featuredListings */}
+      <Box
         sx={{
-          "& .MuiDataGrid-columnHeaderTitle": {
-            // backgroundColor: "#677F6B",
-            // color: "#f5f7f9",
-
-            fontSize: "1rem",
-            fontWeight: "bold",
-          },
+          mt: showResults ? 5 : 20,
+          display: "flex",
+          flexWrap: "wrap",
+          gap: 2,
+          // justifyContent: "space-around",
         }}
-        rows={recommendationData}
-        columns={columns}
-        pageSize={pageSize}
-        rowsPerPageOptions={[5, 10, 25]}
-        autoHeight
-        // rows={recommendationData}
-        // columns={columns}
-        // pageSize={pageSize}
-        // rowsPerPageOptions={[5, 10, 25]}
-        // onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
-        // autoHeight
-      />
+      >
+        {/* <h2>Featured Listings</h2> */}
+        {featuredListings.map((listing, index) => (
+          <Paper
+            key={index}
+            elevation={3}
+            sx={{
+              mb: 2,
+              p: 2,
+              flexShrink: 0,
+              flexGrow: 1,
+              maxWidth: "calc(33.333% - 16px)",
+              backgroundColor: "#f5fbfe",
+            }}
+          >
+            <h2>{listing.neighborhood_group}</h2>
+            <Box
+              component="img"
+              sx={{
+                height: 233,
+                width: "100%",
+                maxHeight: { xs: 233, md: 167 },
+                maxWidth: { xs: 350, md: 250 },
+              }}
+              alt={`Listing image for ${listing.neighborhood_group}`}
+              src={`/feature_listing/${listing.neighborhood_group}.jpeg`}
+            />{" "}
+            <Link href={listing.listing_url} target="_blank" rel="noopener">
+              <Typography>{listing.listing_des}</Typography>
+            </Link>
+          </Paper>
+        ))}
+      </Box>
     </Container>
   );
 }

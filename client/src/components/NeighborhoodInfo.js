@@ -1,19 +1,17 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 import { Link } from "@mui/material";
 
 function NeighborhoodInfo({ neighborhood, neighborhoodGroup }) {
-  const navigate = useNavigate();
+  const url = `/crime?neighborhoodGroup=${encodeURIComponent(
+    neighborhoodGroup
+  )}&neighborhood=${encodeURIComponent(neighborhood)}`;
 
-  const handleClick = () => {
-    navigate(
-      `/crime?neighborhoodGroup=${encodeURIComponent(
-        neighborhoodGroup
-      )}&neighborhood=${encodeURIComponent(neighborhood)}`
-    );
-  };
-
-  return <Link onClick={handleClick}>{neighborhood}</Link>;
+  return (
+    <Link href={url} target="_blank" rel="noopener noreferrer">
+      {neighborhood}
+    </Link>
+  );
 }
 
 export default NeighborhoodInfo;

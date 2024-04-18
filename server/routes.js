@@ -9,6 +9,7 @@ const connection = mysql.createConnection({
   password: config.rds_password,
   port: config.rds_port,
   database: config.rds_db,
+  multipleStatements: true,
 });
 connection.connect((err) => err && console.log(err));
 
@@ -475,7 +476,6 @@ const star_host = async function (req, res) {
 
 // host page pop up
 const host_listing = async function (req, res) {
-  // TODO (TASK 7): implement a route that given an album_id, returns all songs on that album ordered by track number (ascending)
   const hostId = req.query.host_id;
 
   connection.query(
@@ -535,69 +535,50 @@ const recommendation = async function (req, res) {
           TotalArrests
   )
   SELECT
-    airbnb_sub.listing_id,
-    airbnb_sub.listing_des,
-    location_sub.neighborhood,
-    airbnb_sub.price,
-    airbnb_sub.room_type,
-    airbnb_sub.accommodates,
-    airbnb_sub.bathrooms,
-    airbnb_sub.beds,
-    airbnb_sub.mini_nights,
-    airbnb_sub.max_nights,
-    CrimeRates.crime_rate
+      a.listing_id,
+      a.listing_des,
+      l.neighborhood,
+      a.price,
+      a.room_type,
+      a.accommodates,
+      a.bathrooms,
+      a.beds,
+      a.mini_nights,
+      a.max_nights,
+      crime.crime_rate
   FROM
-      (SELECT * FROM location
+      airbnb a
+  JOIN
+      location l ON a.location_id = l.location_id
+  JOIN
+      CrimeRates crime ON l.location_id = crime.location_id
+  WHERE
+      a.accommodates >= ?
+      AND ? BETWEEN a.mini_nights AND a.max_nights
   `;
 
-  let params = [];
-  const optionalFilters = [];
+  let params = [accommodates, stayLength];
 
-  //Pushing down selection for location to create a location_sub
-  if (neighborhoodGroup !== "Any" && neighborhoodGroup) {
-    optionalFilters.push(`neighborhood_group = ?`);
-    params.push(neighborhoodGroup);
+  // Optional filters
+  const optionalFilters = [];
+  if (neighborhoodGroup.trim() !== "Any" && neighborhoodGroup) {
+    optionalFilters.push(`l.neighborhood_group = ?`);
+    params.push(neighborhoodGroup.trim());
   }
   if (neighborhood !== "Any" && neighborhood) {
-    optionalFilters.push(`neighborhood = ?`);
+    optionalFilters.push(`l.neighborhood = ?`);
     params.push(neighborhood);
   }
-
-  // Add the optional filters to the query if they exist
-  if (optionalFilters.length > 0) {
-    query += ` AND ${optionalFilters.join(" AND ")}`;
-    optionalFilters = [];
-  }
-
-  // Continue joining location_sub with CrimeRates CTE
-  query += `) AS location_sub
-    JOIN CrimeRates
-    ON location_sub.location_id = CrimeRates.location_id
-    JOIN (SELECT listing_id, 
-                listing_des, 
-                location_id,
-                price, 
-                room_type, 
-                accommodates, 
-                bathrooms, 
-                beds, 
-                mini_nights,
-                max_nights
-          FROM airbnb WHERE accommodates>=? 
-                        AND ? BETWEEN mini_nights AND max_nights`;
-  params.push(accommodates, stayLength);
-
-  // Pushing down additional selection for airbnb to create a airbnb_sub
   if (roomType) {
-    optionalFilters.push(`room_type = ?`);
+    optionalFilters.push(`a.room_type = ?`);
     params.push(roomType);
   }
   if (beds) {
-    optionalFilters.push(`beds >= ?`);
+    optionalFilters.push(`a.beds >= ?`);
     params.push(beds);
   }
   if (bathrooms) {
-    optionalFilters.push(`bathrooms >= ?`);
+    optionalFilters.push(`a.bathrooms >= ?`);
     params.push(bathrooms);
   }
 
@@ -610,20 +591,17 @@ const recommendation = async function (req, res) {
   let priceCondition = "";
 
   if (priceHigh >= 1000) {
-    priceCondition = " AND price >= ? ";
+    priceCondition = "AND a.price >= ? ";
     params.push(priceLow);
   } else {
-    priceCondition = " AND price BETWEEN ? AND ?";
+    priceCondition = "AND a.price BETWEEN ? AND ?";
     params.push(priceLow, priceHigh);
   }
+
   query += priceCondition;
 
-  // Enclose airbnb_sub selection and join with location_sub's location_id
-  query += `) AS airbnb_sub
-  ON location_sub.location_id = airbnb_sub.location_id`;
-
   // Add the ORDER BY clause
-  query += ` ORDER BY CrimeRates.crime_rate ASC, airbnb_sub.price ASC;`;
+  query += ` ORDER BY crime.crime_rate ASC, a.price ASC;`;
 
   //Debug
   console.log("final rec query: ", query);
@@ -680,8 +658,8 @@ const listing = async function (req, res) {
   connection.query(
     `
   
-    SELECT room_type, beds, bathrooms, listing_url, host_id
-    FROM airbnb
+    SELECT room_type, beds, bathrooms, listing_url, host.host_id, host_url
+    FROM airbnb JOIN host ON airbnb.host_id=host.host_id
     WHERE listing_id = '${listingId}'
     
   `,
@@ -692,6 +670,46 @@ const listing = async function (req, res) {
       } else {
         res.json(data[0]);
       }
+    }
+  );
+};
+
+//return one feature listing from each of the 5 neighborhood group
+const feature_listing = async function (req, res) {
+  connection.query(
+    `
+    SELECT airbnb.listing_id, listing_des, neighborhood_group, listing_url 
+    FROM crime_count JOIN airbnb ON crime_count.location_id = airbnb.location_id
+    WHERE neighborhood_group = 'Bronx' 
+    ORDER BY count ASC, price ASC LIMIT 1;
+    SELECT airbnb.listing_id, listing_des, neighborhood_group, listing_url 
+    FROM crime_count JOIN airbnb ON crime_count.location_id = airbnb.location_id
+    WHERE neighborhood_group = 'Brooklyn' 
+    ORDER BY count ASC, price ASC LIMIT 1;
+    SELECT airbnb.listing_id, listing_des, neighborhood_group, listing_url 
+    FROM crime_count JOIN airbnb ON crime_count.location_id = airbnb.location_id
+    WHERE neighborhood_group = 'Manhattan' 
+    ORDER BY count ASC, price ASC LIMIT 1;
+    SELECT airbnb.listing_id, listing_des, neighborhood_group, listing_url 
+    FROM crime_count JOIN airbnb ON crime_count.location_id = airbnb.location_id
+    WHERE neighborhood_group = 'Queens' 
+    ORDER BY count ASC, price ASC LIMIT 1;
+    SELECT airbnb.listing_id, listing_des, neighborhood_group, listing_url 
+    FROM crime_count JOIN airbnb ON crime_count.location_id = airbnb.location_id
+    WHERE neighborhood_group = 'Staten Island' 
+    ORDER BY count ASC, price ASC LIMIT 1;
+    `,
+    (err, results) => {
+      if (err) {
+        console.error("Error executing query:", err);
+        return res.status(500).json({ error: "Internal server error" });
+      }
+      if (results.length === 0) {
+        console.log("No data found");
+        return res.status(404).json({ message: "No listings found" });
+      }
+      console.log("Query results:", results);
+      res.json(results);
     }
   );
 };
@@ -787,6 +805,7 @@ module.exports = {
   star_host,
   host_listing,
   listing,
+  feature_listing,
   recommendation,
   neighborhoods,
   crime,
