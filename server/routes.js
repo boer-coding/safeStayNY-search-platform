@@ -286,77 +286,6 @@ const top_albums = async function (req, res) {
 };
 
 
-const star_host1 = async function (req, res) {
-  // TODO (TASK 11): return the top albums ordered by aggregate number of plays of all songs on the album (descending), with optional pagination (as in route 7)
-  // Hint: you will need to use a JOIN and aggregation to get the total plays of songs in an album
-
-  const neighborhoodGroup = req.query.neighborhood_group ?? "Any";
-  const neighborhood = req.query.neighborhood ?? "Any";
- 
-  if (neighborhoodGroup == "Any" && neighborhood == "Any") {
-    console.log("Constructed SQL Query 1:", req.query);
-    connection.query(
-      `
-      SELECT host.host_id AS host_id, host_name, neighborhood, neighborhood_group, sum(review_num) AS review_count, CAST(AVG(review_rating)AS DECIMAL(3,2)) AS avg_rating
-      FROM host
-          JOIN airbnb ON host.host_id = airbnb.host_id
-          JOIN review ON airbnb.review_id = review.review_id
-          JOIN location ON airbnb.location_id = location.location_id
-      GROUP BY host_id, host_name, neighborhood, neighborhood_group
-      ORDER BY review_count DESC
-  `,
-      (err, data) => {
-        if (err || data.length === 0) {
-          console.log(err);
-          res.json([]);
-        } else {
-          res.json(data);
-        }
-      }
-    );
-  } else {
-    let query = `WITH host_ranking AS (
-    SELECT host.host_id AS host_id, host_name, location_id, sum(review_num) AS review_count ,avg(review_rating) AS avg_rating
-    FROM host JOIN airbnb ON host.host_id = airbnb.host_id
-        JOIN review ON airbnb.review_id = review.review_id
-    GROUP BY host_id, host_name, location_id
-    ORDER BY review_count DESC, avg_rating DESC
-    )
-    SELECT host_id, host_name, neighborhood,neighborhood_group, review_count, avg_rating
-    FROM host_ranking
-    JOIN location ON host_ranking.location_id = location.location_id
-`;
-
-
-  // Optional filters
-  let params = [];
-  const optionalFilters = [];
-  if (neighborhoodGroup && neighborhoodGroup != "Any") {
-    optionalFilters.push(`neighborhood_group = ?`);
-    params.push(neighborhoodGroup);
-  }
-  if (neighborhood && neighborhood != "Any") {
-    optionalFilters.push(`neighborhood = ?`);
-    params.push(neighborhood);
-  }
-
-
-  // Add the optional filters to the query if they exist
-  if (optionalFilters.length > 0) {
-    query += ` WHERE ${optionalFilters.join(" AND ")}
-    ORDER BY review_count DESC, avg_rating DESC`;
-  }
-
-  connection.query(query,params, (err, data) => {
-    if (err || data.length === 0) {
-      console.log(err);
-      res.json([]);
-    } else {
-      res.json(data);
-    }
-  });
-} 
-};
 // host page
 const star_host = async function (req, res) {
   // TODO (TASK 11): return the top albums ordered by aggregate number of plays of all songs on the album (descending), with optional pagination (as in route 7)
@@ -367,7 +296,7 @@ const star_host = async function (req, res) {
   const superHost = req.query.super_host === 'true' ? 1 : 0;
   console.log(superHost)
 
-  let query = `SELECT host.host_id AS host_id, host_name, super_host, neighborhood_group, neighborhood, sum(review_num) AS review_count, CAST(AVG(review_rating)AS DECIMAL(3,2)) AS avg_rating
+  let query = `SELECT host.host_id AS host_id, host_name, super_host, neighborhood_group, neighborhood,  sum(review_num) AS num, AVG(review_rating) AS rating, AVG(review_accuracy) AS accuracy,AVG(review_communication) AS communication, AVG(review_clean) AS clean, AVG(review_location) AS location, AVG(review_value) AS value
   FROM host
       JOIN airbnb ON host.host_id = airbnb.host_id
       JOIN review ON airbnb.review_id = review.review_id
@@ -381,7 +310,6 @@ const star_host = async function (req, res) {
       
       query += `WHERE super_host = 1
         GROUP BY host_id, host_name
-        ORDER BY review_count DESC, avg_rating DESC;
     `
     console.log(query)
     connection.query(query,(err, data) => {
@@ -418,13 +346,11 @@ const star_host = async function (req, res) {
     if (neighborhood == "Any"){
       query += 
       `GROUP BY host_id, neighborhood_group
-      ORDER BY review_count DESC, avg_rating DESC;
       `
     } else if (neighborhood != "Any"){
       query += 
       `
       GROUP BY host_id, neighborhood_group, neighborhood
-      ORDER BY review_count DESC, avg_rating DESC;
       `
     }
   
@@ -442,7 +368,6 @@ const star_host = async function (req, res) {
   } else {
     if (neighborhoodGroup == "Any" && neighborhood == "Any") {
       query += `GROUP BY host_id, host_name
-        ORDER BY review_count DESC, avg_rating DESC;
     `
     console.log(query)
     connection.query(query,(err, data) => {
@@ -480,13 +405,11 @@ const star_host = async function (req, res) {
       query += 
       `
       GROUP BY host_id, neighborhood_group
-      ORDER BY review_count DESC, avg_rating DESC;
       `
     } else if (neighborhood != "Any"){
       query += 
       `
       GROUP BY host_id, neighborhood_group, neighborhood
-      ORDER BY review_count DESC, avg_rating DESC;
       `
     }
   

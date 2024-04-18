@@ -30,7 +30,6 @@ CREATE TABLE review (
     review_communication 	DECIMAL(3, 2),
     review_location 		DECIMAL(3, 2),
     review_value 			DECIMAL(3, 2),
-    review_pmonth 			DECIMAL(3, 2),
 	PRIMARY KEY (review_id)
 );
 
