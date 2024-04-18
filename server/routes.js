@@ -285,7 +285,6 @@ const top_albums = async function (req, res) {
   }
 };
 
-
 // host page
 const star_host = async function (req, res) {
   // TODO (TASK 11): return the top albums ordered by aggregate number of plays of all songs on the album (descending), with optional pagination (as in route 7)
@@ -293,7 +292,7 @@ const star_host = async function (req, res) {
 
   const neighborhoodGroup = req.query.neighborhood_group ?? "Any";
   const neighborhood = req.query.neighborhood ?? "Any";
-  const superHost = req.query.super_host === 'true' ? 1 : 0;
+  const superHost = req.query.super_host === 'true' ? 0 : 1;
   console.log(superHost)
 
   let query = `SELECT host.host_id AS host_id, host_name, super_host, neighborhood_group, neighborhood,  sum(review_num) AS num, AVG(review_rating) AS rating, AVG(review_accuracy) AS accuracy,AVG(review_communication) AS communication, AVG(review_clean) AS clean, AVG(review_location) AS location, AVG(review_value) AS value
@@ -301,7 +300,6 @@ const star_host = async function (req, res) {
       JOIN airbnb ON host.host_id = airbnb.host_id
       JOIN review ON airbnb.review_id = review.review_id
       JOIN location ON airbnb.location_id = location.location_id
-
   `
 
   if (superHost == 1) {
@@ -381,6 +379,7 @@ const star_host = async function (req, res) {
         
     } else {
     // Optional filters
+    console.log({neighborhoodGroup, neighborhood})
     let params = [];
     const optionalFilters = [];
     if (neighborhoodGroup && neighborhoodGroup != "Any") {

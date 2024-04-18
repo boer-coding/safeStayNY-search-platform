@@ -10,7 +10,8 @@ import {
   Link,
   Checkbox,
   FormControlLabel,
-  LinearProgress
+  LinearProgress,
+  Typography
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import HostListing from "../components/HostListing";
@@ -55,15 +56,26 @@ export function HostPage() {
   // Fetch hosts based on selected neighborhood and neighborhood group
   const fetchHosts = async () => {
     let url = `http://${config.server_host}:${config.server_port}/star_host`;
+      
+    const queryParams = [];
+  
     if (neighborhoodGroup !== "Any") {
-      url += `?neighborhood_group=${encodeURIComponent(neighborhoodGroup)}`;
+      queryParams.push(`neighborhood_group=${encodeURIComponent(neighborhoodGroup)}`);
       if (neighborhood !== "Any") {
-        url += `&neighborhood=${encodeURIComponent(neighborhood)}`;
+        queryParams.push(`neighborhood=${encodeURIComponent(neighborhood)}`);
       }
-      url += `&super_host=${encodeURIComponent(superHost)}`;
-    } else {
-      url += `?super_host=${encodeURIComponent(superHost)}`;
     }
+  
+    
+      queryParams.push(`super_host=true`);
+  
+  
+    if (queryParams.length > 0) {
+      url += `?${queryParams.join("&")}`;
+    }
+  
+    console.log(url);
+    
     
   
     console.log(url)
@@ -77,9 +89,10 @@ export function HostPage() {
         id: host.host_id, // Using host_id as the unique identifier
         ...host,
         avgScore: calculateAvgScore(host), 
-        locScore: calculateLocScore(host), 
+        acScore: calculateAcScore(host), 
         cleanScore: calculateCleanScore(host), 
         valScore: calculateValScore(host), 
+        comScore: calculateComScore(host),
       }));
       processedHostData.sort((a, b) => b[selectedScore] - a[selectedScore]);
       setHostData(processedHostData);
@@ -88,6 +101,53 @@ export function HostPage() {
       console.error("Failed to fetch host data", error);
     }
   };
+
+    // Fetch hosts based on selected neighborhood and neighborhood group
+    const fetchHosts2 = async () => {
+
+        let url = `http://${config.server_host}:${config.server_port}/star_host`;
+      
+        const queryParams = [];
+      
+        if (neighborhoodGroup !== "Any") {
+          queryParams.push(`neighborhood_group=${encodeURIComponent(neighborhoodGroup)}`);
+          if (neighborhood !== "Any") {
+            queryParams.push(`neighborhood=${encodeURIComponent(neighborhood)}`);
+          }
+        }
+      
+     
+          queryParams.push(`super_host=${encodeURIComponent(superHost)}`);
+        
+      
+        if (queryParams.length > 0) {
+          url += `?${queryParams.join("&")}`;
+        }
+      
+        console.log("2", url);
+      
+      try {
+        const response = await fetch(url);
+        const data = await response.json();
+  
+             // Calculate composite score for each host based on aggregated review data
+            // Map each host to include an id property
+        const processedHostData = data.map((host) => ({
+          id: host.host_id, // Using host_id as the unique identifier
+          ...host,
+          avgScore: calculateAvgScore(host), 
+          acScore: calculateAcScore(host), 
+          cleanScore: calculateCleanScore(host), 
+          valScore: calculateValScore(host), 
+          comScore: calculateComScore(host),
+        }));
+        processedHostData.sort((a, b) => b[selectedScore] - a[selectedScore]);
+        setHostData(processedHostData);
+        
+      } catch (error) {
+        console.error("Failed to fetch host data", error);
+      }
+    };
 
 
   const calculateAvgScore = (host) => {
@@ -98,12 +158,20 @@ export function HostPage() {
     return parseFloat(avgScore.toFixed(2)); // Format the score to display only two decimal places
   };
 
-  const calculateLocScore = (host) => {
+  const calculateComScore = (host) => {
     const { num, rating, accuracy, communication, clean, location, value } = host;
     // Calculate the composite score using your desired formula
-    const locScore = location * 8 + num /500 + (rating + accuracy + communication + clean + value) * 2;
+    const comScore = communication * 8 + num /500 + (rating + accuracy + location + clean + value) * 2;
     // Return the calculated composite score
-    return parseFloat(locScore.toFixed(2)); // Format the score to display only two decimal places
+    return parseFloat(comScore.toFixed(2)); // Format the score to display only two decimal places
+  };
+
+  const calculateAcScore = (host) => {
+    const {num, rating, accuracy, communication, clean, location, value } = host;
+    // Calculate the composite score using your desired formula
+    const acScore = accuracy * 8 + num /500 + (rating + location + communication + clean + value) * 2;
+    // Return the calculated composite score
+    return parseFloat(acScore.toFixed(2)); // Format the score to display only two decimal places
   };
 
   const calculateCleanScore = (host) => {
@@ -123,21 +191,45 @@ export function HostPage() {
   };
 
 
-
   // Handle search button click
   const handleSearch = () => {
     fetchHosts();
-  };
-
-  const handleScoreChange = (event) => {
-    setSelectedScore(event.target.value);
+    setSuperHost(false);
   };
   
+  const ScoreBar = ({ value }) => {
+    const maxValue = 10;
+    const width = (value / maxValue) * 100;
+  
+    return (
+      <div>
+        <LinearProgress
+          variant="determinate"
+          value={value}
+          style={{ width: `${width}%`, height: 20 }}
+        />
+      <Typography variant="body2" align="center" style={{ color: "#002884" }}>
+          {value}
+        </Typography>
+      </div>
+    );
+  };
   const columns = [
     {
       field: "super_host",
-      headerName: "Super Host ",
-      width: 130,
+      headerName: 
+      <FormControlLabel
+      label='SuperHost'
+      control={<Checkbox
+        checked={superHost}
+        onChange={(e) => {
+          setSuperHost(e.target.checked)
+          fetchHosts2();
+     // Trigger the search immediately after updating superHost state
+        }}
+      />}
+    />,
+      width: 200,
       renderCell: (params) => (
         params.value === 1 ? (
           <span style={{ color: 'gold' }}>⭐</span>
@@ -155,111 +247,103 @@ export function HostPage() {
         </Link>
       ),
     },
+  
     {
       field: selectedScore,
       headerName: (
         <FormControl fullWidth style={{ minWidth: '200px'}}> {/* Adjust the width here */}
-          <InputLabel>What to you matter most?</InputLabel>
           <Select
           value={selectedScore}
           onChange={(e) => setSelectedScore(e.target.value)}
           style={{ minWidth: '100%' }} // Adjust the width here
         >
             <MenuItem value="avgScore">Overall</MenuItem>
-            <MenuItem value="locScore">Location</MenuItem>
+            <MenuItem value="acScore">Accuracy</MenuItem>
             <MenuItem value="cleanScore">Cleanliness</MenuItem>
+            <MenuItem value="comScore">Communication</MenuItem>
             <MenuItem value="valScore">Value</MenuItem>
           </Select>
         </FormControl>
       ),
       width: 500,
+      renderCell: (params) => <ScoreBar value={params.value} />,
     },
   ];
 
   return (
-    <Container>
-      {selectedHostId && (
-        <HostListing
-          hostId={selectedHostId}
-          handleClose={() => setSelectedHostId(null)}
-        />
-      )}
-      <Grid container spacing={2}>
-        <Grid item xs={12} sm={6}>
-          
-          <div style={{ padding: "50px" }}>
-            <FormControl fullWidth>
-              <InputLabel>Neighborhood Group</InputLabel>
-              <Select
-                value={neighborhoodGroup}
-                label="Neighborhood Group"
-                onChange={(e) => setNeighborhoodGroup(e.target.value)}
-              >
-                <MenuItem value="Any">Any</MenuItem>
-                <MenuItem value="Bronx">Bronx</MenuItem>
-                <MenuItem value="Brooklyn">Brooklyn</MenuItem>
-                <MenuItem value="Manhattan">Manhattan</MenuItem>
-                <MenuItem value="Queens">Queens</MenuItem>
-                <MenuItem value="Staten Island">Staten Island</MenuItem>
-              </Select>
-            </FormControl>
-          </div>
-        </Grid>
-        <Grid item xs={12} sm={6}>
-          <div style={{ padding: "50px" }}>
-            <FormControl fullWidth>
-              <InputLabel>Neighborhood</InputLabel>
-              <Select
-                value={neighborhood}
-                label="Neighborhood"
-                onChange={(e) => setNeighborhood(e.target.value)}
-                disabled={neighborhoodGroup === "Any"}
-              >
-                <MenuItem value="Any">Any</MenuItem>
-                {neighborhoods.map((neighborhood, index) => (
-                  <MenuItem key={index} value={neighborhood}>
-                    {neighborhood}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </div>
-        </Grid>
-        <Grid container spacing={2} justifyContent="center">
-          <Grid item xs={12} sm={6}>
-            <div style={{ display: 'flex', alignItems: 'center', height: '100%' }}>
-              <div style={{ padding: "20px" }}>
-                <FormControlLabel
-                  label='SuperHost'
-                  control={<Checkbox checked={superHost} onChange={(e) => setSuperHost(e.target.checked)} />}
-                />
-              </div>
-            </div>
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <div style={{ display: 'flex', alignItems: 'center', height: '100%' }}>
-              <div style={{ padding: "20px" }}>
-                <Button onClick={handleSearch} variant="contained" color="primary">
-                  Search
-                </Button>
-              </div>
-            </div>
-          </Grid>
-        </Grid>
-      </Grid>
+<Container>
+  {selectedHostId && (
+    <HostListing
+      hostId={selectedHostId}
+      handleClose={() => setSelectedHostId(null)}
+    />
+  )}
+  <h2>Discover hosts who prioritize what matters most to you!</h2>
+  {/* filters */ }
+  <Grid container spacing={2} justifyContent="center">
+    {/* filter 1 */ }
+    <Grid item xs={4}>
+      <div style={{ padding: "20px" }}>
+        <FormControl fullWidth>
+          <InputLabel>Neighborhood Group</InputLabel>
+          <Select
+            value={neighborhoodGroup}
+            label="Neighborhood Group"
+            onChange={(e) => setNeighborhoodGroup(e.target.value)}
+          >
+            <MenuItem value="Any">Any</MenuItem>
+            <MenuItem value="Bronx">Bronx</MenuItem>
+            <MenuItem value="Brooklyn">Brooklyn</MenuItem>
+            <MenuItem value="Manhattan">Manhattan</MenuItem>
+            <MenuItem value="Queens">Queens</MenuItem>
+            <MenuItem value="Staten Island">Staten Island</MenuItem>
+          </Select>
+        </FormControl> 
+      </div>
+    </Grid>
+     {/* filter 1 */ }
+    <Grid item xs={4}>
+      <div style={{ padding: "20px" }}>
+        <FormControl fullWidth>
+          <InputLabel>Neighborhood</InputLabel>
+          <Select
+            value={neighborhood}
+            label="Neighborhood"
+            onChange={(e) => setNeighborhood(e.target.value)}
+            disabled={neighborhoodGroup === "Any"}
+          >
+            <MenuItem value="Any">Any</MenuItem>
+            {neighborhoods.map((neighborhood, index) => (
+              <MenuItem key={index} value={neighborhood}>
+                {neighborhood}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      </div>
+    </Grid>
+          {/* search handle */ }
+          <Grid item xs={4}>
+        <div style={{ padding: "20px" }}>
+          <Button onClick={handleSearch} variant="contained" color="primary">
+            Search
+          </Button>
+        </div>
+    </Grid>
+  </Grid>
 
-      <h2>Star Host</h2>
-      <Grid container spacing={2}>
-    
-      </Grid>
-      <DataGrid
-        rows={hostData}
-        columns={columns}
-        pageSize={pageSize}
-        rowsPerPageOptions={[5, 10, 25]}
-        onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
-        autoHeight
-      />
-    </Container>
+
+
+<h4>Select the factors:</h4>
+  
+  <DataGrid
+    rows={hostData}
+    columns={columns}
+    pageSize={pageSize}
+    rowsPerPageOptions={[5, 10, 25]}
+    onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
+    autoHeight
+  />
+</Container>
   );
 }
