@@ -68,26 +68,22 @@ export function HostPage() {
   const handleSearch = () => {
     fetchHosts();
   };
-
+  
   const columns = [
-    {
-      field: "host_id",
-      headerName: "Host ID",
-      width: 160,
-      renderCell: (params) => (
-        <Link onClick={() => setSelectedHostId(params.row.host_id)}>
-          {params.value}
-        </Link>
-      ),
-    },
-    { field: "host_name", headerName: "Host Name", width: 200 },
+    
+    { field: "host_name", headerName: "Host Name", width: 200,
+    renderCell: (params) => (
+      <Link onClick={() => setSelectedHostId(params.row.host_id)}>
+        {params.value}
+      </Link>
+    ), },
     {
       field: "neighborhood_group",
       headerName: "Neighborhood Group",
       width: 160,
     },
     { field: "neighborhood", headerName: "Neighborhood", width: 300 },
-    { field: "review_count", headerName: "Count", width: 160 },
+    { field: "review_count", headerName: "Review Total", width: 160 },
     { field: "avg_rating", headerName: "Average Rating", width: 180 },
   ];
 

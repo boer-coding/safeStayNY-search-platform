@@ -406,23 +406,20 @@ const star_host = async function (req, res) {
     connection.query(
       `
       WITH host_ranking AS (
-        SELECT host.host_id AS host_id, host_name, location_id, sum(review_num) AS review_count ,avg(review_rating) AS avg_rating
+        SELECT host.host_id AS host_id, host_name, location_id, sum(review_num) AS review_count, CAST(AVG(review_rating)AS DECIMAL(3,2)) AS avg_rating
         FROM host JOIN airbnb ON host.host_id = airbnb.host_id
             JOIN review ON airbnb.review_id = review.review_id
         GROUP BY host_id, host_name, location_id
-        ORDER BY review_count DESC, avg_rating DESC
-      )
-      SELECT host_id, host_name, neighborhood,neighborhood_group, review_count, avg_rating
-    FROM (
-        SELECT *,
-               ROW_NUMBER() OVER (PARTITION BY location_id ORDER BY review_count DESC, avg_rating DESC) AS rn
-        FROM host_ranking
-    ) AS ranked
-
-    JOIN crime_count ON crime_count.location_id = ranked.location_id
-    JOIN location ON ranked.location_id = location.location_id
-    WHERE rn = 1
-    ORDER BY crime_count.count;
+        )
+        SELECT host_id, host_name, neighborhood,neighborhood_group, review_count, avg_rating
+        FROM (
+            SELECT *,
+                   ROW_NUMBER() OVER (PARTITION BY location_id ORDER BY review_count DESC, avg_rating DESC) AS rn
+            FROM host_ranking
+        ) AS ranked
+        JOIN crime_count ON crime_count.location_id = ranked.location_id
+        WHERE rn = 1
+        ORDER BY crime_count.count;
 
   `,
       (err, data) => {
@@ -435,16 +432,16 @@ const star_host = async function (req, res) {
       }
     );
   } else {
-    let query = `WITH host_ranking AS (
-    SELECT host.host_id AS host_id, host_name, location_id, sum(review_num) AS review_count ,avg(review_rating) AS avg_rating
-    FROM host JOIN airbnb ON host.host_id = airbnb.host_id
-        JOIN review ON airbnb.review_id = review.review_id
-    GROUP BY host_id, host_name, location_id
-    ORDER BY review_count DESC, avg_rating DESC
-    )
-    SELECT host_id, host_name, neighborhood,neighborhood_group, review_count, avg_rating
-    FROM host_ranking
-    JOIN location ON host_ranking.location_id = location.location_id
+    let query = `
+    WITH host_ranking AS (
+      SELECT host.host_id AS host_id, host_name, location_id, sum(review_num) AS review_count, CAST(AVG(review_rating)AS DECIMAL(3,2)) AS avg_rating
+      FROM host JOIN airbnb ON host.host_id = airbnb.host_id
+          JOIN review ON airbnb.review_id = review.review_id
+      GROUP BY host_id, host_name, location_id
+      )
+      SELECT host_id, host_name, neighborhood,neighborhood_group, review_count, avg_rating
+      FROM host_ranking
+      JOIN crime_count ON host_ranking.location_id = crime_count.location_id
 `;
 
     // Optional filters
