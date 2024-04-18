@@ -364,82 +364,144 @@ const star_host = async function (req, res) {
 
   const neighborhoodGroup = req.query.neighborhood_group ?? "Any";
   const neighborhood = req.query.neighborhood ?? "Any";
- 
-  if (neighborhoodGroup == "Any" && neighborhood == "Any") {
-    console.log("Constructed SQL Query 1:", req.query);
-    connection.query(
-      `
-      SELECT host.host_id AS host_id, host_name, sum(review_num) AS review_count, CAST(AVG(review_rating)AS DECIMAL(3,2)) AS avg_rating
-      FROM host
-          JOIN airbnb ON host.host_id = airbnb.host_id
-          JOIN review ON airbnb.review_id = review.review_id
-          join location ON airbnb.location_id = location.location_id
-      GROUP BY host_id, host_name
-      ORDER BY review_count DESC, avg_rating DESC;
-  `,
-      (err, data) => {
-        if (err || data.length === 0) {
-          console.log(err);
-          res.json([]);
-        } else {
-          res.json(data);
-        }
-      }
-    );
-  } else {
-    let query = `
-    SELECT host.host_id AS host_id, host_name, sum(review_num) AS review_count, CAST(AVG(review_rating)AS DECIMAL(3,2)) AS avg_rating
-    FROM host JOIN airbnb ON host.host_id = airbnb.host_id
-              JOIN review ON airbnb.review_id = review.review_id
-              JOIN location ON airbnb.location_id = location.location_id
+  const superHost = req.query.super_host === 'true' ? 1 : 0;
+  console.log(superHost)
+
+  let query = `SELECT host.host_id AS host_id, host_name, super_host, neighborhood_group, neighborhood, sum(review_num) AS review_count, CAST(AVG(review_rating)AS DECIMAL(3,2)) AS avg_rating
+  FROM host
+      JOIN airbnb ON host.host_id = airbnb.host_id
+      JOIN review ON airbnb.review_id = review.review_id
+      JOIN location ON airbnb.location_id = location.location_id
+
+  `
+
+  if (superHost == 1) {
     
-`;
-
-  // Optional filters
-  let params = [];
-  const optionalFilters = [];
-  if (neighborhoodGroup && neighborhoodGroup != "Any") {
-    optionalFilters.push(`neighborhood_group = ?`);
-    params.push(neighborhoodGroup);
-  }
-  if (neighborhood && neighborhood != "Any") {
-    optionalFilters.push(`neighborhood = ?`);
-    params.push(neighborhood);
-  }
-
-
-  // Add the optional filters to the query if they exist
-  if (optionalFilters.length > 0) {
-    query += 
+    if (neighborhoodGroup == "Any" && neighborhood == "Any") {
+      
+      query += `WHERE super_host = 1
+        GROUP BY host_id, host_name
+        ORDER BY review_count DESC, avg_rating DESC;
     `
-    WHERE ${optionalFilters.join(" AND ")}
-    `
-  }
-  
-  if (neighborhood == "Any"){
-    query += 
-    `
-    GROUP BY host_id, neighborhood_group
-    ORDER BY review_count DESC, avg_rating DESC;
-    `
-  } else if (neighborhood != "Any"){
-    query += 
-    `
-    GROUP BY host_id, neighborhood_group, neighborhood
-    ORDER BY review_count DESC, avg_rating DESC;
-    `
-  }
-
-  console.log(query)
-  connection.query(query, params,(err, data) => {
-    if (err || data.length === 0) {
-      console.log(err);
-      res.json([]);
+    console.log(query)
+    connection.query(query,(err, data) => {
+      if (err || data.length === 0) {
+        console.log(err);
+        res.json([]);
+      } else {
+        res.json(data);
+      }
+    });
+        
     } else {
-      res.json(data);
+    // Optional filters
+    console.log({neighborhood,neighborhoodGroup})
+    let params = [];
+    const optionalFilters = [];
+    if (neighborhoodGroup && neighborhoodGroup != "Any") {
+      optionalFilters.push(`neighborhood_group = ?`);
+      params.push(neighborhoodGroup);
     }
-  });
-} 
+    if (neighborhood && neighborhood != "Any") {
+      optionalFilters.push(`neighborhood = ?`);
+      params.push(neighborhood);
+    }
+  
+  
+    // Add the optional filters to the query if they exist
+    if (optionalFilters.length > 0) {
+      query += 
+      `WHERE ${optionalFilters.join(" AND ")} AND super_host = 1
+      `
+    }
+    
+    if (neighborhood == "Any"){
+      query += 
+      `GROUP BY host_id, neighborhood_group
+      ORDER BY review_count DESC, avg_rating DESC;
+      `
+    } else if (neighborhood != "Any"){
+      query += 
+      `
+      GROUP BY host_id, neighborhood_group, neighborhood
+      ORDER BY review_count DESC, avg_rating DESC;
+      `
+    }
+  
+    console.log(query)
+    connection.query(query, params,(err, data) => {
+      if (err || data.length === 0) {
+        console.log(err);
+        res.json([]);
+      } else {
+        res.json(data);
+      }
+    });
+  } 
+
+  } else {
+    if (neighborhoodGroup == "Any" && neighborhood == "Any") {
+      query += `GROUP BY host_id, host_name
+        ORDER BY review_count DESC, avg_rating DESC;
+    `
+    console.log(query)
+    connection.query(query,(err, data) => {
+      if (err || data.length === 0) {
+        console.log(err);
+        res.json([]);
+      } else {
+        res.json(data);
+      }
+    });
+        
+    } else {
+    // Optional filters
+    let params = [];
+    const optionalFilters = [];
+    if (neighborhoodGroup && neighborhoodGroup != "Any") {
+      optionalFilters.push(`neighborhood_group = ?`);
+      params.push(neighborhoodGroup);
+    }
+    if (neighborhood && neighborhood != "Any") {
+      optionalFilters.push(`neighborhood = ?`);
+      params.push(neighborhood);
+    }
+  
+  
+    // Add the optional filters to the query if they exist
+    if (optionalFilters.length > 0) {
+      query += 
+      `
+      WHERE ${optionalFilters.join(" AND ")}
+      `
+    }
+    
+    if (neighborhood == "Any"){
+      query += 
+      `
+      GROUP BY host_id, neighborhood_group
+      ORDER BY review_count DESC, avg_rating DESC;
+      `
+    } else if (neighborhood != "Any"){
+      query += 
+      `
+      GROUP BY host_id, neighborhood_group, neighborhood
+      ORDER BY review_count DESC, avg_rating DESC;
+      `
+    }
+  
+    console.log(query)
+    connection.query(query, params,(err, data) => {
+      if (err || data.length === 0) {
+        console.log(err);
+        res.json([]);
+      } else {
+        res.json(data);
+      }
+    });
+  } 
+
+  }
 };
 // host page pop up
 const host_listing = async function (req, res) {

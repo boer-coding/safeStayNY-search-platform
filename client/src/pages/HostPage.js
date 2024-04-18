@@ -8,6 +8,8 @@ import {
   MenuItem,
   Select,
   Link,
+  Checkbox,
+  FormControlLabel,
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import HostListing from "../components/HostListing";
@@ -17,9 +19,12 @@ const config = require("../config.json");
 export function HostPage() {
   const [pageSize, setPageSize] = useState(10);
   const [hostData, setHostData] = useState([]);
+
   const [neighborhoodGroup, setNeighborhoodGroup] = useState("Any");
   const [neighborhood, setNeighborhood] = useState("Any");
   const [neighborhoods, setNeighborhoods] = useState([]);
+
+  const [superHost, setSuperHost] = useState(true);
 
   const [selectedHostId, setSelectedHostId] = useState(null); // State to store the selected host_id for the popup
 
@@ -53,13 +58,19 @@ export function HostPage() {
       if (neighborhood !== "Any") {
         url += `&neighborhood=${encodeURIComponent(neighborhood)}`;
       }
+      url += `&super_host=${encodeURIComponent(superHost)}`;
+    } else {
+      url += `?super_host=${encodeURIComponent(superHost)}`;
     }
+    
+  
+    console.log(url)
     try {
       const response = await fetch(url);
       const data = await response.json();
 
       setHostData(data.map((host) => ({ id: host.host_id, ...host })));
-      console.log(data)
+      
     } catch (error) {
       console.error("Failed to fetch host data", error);
     }
@@ -80,6 +91,7 @@ export function HostPage() {
     ), },
     { field: "review_count", headerName: "Review Total", width: 200 },
     { field: "avg_rating", headerName: "Average Rating", width: 200 },
+    { field: 'super_host', headerName: 'Super Host' },
   ];
 
   return (
@@ -128,6 +140,12 @@ export function HostPage() {
               ))}
             </Select>
           </FormControl>
+        </Grid>
+        <Grid item xs={4}>
+          <FormControlLabel
+            label='SuperHost'
+            control={<Checkbox checked={superHost} onChange={(e) => setSuperHost(e.target.checked)} />}
+          />
         </Grid>
       </div>
       <Button onClick={handleSearch}>Search</Button>
