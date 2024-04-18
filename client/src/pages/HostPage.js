@@ -280,7 +280,7 @@ export function HostPage() {
   )}
   <h2>Discover hosts who prioritize what matters most to you!</h2>
   {/* filters */ }
-  <Grid container spacing={2} justifyContent="center">
+  <Grid container spacing={3} justifyContent="center">
     {/* filter 1 */ }
     <Grid item xs={4}>
       <div style={{ padding: "20px" }}>
@@ -301,7 +301,7 @@ export function HostPage() {
         </FormControl> 
       </div>
     </Grid>
-     {/* filter 1 */ }
+     {/* filter 2 */ }
     <Grid item xs={4}>
       <div style={{ padding: "20px" }}>
         <FormControl fullWidth>
@@ -323,8 +323,8 @@ export function HostPage() {
       </div>
     </Grid>
           {/* search handle */ }
-          <Grid item xs={4}>
-        <div style={{ padding: "20px" }}>
+    <Grid item xs={4}>
+        <div style={{ padding: "30px" }}>
           <Button onClick={handleSearch} variant="contained" color="primary">
             Search
           </Button>
