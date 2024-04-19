@@ -65,20 +65,12 @@ export function HostPage() {
         queryParams.push(`neighborhood=${encodeURIComponent(neighborhood)}`);
       }
     }
-  
-    
-      queryParams.push(`super_host=true`);
-  
-  
+    queryParams.push(`super_host=true`);
+
     if (queryParams.length > 0) {
       url += `?${queryParams.join("&")}`;
-    }
-  
+    } 
     console.log(url);
-    
-    
-  
-    console.log(url)
     try {
       const response = await fetch(url);
       const data = await response.json();
@@ -102,8 +94,8 @@ export function HostPage() {
     }
   };
 
-    // Fetch hosts based on selected neighborhood and neighborhood group
-    const fetchHosts2 = async () => {
+  // Fetch hosts based on selected neighborhood and neighborhood group
+  const fetchHosts2 = async () => {
 
         let url = `http://${config.server_host}:${config.server_port}/star_host`;
       
@@ -115,11 +107,8 @@ export function HostPage() {
             queryParams.push(`neighborhood=${encodeURIComponent(neighborhood)}`);
           }
         }
-      
-     
           queryParams.push(`super_host=${encodeURIComponent(superHost)}`);
         
-      
         if (queryParams.length > 0) {
           url += `?${queryParams.join("&")}`;
         }
@@ -147,7 +136,7 @@ export function HostPage() {
       } catch (error) {
         console.error("Failed to fetch host data", error);
       }
-    };
+  };
 
 
   const calculateAvgScore = (host) => {
@@ -157,11 +146,11 @@ export function HostPage() {
     // Return the calculated composite score
     return parseFloat(avgScore.toFixed(2)); // Format the score to display only two decimal places
   };
-
+  {/* 45%, 8%, 5%*/}
   const calculateComScore = (host) => {
     const { num, rating, accuracy, communication, clean, location, value } = host;
     // Calculate the composite score using your desired formula
-    const comScore = communication * 8 + num /500 + (rating + accuracy + location + clean + value) * 2;
+    const comScore = communication * 11 + num * 0.001  + (rating + accuracy + location + clean + value) * 1.6;
     // Return the calculated composite score
     return parseFloat(comScore.toFixed(2)); // Format the score to display only two decimal places
   };
@@ -169,7 +158,7 @@ export function HostPage() {
   const calculateAcScore = (host) => {
     const {num, rating, accuracy, communication, clean, location, value } = host;
     // Calculate the composite score using your desired formula
-    const acScore = accuracy * 8 + num /500 + (rating + location + communication + clean + value) * 2;
+    const acScore = accuracy * 11 + num * 0.001 + (rating + location + communication + clean + value) * 1.6;
     // Return the calculated composite score
     return parseFloat(acScore.toFixed(2)); // Format the score to display only two decimal places
   };
@@ -177,7 +166,7 @@ export function HostPage() {
   const calculateCleanScore = (host) => {
     const { num, rating, accuracy, communication, clean, location, value } = host;
     // Calculate the composite score using your desired formula
-    const cleanScore = clean * 8 + num / 500 + (rating + accuracy + communication + location + value) * 2;
+    const cleanScore = clean * 11 + num * 0.001  + (rating + accuracy + communication + location + value) * 1.6;
     // Return the calculated composite score
     return parseFloat(cleanScore.toFixed(2)); // Format the score to display only two decimal places
   };
@@ -185,7 +174,7 @@ export function HostPage() {
   const calculateValScore = (host) => {
     const { num, rating, accuracy, communication, clean, location, value } = host;
     // Calculate the composite score using your desired formula
-    const valScore = value * 8 + num / 500 + (rating + accuracy + communication + location + clean) * 2;
+    const valScore = value * 11 + num * 0.001  + (rating + accuracy + communication + location + clean) * 1.6;
     // Return the calculated composite score
     return parseFloat(valScore.toFixed(2)); // Format the score to display only two decimal places
   };
@@ -198,19 +187,20 @@ export function HostPage() {
   };
   
   const ScoreBar = ({ value }) => {
-    const maxValue = 10;
+    const maxValue = 100;
     const width = (value / maxValue) * 100;
   
     return (
-      <div>
+      <div style={{ width: '80%', marginBottom: 10 }}>
         <LinearProgress
           variant="determinate"
           value={value}
           style={{ width: `${width}%`, height: 20 }}
         />
-      <Typography variant="body2" align="center" style={{ color: "#002884" }}>
-          {value}
-        </Typography>
+       <Typography variant="body2" style={{ marginRight: 8, color: "#002884" }}>
+        {value}
+      </Typography>
+        
       </div>
     );
   };
@@ -255,7 +245,7 @@ export function HostPage() {
           <Select
           value={selectedScore}
           onChange={(e) => setSelectedScore(e.target.value)}
-          style={{ minWidth: '100%' }} // Adjust the width here
+          //style={{ minWidth: '100%' }} // Adjust the width here
         >
             <MenuItem value="avgScore">Overall</MenuItem>
             <MenuItem value="acScore">Accuracy</MenuItem>
@@ -334,7 +324,7 @@ export function HostPage() {
 
 
 
-<h4>Select the factors:</h4>
+<h4>Select the factors most important to you:</h4>
   
   <DataGrid
     rows={hostData}
