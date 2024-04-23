@@ -13,21 +13,12 @@ app.use(
 // We use express to define our various API endpoints and
 // provide their handlers that we implemented in routes.js
 app.get("/author/:type", routes.author);
-app.get("/random", routes.random);
-app.get("/song/:song_id", routes.song);
-app.get("/album/:album_id", routes.album);
-app.get("/albums", routes.albums);
-app.get("/album_songs/:album_id", routes.album_songs);
-app.get("/top_songs", routes.top_songs);
-app.get("/top_albums", routes.top_albums);
-app.get("/star_host", routes.star_host);
-app.get("/host_listing", routes.host_listing);
+app.get("/top_5_neighbors", routes.top_5_neighbors);
 app.get("/recommendations", routes.recommendation);
 app.get("/neighborhoods", routes.neighborhoods);
 app.get("/listing", routes.listing);
 app.get("/feature_listing", routes.feature_listing);
 app.get("/crime", routes.crime);
-app.get("/top_5_neighbors", routes.top_5_neighbors);
 
 app.listen(config.server_port, () => {
   console.log(
