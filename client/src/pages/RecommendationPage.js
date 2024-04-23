@@ -170,7 +170,7 @@ export function RecommendationPage() {
       });
   };
 
-  //always apply fetch neighborhoods
+  //always apply fetch neighborhoods, feature listing
   useEffect(() => {
     fetchFeatureListing();
     fetchNeighborhoods();
@@ -206,7 +206,7 @@ export function RecommendationPage() {
       field: "crime.crime_rate",
       headerName: "Crime Rate",
       width: 175,
-      renderCell: (params) => `${params.row.crime_rate.toFixed(2)}%`,
+      renderCell: (params) => `${params.row.crime_rate.toFixed(3)}%`,
     },
     {
       field: "price,",
@@ -434,37 +434,44 @@ export function RecommendationPage() {
           // justifyContent: "space-around",
         }}
       >
-        {/* <h2>Featured Listings</h2> */}
-        {featuredListings.map((listing, index) => (
-          <Paper
-            key={index}
-            elevation={3}
-            sx={{
-              mb: 2,
-              p: 2,
-              flexShrink: 0,
-              flexGrow: 1,
-              maxWidth: "calc(33.333% - 16px)",
-              backgroundColor: "#f5fbfe",
-            }}
-          >
-            <h2>{listing.neighborhood_group}</h2>
-            <Box
-              component="img"
-              sx={{
-                height: 233,
-                width: "100%",
-                maxHeight: { xs: 233, md: 167 },
-                maxWidth: { xs: 350, md: 250 },
-              }}
-              alt={`Listing image for ${listing.neighborhood_group}`}
-              src={`/feature_listing/${listing.neighborhood_group}.jpeg`}
-            />{" "}
-            <Link href={listing.listing_url} target="_blank" rel="noopener">
-              <Typography>{listing.listing_des}</Typography>
-            </Link>
-          </Paper>
-        ))}
+        <Grid container spacing={2}>
+          <Grid item xs={12}>
+            <h2>Featured Listings</h2>
+          </Grid>
+          {featuredListings.map((listing, index) => (
+            <Grid item xs={12} sm={6} md={4} key={index}>
+              <Paper
+                key={index}
+                elevation={3}
+                sx={{
+                  mb: 2,
+                  p: 2,
+                  flexShrink: 0,
+                  flexGrow: 1,
+                  height: 330,
+                  // maxWidth: "calc(33.333% - 16px)",
+                  backgroundColor: "#f5fbfe",
+                }}
+              >
+                <h2>{listing.neighborhood_group}</h2>
+                <Box
+                  component="img"
+                  sx={{
+                    height: 233,
+                    width: "100%",
+                    maxHeight: { xs: 233, md: 167 },
+                    maxWidth: { xs: 350, md: 250 },
+                  }}
+                  alt={`Listing image for ${listing.neighborhood_group}`}
+                  src={`/feature_listing/${listing.neighborhood_group}.jpeg`}
+                />{" "}
+                <Link href={listing.listing_url} target="_blank" rel="noopener">
+                  <Typography>{listing.listing_des}</Typography>
+                </Link>
+              </Paper>
+            </Grid>
+          ))}
+        </Grid>
       </Box>
     </Container>
   );

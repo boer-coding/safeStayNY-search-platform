@@ -292,143 +292,128 @@ const star_host = async function (req, res) {
 
   const neighborhoodGroup = req.query.neighborhood_group ?? "Any";
   const neighborhood = req.query.neighborhood ?? "Any";
-  const superHost = req.query.super_host === 'true' ? 0 : 1;
-  console.log(superHost)
+  const superHost = req.query.super_host === "true" ? 0 : 1;
+  console.log(superHost);
 
   let query = `SELECT host.host_id AS host_id, host_name, super_host, neighborhood_group, neighborhood,  sum(review_num) AS num, AVG(review_rating) AS rating, AVG(review_accuracy) AS accuracy,AVG(review_communication) AS communication, AVG(review_clean) AS clean, AVG(review_location) AS location, AVG(review_value) AS value
   FROM host
       JOIN airbnb ON host.host_id = airbnb.host_id
       JOIN review ON airbnb.review_id = review.review_id
       JOIN location ON airbnb.location_id = location.location_id
-  `
+  `;
 
   if (superHost == 1) {
-    
     if (neighborhoodGroup == "Any" && neighborhood == "Any") {
-      
       query += `WHERE super_host = 1
         GROUP BY host_id, host_name
-    `
-    console.log(query)
-    connection.query(query,(err, data) => {
-      if (err || data.length === 0) {
-        console.log(err);
-        res.json([]);
-      } else {
-        res.json(data);
-      }
-    });
-        
+    `;
+      console.log(query);
+      connection.query(query, (err, data) => {
+        if (err || data.length === 0) {
+          console.log(err);
+          res.json([]);
+        } else {
+          res.json(data);
+        }
+      });
     } else {
-    // Optional filters
-    console.log({neighborhood,neighborhoodGroup})
-    let params = [];
-    const optionalFilters = [];
-    if (neighborhoodGroup && neighborhoodGroup != "Any") {
-      optionalFilters.push(`neighborhood_group = ?`);
-      params.push(neighborhoodGroup);
-    }
-    if (neighborhood && neighborhood != "Any") {
-      optionalFilters.push(`neighborhood = ?`);
-      params.push(neighborhood);
-    }
-  
-  
-    // Add the optional filters to the query if they exist
-    if (optionalFilters.length > 0) {
-      query += 
-      `WHERE ${optionalFilters.join(" AND ")} AND super_host = 1
-      `
-    }
-    
-    if (neighborhood == "Any"){
-      query += 
-      `GROUP BY host_id, neighborhood_group
-      `
-    } else if (neighborhood != "Any"){
-      query += 
-      `
-      GROUP BY host_id, neighborhood_group, neighborhood
-      `
-    }
-  
-    console.log(query)
-    connection.query(query, params,(err, data) => {
-      if (err || data.length === 0) {
-        console.log(err);
-        res.json([]);
-      } else {
-        res.json(data);
+      // Optional filters
+      console.log({ neighborhood, neighborhoodGroup });
+      let params = [];
+      const optionalFilters = [];
+      if (neighborhoodGroup && neighborhoodGroup != "Any") {
+        optionalFilters.push(`neighborhood_group = ?`);
+        params.push(neighborhoodGroup);
       }
-    });
-  } 
+      if (neighborhood && neighborhood != "Any") {
+        optionalFilters.push(`neighborhood = ?`);
+        params.push(neighborhood);
+      }
 
+      // Add the optional filters to the query if they exist
+      if (optionalFilters.length > 0) {
+        query += `WHERE ${optionalFilters.join(" AND ")} AND super_host = 1
+      `;
+      }
+
+      if (neighborhood == "Any") {
+        query += `GROUP BY host_id, neighborhood_group
+      `;
+      } else if (neighborhood != "Any") {
+        query += `
+      GROUP BY host_id, neighborhood_group, neighborhood
+      `;
+      }
+
+      console.log(query);
+      connection.query(query, params, (err, data) => {
+        if (err || data.length === 0) {
+          console.log(err);
+          res.json([]);
+        } else {
+          res.json(data);
+        }
+      });
+    }
   } else {
     if (neighborhoodGroup == "Any" && neighborhood == "Any") {
       query += `GROUP BY host_id, host_name
-    `
-    console.log(query)
-    connection.query(query,(err, data) => {
-      if (err || data.length === 0) {
-        console.log(err);
-        res.json([]);
-      } else {
-        res.json(data);
-      }
-    });
-        
+    `;
+      console.log(query);
+      connection.query(query, (err, data) => {
+        if (err || data.length === 0) {
+          console.log(err);
+          res.json([]);
+        } else {
+          res.json(data);
+        }
+      });
     } else {
-    // Optional filters
-    console.log({neighborhoodGroup, neighborhood})
-    let params = [];
-    const optionalFilters = [];
-    if (neighborhoodGroup && neighborhoodGroup != "Any") {
-      optionalFilters.push(`neighborhood_group = ?`);
-      params.push(neighborhoodGroup);
-    }
-    if (neighborhood && neighborhood != "Any") {
-      optionalFilters.push(`neighborhood = ?`);
-      params.push(neighborhood);
-    }
-  
-  
-    // Add the optional filters to the query if they exist
-    if (optionalFilters.length > 0) {
-      query += 
-      `
-      WHERE ${optionalFilters.join(" AND ")}
-      `
-    }
-    
-    if (neighborhood == "Any"){
-      query += 
-      `
-      GROUP BY host_id, neighborhood_group
-      `
-    } else if (neighborhood != "Any"){
-      query += 
-      `
-      GROUP BY host_id, neighborhood_group, neighborhood
-      `
-    }
-  
-    console.log(query)
-    connection.query(query, params,(err, data) => {
-      if (err || data.length === 0) {
-        console.log(err);
-        res.json([]);
-      } else {
-        res.json(data);
+      // Optional filters
+      console.log({ neighborhoodGroup, neighborhood });
+      let params = [];
+      const optionalFilters = [];
+      if (neighborhoodGroup && neighborhoodGroup != "Any") {
+        optionalFilters.push(`neighborhood_group = ?`);
+        params.push(neighborhoodGroup);
       }
-    });
-  } 
+      if (neighborhood && neighborhood != "Any") {
+        optionalFilters.push(`neighborhood = ?`);
+        params.push(neighborhood);
+      }
 
+      // Add the optional filters to the query if they exist
+      if (optionalFilters.length > 0) {
+        query += `
+      WHERE ${optionalFilters.join(" AND ")}
+      `;
+      }
+
+      if (neighborhood == "Any") {
+        query += `
+      GROUP BY host_id, neighborhood_group
+      `;
+      } else if (neighborhood != "Any") {
+        query += `
+      GROUP BY host_id, neighborhood_group, neighborhood
+      `;
+      }
+
+      console.log(query);
+      connection.query(query, params, (err, data) => {
+        if (err || data.length === 0) {
+          console.log(err);
+          res.json([]);
+        } else {
+          res.json(data);
+        }
+      });
+    }
   }
 };
 // host page pop up
 const host_listing = async function (req, res) {
   const hostId = req.query.host_id;
-
 
   connection.query(
     `
@@ -611,7 +596,7 @@ const listing = async function (req, res) {
   connection.query(
     `
   
-    SELECT room_type, beds, bathrooms, listing_url, host.host_id, host_url
+    SELECT room_type, beds, bathrooms, listing_url, price, mini_nights, max_nights, accommodates
     FROM airbnb JOIN host ON airbnb.host_id=host.host_id
     WHERE listing_id = '${listingId}'
     
@@ -631,26 +616,26 @@ const listing = async function (req, res) {
 const feature_listing = async function (req, res) {
   connection.query(
     `
-    SELECT airbnb.listing_id, listing_des, neighborhood_group, listing_url 
+    (SELECT airbnb.listing_id, listing_des, neighborhood_group, listing_url 
     FROM crime_count JOIN airbnb ON crime_count.location_id = airbnb.location_id
     WHERE neighborhood_group = 'Bronx' 
-    ORDER BY count ASC, price ASC LIMIT 1;
-    SELECT airbnb.listing_id, listing_des, neighborhood_group, listing_url 
+    ORDER BY count ASC, price ASC LIMIT 1) UNION ALL
+    (SELECT airbnb.listing_id, listing_des, neighborhood_group, listing_url 
     FROM crime_count JOIN airbnb ON crime_count.location_id = airbnb.location_id
     WHERE neighborhood_group = 'Brooklyn' 
-    ORDER BY count ASC, price ASC LIMIT 1;
-    SELECT airbnb.listing_id, listing_des, neighborhood_group, listing_url 
+    ORDER BY count ASC, price ASC LIMIT 1) UNION ALL
+    (SELECT airbnb.listing_id, listing_des, neighborhood_group, listing_url 
     FROM crime_count JOIN airbnb ON crime_count.location_id = airbnb.location_id
     WHERE neighborhood_group = 'Manhattan' 
-    ORDER BY count ASC, price ASC LIMIT 1;
-    SELECT airbnb.listing_id, listing_des, neighborhood_group, listing_url 
+    ORDER BY count ASC, price ASC LIMIT 1) UNION ALL
+    (SELECT airbnb.listing_id, listing_des, neighborhood_group, listing_url 
     FROM crime_count JOIN airbnb ON crime_count.location_id = airbnb.location_id
     WHERE neighborhood_group = 'Queens' 
-    ORDER BY count ASC, price ASC LIMIT 1;
-    SELECT airbnb.listing_id, listing_des, neighborhood_group, listing_url 
+    ORDER BY count ASC, price ASC LIMIT 1) UNION ALL
+    (SELECT airbnb.listing_id, listing_des, neighborhood_group, listing_url 
     FROM crime_count JOIN airbnb ON crime_count.location_id = airbnb.location_id
     WHERE neighborhood_group = 'Staten Island' 
-    ORDER BY count ASC, price ASC LIMIT 1;
+    ORDER BY count ASC, price ASC LIMIT 1);
     `,
     (err, results) => {
       if (err) {

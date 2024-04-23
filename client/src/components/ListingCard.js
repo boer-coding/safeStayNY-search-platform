@@ -72,6 +72,26 @@ export default function ListingCard({ listingId, handleClose }) {
         </p>
         <p>
           <strong>
+            Price:
+            <strong /> ${listingData.price}
+          </strong>
+        </p>
+        <p>
+          <strong>
+            Accommodates:
+            <strong /> {listingData.accommodates}
+          </strong>
+        </p>
+        <p>
+          <strong>
+            Stay Length:
+            <strong /> {listingData.mini_nights} - {listingData.max_nights}{" "}
+            nights
+          </strong>
+        </p>
+
+        <p>
+          <strong>
             <strong />
             <Link
               href={listingData.listing_url}
@@ -82,7 +102,7 @@ export default function ListingCard({ listingId, handleClose }) {
             </Link>
           </strong>
         </p>
-        <p>
+        {/* <p>
           <strong>
             <strong />
             <Link
@@ -93,8 +113,7 @@ export default function ListingCard({ listingId, handleClose }) {
               View Host
             </Link>
           </strong>
-        </p>
-
+        </p> */}
         <div style={{ margin: 20 }}>{}</div>
         <Button
           onClick={handleClose}
