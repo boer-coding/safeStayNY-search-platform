@@ -23,7 +23,7 @@ export default function HomePage() {
       field: "neighborhood",
       headerName: "Neighborhood",
       renderCell: (row) => (
-        <a
+        <Link
           href={`https://en.wikipedia.org/wiki/${row.neighborhood.replace(
             " ",
             "_"
@@ -32,20 +32,20 @@ export default function HomePage() {
           rel="noopener noreferrer"
         >
           {row.neighborhood}
-        </a>
+        </Link>
       ),
     },
     {
       field: "neighborhood_group",
       headerName: "Neighborhood Group",
       renderCell: (row) => (
-        <a
+        <Link
           href={`https://en.wikipedia.org/wiki/${row.neighborhood_group}`}
           target="_blank"
           rel="noopener noreferrer"
         >
           {row.neighborhood_group}
-        </a>
+        </Link>
       ),
     },
     {
