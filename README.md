@@ -40,4 +40,4 @@ athrala- Ying Zhang - implemented Recommendation Page v4
 athrala- Ying Zhang - implemented ListingCard v2
 
 - remove host info, change to comprehensive listing details
-- enhance UI for ListingCard
+- enhance UI for ListingCard, Link, and HostPage
