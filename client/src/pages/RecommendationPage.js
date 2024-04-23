@@ -411,7 +411,7 @@ export function RecommendationPage() {
           <DataGrid
             sx={{
               "& .MuiDataGrid-columnHeaderTitle": {
-                color: "#526555",
+                color: "#124116",
                 fontSize: "1rem",
                 fontWeight: "bold",
               },
