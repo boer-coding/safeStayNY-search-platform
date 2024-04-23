@@ -1,6 +1,14 @@
 import { useEffect, useState } from "react";
 import { Box, Button, ButtonGroup, Modal, Link } from "@mui/material";
-
+import {
+  Hotel,
+  Bed,
+  Bathtub,
+  AttachMoney,
+  Group,
+  Event,
+  Visibility,
+} from "@mui/icons-material";
 import { NavLink } from "react-router-dom";
 
 import { formatDuration } from "../helpers/formatter";
@@ -53,54 +61,61 @@ export default function ListingCard({ listingId, handleClose }) {
       >
         <h1>{listingData.listingId}</h1>
         <p>
-          <strong>
-            Room Type:
-            <strong /> {listingData.room_type}
-          </strong>
+          <Box display="flex" alignItems="center" gap={1}>
+            <Hotel />
+            <strong>Room Type:</strong>
+            {listingData.room_type}
+          </Box>
         </p>
         <p>
-          <strong>
-            Beds:
-            <strong /> {listingData.beds}
-          </strong>
+          <Box display="flex" alignItems="center" gap={1}>
+            <Bed />
+            <strong>Beds:</strong>
+            {listingData.beds}
+          </Box>
         </p>
         <p>
-          <strong>
-            Bathrooms:
-            <strong /> {listingData.bathrooms}
-          </strong>
+          <Box display="flex" alignItems="center" gap={1}>
+            <Bathtub />
+            <strong>Bathrooms:</strong>
+            {listingData.bathrooms}
+          </Box>
         </p>
         <p>
-          <strong>
-            Price:
-            <strong /> ${listingData.price}
-          </strong>
+          <Box display="flex" alignItems="center" gap={1}>
+            <AttachMoney />
+            <strong>Price:</strong>${listingData.price}
+          </Box>
         </p>
         <p>
-          <strong>
-            Accommodates:
-            <strong /> {listingData.accommodates}
-          </strong>
+          <Box display="flex" alignItems="center" gap={1}>
+            <Group />
+            <strong>Accommodates:</strong>
+            {listingData.accommodates}
+          </Box>
         </p>
         <p>
-          <strong>
-            Stay Length:
-            <strong /> {listingData.mini_nights} - {listingData.max_nights}{" "}
-            nights
-          </strong>
+          <Box display="flex" alignItems="center" gap={1}>
+            <Event />
+            <strong>Stay Length:</strong>
+            {listingData.mini_nights} - {listingData.max_nights} nights
+          </Box>
         </p>
 
         <p>
-          <strong>
-            <strong />
-            <Link
-              href={listingData.listing_url}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              View Listing
-            </Link>
-          </strong>
+          <Box display="flex" alignItems="center" gap={1}>
+            <Visibility />
+            <strong>
+              <strong />
+              <Link
+                href={listingData.listing_url}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                View Listing
+              </Link>
+            </strong>
+          </Box>
         </p>
         {/* <p>
           <strong>
