@@ -483,6 +483,28 @@ const top_5_neighbors = async function (req, res) {
   res.send(result);
 };
 
+const neighborhood_group_crime = async function (req, res) {
+  connection.query(
+    `
+    SELECT neighborhood_group,sum(count) as crime_count
+    FROM crime_count
+    GROUP BY neighborhood_group
+  `,
+    (err, data) => {
+      if (err || data.length === 0) {
+        console.log(err);
+        res.json([]);
+      } else {
+        const jsonArray = data.map((row) => ({
+          neighborhood_group: row.neighborhood_group,
+          crime_count: row.crime_count,
+        }));
+        res.json(jsonArray);
+      }
+    }
+  );
+};
+
 module.exports = {
   author,
   top_5_neighbors,
@@ -493,4 +515,5 @@ module.exports = {
   recommendation,
   neighborhoods,
   crime,
+  neighborhood_group_crime,
 };
