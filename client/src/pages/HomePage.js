@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Container, Divider } from "@mui/material";
+import { Container, Divider, Link } from "@mui/material";
 import { NavLink } from "react-router-dom";
 import Carousel from "../components/Carousel";
 import { SliderData } from "../components/Data";
@@ -111,7 +111,7 @@ export default function HomePage() {
       {/* list saftest neighbors */}
       <h2>Top 5 Safetest Neighbors:&nbsp;</h2>
       <p>
-        We slected poppular and the safetest neighborhoods for you! Check
+        We selected poppular and the safetest neighborhoods for you! Check
         detailed listings <NavLink to="/recommendations">here</NavLink>.
       </p>
       <LazyTable

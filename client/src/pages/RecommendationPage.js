@@ -1,13 +1,10 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import {
   Button,
-  Checkbox,
   Container,
-  FormControlLabel,
   Grid,
   Link,
   Slider,
-  TextField,
   Select,
   MenuItem,
   FormControl,
@@ -15,15 +12,11 @@ import {
   Typography,
   Paper,
   Box,
-  useTheme,
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
-// import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
-// import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ListingCard from "../components/ListingCard";
 import NeighborhoodInfo from "../components/NeighborhoodInfo";
 import { useNavigate } from "react-router-dom";
-// import { CrimePage } from "./CrimePage";
 
 const config = require("../config.json");
 // const navigate = useNavigate();
@@ -192,19 +185,12 @@ export function RecommendationPage() {
       ),
     },
     {
-      field: "neighborhoodGroup",
-      width: 300,
-      // renderCell: (params) => params.row.neighborhood,
-      renderCell: (params) => `${params.row.neighborhood_group}`,
-    },
-    {
       field: "neighborhood,",
       headerName: "Neighborhood",
       width: 300,
       // renderCell: (params) => params.row.neighborhood,
       renderCell: (params) => {
         console.log(params.row.neighborhood_group);
-        // const neighborhoodGroup = params.row.neighborhood_group || "Any";
         return (
           <NeighborhoodInfo
             neighborhood={params.row.neighborhood}

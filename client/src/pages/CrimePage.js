@@ -30,7 +30,6 @@ import {
 import { DataGrid } from "@mui/x-data-grid";
 import BarChartComponent from "../components/BarChart";
 import { useSearchParams } from "react-router-dom";
-
 // import HostListing from "../components/HostListing";
 
 const config = require("../config.json");
@@ -57,10 +56,6 @@ export function CrimePage() {
   //handleChange
   const handleNeighborhoodGroupChange = (event) => {
     setNeighborhoodGroup(event.target.value);
-    // If 'Any' is selected for neighborhoodGroup, set neighborhood to 'Any' as well
-    if (event.target.value === "Any") {
-      setNeighborhood("Any");
-    }
   };
   const handleNeighborhoodChange = (event) => {
     setNeighborhood(event.target.value);
@@ -71,7 +66,6 @@ export function CrimePage() {
     const url = `http://${config.server_host}:${
       config.server_port
     }/neighborhoods?neighborhoodGroup=${encodeURIComponent(neighborhoodGroup)}`;
-    // const url = `http://${config.server_host}:${config.server_port}/neighborhoods`;
 
     try {
       const response = await fetch(url);

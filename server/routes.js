@@ -216,7 +216,6 @@ const recommendation = async function (req, res) {
           TotalArrests
   )
   SELECT
-      l.location_id,
       l.neighborhood_group,
       a.listing_id,
       a.listing_des,
@@ -400,7 +399,7 @@ const feature_listing = async function (req, res) {
   );
 };
 
-/* OLD -  use Route 8: /crime */
+/* Route 8: /crime */
 const crime = async function (req, res) {
   console.log("Received query params:", req.query);
   const { neighborhoodGroup = "Any", neighborhood = "Any" } = req.query;
@@ -456,49 +455,6 @@ FROM arrest_list al JOIN location l ON al.location_id = l.location_id JOIN suspe
     }
   });
 };
-
-/* Route 9: convert location_id to neighborhood and neighborhood_group*/
-const location = async function (req, res) {
-  console.log("Received query params:", req.query);
-  const { location_id = null } = req.query;
-
-  console.log("Received query params:", req.query);
-  let query = `SELECT l.neighborhood, l.neighborhood_group
-  FROM location l
-  WHERE l.location_id= '${location_id}'
-  `;
-
-  connection.query(query, params, (err, data) => {
-    if (err || data.length === 0) {
-      console.log(err);
-      res.json([]);
-    } else {
-      res.json(data);
-    }
-  });
-};
-
-// /* NEW for testing in CrimePage Route 8: /crime */
-// const crime_new = async function (req, res) {
-//   console.log("Received query params:", req.query);
-//   const { location_id = null } = req.query;
-
-//   console.log("Received query params:", req.query);
-//   let query = `SELECT l.location_id, a.arrest_id
-//   FROM location l
-//   JOIN arrest_list a
-//   ON l.location_id= '${location_id}'
-//   `;
-
-//   connection.query(query, params, (err, data) => {
-//     if (err || data.length === 0) {
-//       console.log(err);
-//       res.json([]);
-//     } else {
-//       res.json(data);
-//     }
-//   });
-// };
 
 /* Route 10: /top_5_neighbors */
 const top_5_neighbors = async function (req, res) {
