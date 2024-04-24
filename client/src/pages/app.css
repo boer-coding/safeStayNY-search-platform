@@ -9,7 +9,8 @@
   .description {
     grid-column: 1 / 2; /* Span one column */
     grid-row: 2 / 4; /* Span two rows */
-
+    background-color: lightgray;
+    border: 1px solid gray;
     padding: 20px;
   }
   
@@ -17,14 +18,15 @@
     grid-column: 2 / 3; /* Span one column */
     grid-row: 1 / 2; /* Span both rows */
     
-    
-    padding: 20px;
+    border: 1px solid gray;
+
   }
   
   .lower-table {
     grid-column: 2 / 3; /* Span one column */
     grid-row: 2 / 4; /* Span both rows */
-
+    
+    border: 1px solid gray;
     padding: 20px;
   }
   

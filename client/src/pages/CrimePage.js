@@ -15,9 +15,11 @@ import {
   InputLabel,
   Typography,
 } from "@mui/material";
-import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis } from 'recharts';
+import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Rectangle, CartesianGrid, Tooltip, Legend } from 'recharts';
 import { DataGrid } from "@mui/x-data-grid";
 import BarChartComponent from "../components/BarChart";
+
+
 // import HostListing from "../components/HostListing";
 
 const config = require("../config.json");
@@ -66,7 +68,7 @@ export function CrimePage() {
     }
   };
 
-    const groupCrimeData = [
+  const groupCrimeData = [
     {
       name: 'Queens',
       crime_count: 50965,
@@ -114,13 +116,13 @@ export function CrimePage() {
 
         setCrimeData(crimeDataJson);
 
-        const newData = crimeData.map((row) => ({
-          type: row.ofns_type,
-          value: row.offense_count
-        }));
-
-        setbarchartData(newData);
-
+        // const newData = crimeDataJson.map((row) => ({
+        //   type: row.ofns_type,
+        //   value: row.offense_count
+        // }));
+        // console.log(newData);
+        // setbarchartData(newData);
+        // console.log("bcd", barchartData);
 
       })
       .catch((error) => {
@@ -144,35 +146,30 @@ export function CrimePage() {
 
   return (
     <div className="container">
-      <div className="lower-left-table" style={{ width: '100%', height: '400px'}}>
+      <div className="lower-left-table" style={{ width: '100%', height: '400px' }}>
         <h3>Neighborhood Group Crime Chart </h3>
         <div>
-        <p>As you can see, Staten Island is the safest neighborhood group, while Brooklyn is the most dangerous one. So schedule your activities in Brooklyn during daylight hours as much as possible. Booking an Airbnb in Staten Island might be a good idea!</p>
+          <p>As you can see, Staten Island is the safest neighborhood group, while Brooklyn is the most dangerous one. So schedule your activities in Brooklyn during daylight hours as much as possible. Booking an Airbnb in Staten Island might be a good idea!</p>
         </div>
         <BarChartComponent data={groupCrimeData} />
       </div>
       <div className="upper-table">
         <h2>Top Crime type</h2>
         {
-          <BarChart data={barchartData}
-            layout='vertical'
-            margin={{ left: 40 }}
-          >
-            <XAxis type='category' dataKey='ofns_type' />
-            <YAxis />
-            <Bar dataKey='offense_count' stroke='#8884d8' fill='#8884d8' />
-          </BarChart>
+
         }
 
-        <ResponsiveContainer height={250}>
-          <BarChart
-            data={barchartData}
-            layout='vertical'
-            margin={{ left: 40 }}
+
+        <ResponsiveContainer width="100%" height={500}>
+          <BarChart data={crimeData}
+          width={50} height={80}
+          layout="vertical"
           >
-            <XAxis type='number' domain={[0, 1]} />
-            <YAxis type='category' dataKey='name' />
-            <Bar dataKey='value' stroke='#8884d8' fill='#8884d8' />
+            <YAxis dataKey="ofns_type" type = "category" fontSize={10} />
+
+            <XAxis type = "number"/>
+            <Legend />
+            <Bar dataKey="offense_count" fill="#8884d8" />
           </BarChart>
         </ResponsiveContainer>
       </div>
