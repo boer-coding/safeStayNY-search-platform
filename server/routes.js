@@ -1,7 +1,7 @@
 const mysql = require("mysql");
 const config = require("./config.json");
 
-// Creates MySQL connection using database credential provided in config.json
+/* Creates MySQL connection using database credential provided in config.json */
 const connection = mysql.createConnection({
   host: config.rds_host,
   user: config.rds_user,
@@ -12,7 +12,7 @@ const connection = mysql.createConnection({
 });
 connection.connect((err) => err && console.log(err));
 
-// Route 1: GET /author/:type
+/* Route 1: GET /author/:type */
 const author = async function (req, res) {
   const name = "Yuqing Guo, Boer Liu, Hannah Luan, Ying Zhang";
 
@@ -29,10 +29,8 @@ const author = async function (req, res) {
   }
 };
 
-
-// host page
+/* Route 2: host page */
 const star_host = async function (req, res) {
-  
   const neighborhoodGroup = req.query.neighborhood_group ?? "Any";
   const neighborhood = req.query.neighborhood ?? "Any";
   const superHost = req.query.super_host === "true" ? 0 : 1;
@@ -154,7 +152,8 @@ const star_host = async function (req, res) {
     }
   }
 };
-// host page pop up
+
+/* Route 3: host page pop up */
 const host_listing = async function (req, res) {
   const hostId = req.query.host_id;
 
@@ -185,7 +184,8 @@ const cleanParams = (params) => {
   return cleaned;
 };
 
-// v3 optimized Route 10: GET /recommendation
+/* Route 4: GET /recommendation 
+return listing details base on filters selected */
 const recommendation = async function (req, res) {
   const cleanQuery = cleanParams(req.query);
   console.log("Received query params:", req.query);
@@ -216,6 +216,7 @@ const recommendation = async function (req, res) {
           TotalArrests
   )
   SELECT
+      l.neighborhood_group,
       a.listing_id,
       a.listing_des,
       l.neighborhood,
@@ -297,7 +298,8 @@ const recommendation = async function (req, res) {
   });
 };
 
-// return neighborhood list based on nb_group selected Route 11: GET /neighborhoods
+/* Route 5: GET /neighborhoods 
+return neighborhood list based on neighborhoodGroup selected */
 const neighborhoods = async function (req, res) {
   // console.log("Received neighborhoodGroup params:", req.query);
   const queryParams = [];
@@ -330,7 +332,8 @@ const neighborhoods = async function (req, res) {
   });
 };
 
-// return listing info based on listing_id selected Route 12: GET /listing
+/* Route 6: GET /listing
+return listing info based on listing_id selected */
 const listing = async function (req, res) {
   const listingId = req.query.listing_id;
 
@@ -355,7 +358,8 @@ const listing = async function (req, res) {
   );
 };
 
-//return one feature listing from each of the 5 neighborhood group
+/* Route 7: GET /feature_listing
+return one feature listing from each of the 5 neighborhood group */
 const feature_listing = async function (req, res) {
   connection.query(
     `
@@ -395,6 +399,7 @@ const feature_listing = async function (req, res) {
   );
 };
 
+/* OLD-  use Route 8: /crime */
 const crime = async function (req, res) {
   console.log("Received query params:", req.query);
   const { neighborhoodGroup = "Any", neighborhood = "Any" } = req.query;
@@ -451,6 +456,29 @@ FROM arrest_list al JOIN location l ON al.location_id = l.location_id JOIN suspe
   });
 };
 
+// /* NEW for testing in CrimePage Route 8: /crime */
+// const crime_new = async function (req, res) {
+//   console.log("Received query params:", req.query);
+//   const { location_id = null } = req.query;
+
+//   console.log("Received query params:", req.query);
+//   let query = `SELECT l.location_id, a.arrest_id
+//   FROM location l
+//   JOIN arrest_list a
+//   ON l.location_id= '${location_id}'
+//   `;
+
+//   connection.query(query, params, (err, data) => {
+//     if (err || data.length === 0) {
+//       console.log(err);
+//       res.json([]);
+//     } else {
+//       res.json(data);
+//     }
+//   });
+// };
+
+/* Route 10: /top_5_neighbors */
 const top_5_neighbors = async function (req, res) {
   const result = [
     {

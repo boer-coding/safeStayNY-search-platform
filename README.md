@@ -41,3 +41,9 @@ athrala- Ying Zhang - implemented ListingCard v2
 
 - remove host info, change to comprehensive listing details
 - enhance UI for ListingCard, Link, and HostPage
+
+### 4.22.2024
+
+athrala- Ying Zhang - implemented Crime Page v2
+
+- implemented **`route /crime`**

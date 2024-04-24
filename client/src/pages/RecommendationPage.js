@@ -22,10 +22,11 @@ import { DataGrid } from "@mui/x-data-grid";
 // import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ListingCard from "../components/ListingCard";
 import NeighborhoodInfo from "../components/NeighborhoodInfo";
+import { useNavigate } from "react-router-dom";
 // import { CrimePage } from "./CrimePage";
-// import BronxImage from "./public/feature_listing/Bronx.jpeg";
 
 const config = require("../config.json");
+// const navigate = useNavigate();
 
 //query neighborhood group, nb, accommodate, days, room-type, bed, bath
 export function RecommendationPage() {
@@ -89,6 +90,10 @@ export function RecommendationPage() {
     const value = event.target.value;
     setBathrooms(value === "8+" ? 8 : value);
   };
+
+  // const handleNeighborhoodClick = (locationId) => {
+  //   navigate(`/crime?locationId=${locationId}`);
+  // };
 
   //fetch neighborhoods base on neighborhood group
   const fetchNeighborhoods = async () => {
