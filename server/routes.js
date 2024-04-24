@@ -176,6 +176,7 @@ const host_listing = async function (req, res) {
   );
 };
 
+/* helper function for Route 4, trim all parameters */
 const cleanParams = (params) => {
   let cleaned = {};
   for (let key in params) {
@@ -577,5 +578,5 @@ module.exports = {
   neighborhoods,
   crime,
   neighborhood_group_crime,
-  crimeDemographic
+  crimeDemographic,
 };

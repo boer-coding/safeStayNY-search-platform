@@ -1,19 +1,15 @@
 import { useEffect, useState } from "react";
-import "./app.css";
+import "../app.css";
 import {
   Button,
   Checkbox,
   Container,
   FormControlLabel,
   Grid,
-  Link,
-  Slider,
-  TextField,
   Select,
   MenuItem,
   FormControl,
   InputLabel,
-  Typography,
 } from "@mui/material";
 import {
   ResponsiveContainer,
@@ -21,29 +17,21 @@ import {
   Bar,
   XAxis,
   YAxis,
-  RadarChart,
-  Radar,
-  PolarGrid,
-  PolarAngleAxis,
-  PolarRadiusAxis,
-  Legend
+  Legend,
 } from "recharts";
-import { DataGrid } from "@mui/x-data-grid";
 import BarChartComponent from "../components/BarChart";
 import { useSearchParams } from "react-router-dom";
-// import HostListing from "../components/HostListing";
 
 const config = require("../config.json");
 
 //query neighborhood group, nb, accommodate, days, room-type, bed, bath
 export function CrimePage() {
-  const [pageSize, setPageSize] = useState(10);
 
   //state hooks for fetching
   const [crimeData, setCrimeData] = useState([]);
-  const [barchartData, setbarchartData] = useState([]);
   const [neighborhoodData, setNeighborhoods] = useState([]);
   const [demoData, setdemoData] = useState([]);
+  const [groupCrimeData, setGroupCrimeData] = useState([]);
 
   //necessary filters
   const [searchParams] = useSearchParams();
@@ -82,29 +70,6 @@ export function CrimePage() {
     }
   };
 
-  const groupCrimeData = [
-    {
-      name: "Queens",
-      crime_count: 50965,
-    },
-    {
-      name: "Bronx",
-      crime_count: 49361,
-    },
-    {
-      name: "Manhattan",
-      crime_count: 53321,
-    },
-    {
-      name: "Staten Island",
-      crime_count: 11194,
-    },
-    {
-      name: "Brooklyn",
-      crime_count: 60379,
-    },
-  ];
-
   //fetch recommendation listing base on filters
   const search = () => {
     console.log("Search initiated with filters:", {
@@ -115,6 +80,19 @@ export function CrimePage() {
       neighborhoodGroup,
       neighborhood,
     });
+
+  fetch(`http://${config.server_host}:${config.server_port}/crime/neighborhood_group`)
+    .then((res) => res.json())
+    .then((resJson) => {
+      const featuredListings = resJson.map((row) => ({
+        id: row.group_crime_id, 
+        ...row,
+      }));
+      setGroupCrimeData(featuredListings);
+    })
+    .catch(error => {
+      console.error('There was a problem with your fetch operation:', error);
+  });
 
     fetch(
       `http://${config.server_host}:${
@@ -131,46 +109,30 @@ export function CrimePage() {
         }));
 
         setCrimeData(crimeDataJson);
-
-        // const newData = crimeDataJson.map((row) => ({
-        //   type: row.ofns_type,
-        //   value: row.offense_count
-        // }));
-        // console.log(newData);
-        // setbarchartData(newData);
-        // console.log("bcd", barchartData);
-
       })
       .catch((error) => {
         console.error("Failed to fetch recommendation", error);
       });
-      console.log(queryParams);
-      fetch(
-        `http://${config.server_host}:${config.server_port}/crimeDemographic?${queryParams.toString()}`
-      )
-        .then((res) => res.json())
-        .then((resJson) => {
-          // DataGrid expects an array of objects with a unique id.
-          // To accomplish this, we use a map with spread syntax (https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Spread_syntax)
-          const demoDataJson = resJson.map((a) => ({
-            id: a.type_id,
-            ...a,
-          }));
-  
-          setdemoData(demoDataJson);
-  
-          // const newData = crimeDataJson.map((row) => ({
-          //   type: row.ofns_type,
-          //   value: row.offense_count
-          // }));
-          // console.log(newData);
-          // setbarchartData(newData);
-          // console.log("bcd", barchartData);
-  
-        })
-        .catch((error) => {
-          console.error("Failed to fetch recommendation", error);
-        });
+    console.log(queryParams);
+    fetch(
+      `http://${config.server_host}:${
+        config.server_port
+      }/crimeDemographic?${queryParams.toString()}`
+    )
+      .then((res) => res.json())
+      .then((resJson) => {
+        // DataGrid expects an array of objects with a unique id.
+        // To accomplish this, we use a map with spread syntax (https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Spread_syntax)
+        const demoDataJson = resJson.map((a) => ({
+          id: a.type_id,
+          ...a,
+        }));
+
+        setdemoData(demoDataJson);
+      })
+      .catch((error) => {
+        console.error("Failed to fetch recommendation", error);
+      });
   };
 
   //fetch recs based on filter
@@ -183,7 +145,7 @@ export function CrimePage() {
     <div className="container">
       <div
         className="lower-left-table"
-        style={{ width: "100%", height: "400px" }}
+        style={{ width: "100%", height: "600px" }}
       >
         <h3>Neighborhood Group Crime Chart </h3>
         <div>
@@ -199,15 +161,11 @@ export function CrimePage() {
       <div className="upper-table">
         <h2>Top Crime type</h2>
 
-
         <ResponsiveContainer width="100%" height={500}>
-          <BarChart data={crimeData}
-          width={50} height={80}
-          layout="vertical"
-          >
-            <YAxis dataKey="ofns_type" type = "category" fontSize={10} />
+          <BarChart data={crimeData} width={50} height={80} layout="vertical">
+            <YAxis dataKey="ofns_type" type="category" fontSize={10} />
 
-            <XAxis type = "number"/>
+            <XAxis type="number" />
             <Legend />
             <Bar dataKey="offense_count" fill="#8884d8" />
           </BarChart>
@@ -216,22 +174,21 @@ export function CrimePage() {
       <div className="lower-table">
         <h2>Demographic Statistics</h2>
         <ResponsiveContainer width="100%" height={500}>
-          <BarChart data={demoData}
-          width={50} height={80}
-          layout="vertical"
-          >
-            <YAxis dataKey="type" type = "category" fontSize={10} />
+          <BarChart data={demoData} width={50} height={80} layout="vertical">
+            <YAxis dataKey="type" type="category" fontSize={10} />
 
-            <XAxis type = "number"/>
+            <XAxis type="number" />
             <Legend />
             <Bar dataKey="count" fill="#8884d8" />
           </BarChart>
         </ResponsiveContainer>
-
       </div>
 
-      <Container>
+      <Container class="upper-left-table">
         <h2>Filters</h2>
+        <p>
+          Select neighborhood group and neighborhood to see crime statistics.
+        </p>
         <Grid container spacing={6}>
           <Grid item xs={3}>
             <FormControl fullWidth>
@@ -268,13 +225,16 @@ export function CrimePage() {
               </Select>
             </FormControl>
           </Grid>
+
+          <Grid item xs={3} style={{ display: "flex", alignItems: "flex-end" }}>
+            <Button onClick={() => search()} style={{ marginLeft: "auto" }}>
+              Search
+            </Button>
+          </Grid>
         </Grid>
-        <Button
-          onClick={() => search()}
-          style={{ left: "50%", transform: "translateX(-50%)" }}
-        >
-          Search
-        </Button>
+        <div class="image-container">
+          <img src="https://images.pexels.com/photos/9364799/pexels-photo-9364799.jpeg?auto=compress&cs=tinysrgb&w=600" />
+        </div>
       </Container>
     </div>
   );
