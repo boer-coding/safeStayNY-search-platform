@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Container, Divider, Link } from "@mui/material";
+import { Container, Divider } from "@mui/material";
 import { NavLink } from "react-router-dom";
 import Carousel from "../components/Carousel";
 import { SliderData } from "../components/Data";
@@ -7,8 +7,6 @@ import "../app.css";
 import {
   APIProvider,
   Map,
-  Pin,
-  AdvancedMarker,
 } from "@vis.gl/react-google-maps";
 
 import LazyTable from "../components/LazyTable";
@@ -18,11 +16,6 @@ export default function HomePage() {
   const [appAuthor, setAppAuthor] = useState("");
   const position = [
     { lat: 40.6970192, lng: -74.3093451 },
-    { lat: 40.57649571266335, lng: -73.84837669505295 },
-    { lat: 40.577390058334586, lng: -74.13834755054633 },
-    { lat: 40.56184964143356, lng: -73.88796264178508 },
-    { lat: 40.611295809274296, lng: -74.06038542143051 },
-    { lat: 40.60596913792262, lng: -74.05605235768698 },
   ];
 
   useEffect(() => {
@@ -64,7 +57,7 @@ export default function HomePage() {
           {row.neighborhood_group}
         </a>
       ),
-    },
+    }
   ];
 
   return (
@@ -111,8 +104,7 @@ export default function HomePage() {
       {/* list saftest neighbors */}
       <h2>Top 5 Safetest Neighbors:&nbsp;</h2>
       <p>
-        We selected poppular and the safetest neighborhoods for you! Check
-        detailed listings <NavLink to="/recommendations">here</NavLink>.
+        We slected poppular and the safetest neighborhoods for you! Check detailed listings <NavLink to="/recommendations">here</NavLink>.
       </p>
       <LazyTable
         route={`http://${config.server_host}:${config.server_port}/top_5_neighbors`}
@@ -123,11 +115,12 @@ export default function HomePage() {
       <Divider />
       <Container class="map-container">
         <APIProvider apiKey="AIzaSyCYHonDUWTua7kF363vtOtnp1aYtoRrvBM">
-          <Map zoom={12} center={position[0]}></Map>
+          <Map zoom={12} center={position[0]}>
+          </Map>
         </APIProvider>
       </Container>
       {/* app authors */}
-      <p style={{ fontWeight: "bold" }}>{appAuthor}</p>
+      <p style={{ fontWeight: 'bold' }}>{appAuthor}</p>
     </Container>
   );
 }
