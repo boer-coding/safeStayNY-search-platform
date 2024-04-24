@@ -17,6 +17,7 @@ import {
 } from "@mui/material";
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis } from 'recharts';
 import { DataGrid } from "@mui/x-data-grid";
+import BarChartComponent from "../components/BarChart";
 // import HostListing from "../components/HostListing";
 
 const config = require("../config.json");
@@ -64,6 +65,29 @@ export function CrimePage() {
       console.error("Failed to fetch neighborhood list", error);
     }
   };
+
+    const groupCrimeData = [
+    {
+      name: 'Queens',
+      crime_count: 50965,
+    },
+    {
+      name: 'Bronx',
+      crime_count: 49361,
+    },
+    {
+      name: 'Manhattan',
+      crime_count: 53321
+    },
+    {
+      name: 'Staten Island',
+      crime_count: 11194,
+    },
+    {
+      name: 'Brooklyn',
+      crime_count: 60379,
+    },
+  ];
 
   //fetch recommendation listing base on filters
   const search = () => {
@@ -120,10 +144,12 @@ export function CrimePage() {
 
   return (
     <div className="container">
-      <div className="description">
-
-        <h2>Description</h2>
-        <p>Here is description</p>
+      <div className="lower-left-table" style={{ width: '100%', height: '400px'}}>
+        <h3>Neighborhood Group Crime Chart </h3>
+        <div>
+        <p>As you can see, Staten Island is the safest neighborhood group, while Brooklyn is the most dangerous one. So schedule your activities in Brooklyn during daylight hours as much as possible. Booking an Airbnb in Staten Island might be a good idea!</p>
+        </div>
+        <BarChartComponent data={groupCrimeData} />
       </div>
       <div className="upper-table">
         <h2>Top Crime type</h2>
