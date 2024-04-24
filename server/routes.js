@@ -578,5 +578,5 @@ module.exports = {
   neighborhoods,
   crime,
   neighborhood_group_crime,
-  crimeDemographic
+  crimeDemographic,
 };
