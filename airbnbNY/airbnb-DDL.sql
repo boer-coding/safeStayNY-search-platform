@@ -1,93 +1,88 @@
-CREATE DATABASE project;
+create table host(
+    host_id    int          not null primary key,
+    host_name  varchar(70)  not null,
+    join_since varchar(20)  not null,
+    super_host tinyint(1)   not null,
+    host_url   varchar(200) not null,
+    pic_url    varchar(300) not null
+);
 
-USE project;
-
-CREATE TABLE host (
-    host_id   	        INT,
-    host_name           VARCHAR(70)  NOT NULL,
-    join_since          VARCHAR(20)  NOT NULL,
-    super_host		    ENUM ('t','f')NOT NULL,
-    host_url            VARCHAR(200)  NOT NULL,
-	PRIMARY KEY (host_id)
+create table location( 
+    location_id        int          not null primary key,
+    neighborhood       varchar(100) not null,
+    neighborhood_group varchar(20)  not null
 );
 
 
-CREATE TABLE location (
-    location_id             INT,
-    neighborhood            VARCHAR(100)           NOT NULL,
-    neighborhood_group 	    VARCHAR(20)            NOT NULL,
-	PRIMARY KEY (location_id)
+create table review(
+    review_id            int           not null primary key,
+    review_num           int           null,
+    review_rating        decimal(3, 2) null,
+    review_accuracy      decimal(3, 2) null,
+    review_clean         decimal(3, 2) null,
+    review_checkin       decimal(3, 2) null,
+    review_communication decimal(3, 2) null,
+    review_location      decimal(3, 2) null,
+    review_value         decimal(3, 2) null
 );
 
 
-CREATE TABLE review (
-    review_id          		INT,
-    review_num         		INT,
-    review_rating      		DECIMAL(3, 2),
-    review_accuracy    		DECIMAL(3, 2),
-    review_clean	 		DECIMAL(3, 2),
-    review_checkin      	DECIMAL(3, 2),
-    review_communication 	DECIMAL(3, 2),
-    review_location 		DECIMAL(3, 2),
-    review_value 			DECIMAL(3, 2),
-	PRIMARY KEY (review_id)
+create table airbnb(
+    listing_id   int   primary key,
+    listing_des  varchar(120)                                                          null,
+    host_id      int                                                                   not null,
+    room_type    enum ('Entire home/apt', 'Private room', 'Hotel room', 'Shared room') not null,
+    price        int                                                                   null,
+    mini_nights  int                                                                   null,
+    location_id  int                                                                   not null,
+    latitude     decimal(7, 5)                                                         not null,
+    longitude    decimal(7, 5)                                                         not null,
+    review_id    int                                                                   not null,
+    max_nights   int                                                                   null,
+    listing_url  varchar(300)                                                          null,
+    accommodates int                                                                   null,
+    bathrooms    int                                                                   null,
+    beds         int                                                                   null,
+    constraint airbnb_ibfk_1
+        foreign key (host_id) references host (host_id),
+    constraint airbnb_ibfk_2
+        foreign key (location_id) references location (location_id),
+    constraint airbnb_ibfk_3
+        foreign key (review_id) references review (review_id)
 );
 
-
-CREATE TABLE airbnb (
-    listing_id    	INT,
-    listing_des 	VARCHAR(120),
-    host_id			INT                    NOT NULL,
-    room_type		ENUM ('Entire home/apt',
-                            'Private room',
-                            'Hotel room',
-                            'Shared room') NOT NULL,
-    price			INT,
-    mini_nights 	INT,
-    location_id     INT                    NOT NULL,
-	latitude       	DECIMAL(7, 5)          NOT NULL,
-	longitude      	DECIMAL(7, 5)          NOT NULL,
-	review_id 		INT                    NOT NULL,
-	PRIMARY KEY (listing_id),
-	FOREIGN KEY (host_id) REFERENCES host(host_id),
-    FOREIGN KEY (location_id) REFERENCES location (location_id),
-	FOREIGN KEY (review_id) REFERENCES review (review_id)
+create table offense_description(
+    ky_cd     int         not null primary key,
+    ofns_type varchar(60) not null
 );
 
-CREATE TABLE offense_description (
-    ky_cd    INT,
-    ofns_type VARCHAR(60)	NOT NULL,
-	PRIMARY KEY (ky_cd)
+create table police_department_description(
+    pd_cd   int          not null primary key,
+    pd_type varchar(120) null
 );
 
-CREATE TABLE police_department_description (
-    pd_cd    INT,
-    pd_type VARCHAR(120),
-	PRIMARY KEY (pd_cd)
+create table suspect(
+    type_id   int  primary key,
+    age_group enum ('<18', '18-24', '25-44', '45-64', '65+')                                                                                       not null,
+    gender    enum ('F', 'M', 'U')                                                                                                                 not null,
+    race      enum ('BLACK', 'WHITE', 'WHITE HISPANIC', 'BLACK HISPANIC', 'ASIAN / PACIFIC ISLANDER', 'UNKNOWN', 'AMERICAN INDIAN/ALASKAN NATIVE') not null
 );
 
-CREATE TABLE suspect (
-    type_id     INT,
-    age_group   ENUM ('<18','18-24','25-44','45-64','65+')      	  NOT NULL,
-	gender 		ENUM ('F', 'M','U')									  NOT NULL,
-	race        ENUM ('BLACK', 'WHITE','WHITE HISPANIC',
-						'BLACK HISPANIC','ASIAN / PACIFIC ISLANDER',
-						'UNKNOWN','AMERICAN INDIAN/ALASKAN NATIVE')   NOT NULL,
-	PRIMARY KEY (type_id)
-);
-
-CREATE TABLE arrest_list (
-    arrest_id      INT,
-	arrest_date    VARCHAR(10) 		NOT NULL,
-	latitude       DECIMAL(8, 6)	NOT NULL,
-	longitude      DECIMAL(8, 6)	NOT NULL,
-	type_id		   INT				NOT NULL,
-	ky_cd          INT,
-	pd_cd          INT				NOT NULL,
-    location_id    INT              NOT NULL,
-	PRIMARY KEY (arrest_id),
-	FOREIGN KEY (ky_cd) REFERENCES offense_description (ky_cd),
-	FOREIGN KEY (pd_cd) REFERENCES police_department_description (pd_cd),
-	FOREIGN KEY (type_id) REFERENCES suspect (type_id),
-    FOREIGN KEY (location_id) REFERENCES location (location_id)
+create table arrest_list(
+    arrest_id   int           not null primary key,
+    arrest_date varchar(10)   not null,
+    latitude    decimal(8, 6) not null,
+    longitude   decimal(8, 6) not null,
+    type_id     int           not null,
+    ky_cd       int           null,
+    pd_cd       int           not null,
+    location_id int           not null,
+    constraint arrest_list_ibfk_1
+        foreign key (pd_cd) references police_department_description (pd_cd),
+    constraint arrest_list_ibfk_2
+        foreign key (type_id) references suspect (type_id),
+    constraint arrest_list_ibfk_3
+        foreign key (location_id) references location (location_id),
+    constraint arrest_list_ibfk_4
+        foreign key (ky_cd) references offense_description (ky_cd)
 );
