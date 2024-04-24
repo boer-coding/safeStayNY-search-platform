@@ -121,9 +121,9 @@ export default function HomePage() {
       </Container>
 
       {/* list saftest neighbors */}
-      <h2>Top 5 Safetest Neighbors:&nbsp;</h2>
+      <h2>Top 5 safest Neighbors:&nbsp;</h2>
       <p>
-        We slected poppular and the safetest neighborhoods for you! Check
+        We slected poppular and the safest neighborhoods for you! Check
         detailed listings <NavLink to="/recommendations">here</NavLink>.
       </p>
       <LazyTable
