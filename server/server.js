@@ -18,7 +18,6 @@ app.get("/recommendations", routes.recommendation);
 app.get("/neighborhoods", routes.neighborhoods);
 app.get("/listing", routes.listing);
 app.get("/feature_listing", routes.feature_listing);
-app.get("/location", routes.location);
 app.get("/crime", routes.crime);
 
 app.listen(config.server_port, () => {

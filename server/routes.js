@@ -492,6 +492,5 @@ module.exports = {
   feature_listing,
   recommendation,
   neighborhoods,
-  location,
   crime,
 };
