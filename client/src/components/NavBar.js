@@ -7,7 +7,7 @@ import {
   Icon,
 } from "@mui/material";
 import { NavLink } from "react-router-dom";
-import logo from "./logo.svg";
+import logo from "../logo.svg";
 
 function NavText({ href, text, isMain }) {
   return (
