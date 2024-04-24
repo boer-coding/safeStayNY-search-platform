@@ -150,9 +150,8 @@ export function HostPage() {
     // Return the calculated composite score
     return parseFloat(avgScore.toFixed(2)); // Format the score to display only two decimal places
   };
-  {
+  
     /* 45%, 8%, 5%*/
-  }
   const calculateComScore = (host) => {
     const { num, rating, accuracy, communication, clean, location, value } =
       host;
