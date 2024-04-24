@@ -195,7 +195,7 @@ export function RecommendationPage() {
       field: "neighborhoodGroup",
       width: 300,
       // renderCell: (params) => params.row.neighborhood,
-      renderCell: (params) => `${params.row.neighborhoodGroup}`,
+      renderCell: (params) => `${params.row.neighborhood_group}`,
     },
     {
       field: "neighborhood,",
@@ -203,12 +203,12 @@ export function RecommendationPage() {
       width: 300,
       // renderCell: (params) => params.row.neighborhood,
       renderCell: (params) => {
-        console.log(params.row);
+        console.log(params.row.neighborhood_group);
         // const neighborhoodGroup = params.row.neighborhood_group || "Any";
         return (
           <NeighborhoodInfo
             neighborhood={params.row.neighborhood}
-            neighborhoodGroup={params.row.neighborhoodGroup}
+            neighborhoodGroup={params.row.neighborhood_group}
           />
         );
       },
