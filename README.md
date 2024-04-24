@@ -46,4 +46,12 @@ athrala- Ying(Rita) Zhang - implemented ListingCard v2
 
 athrala- Ying(Rita) Zhang - implemented Recommendation Page v5
 
-- bug fix redirect to crime page from recommendation page
+- bug fix, add **redirect** to Crime Page from recommendation page
+
+### 4.24.2024
+
+athrala- Ying(Rita) Zhang - Host Page, Recommendation Page
+
+- add host pic, ui to Host Page
+- add **redirect** from Recommendation Page to Host
+- Home Page typo

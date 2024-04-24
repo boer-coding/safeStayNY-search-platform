@@ -15,6 +15,7 @@ import {
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import HostListing from "../components/HostListing";
+import { useLocation } from "react-router-dom";
 
 const config = require("../config.json");
 
@@ -30,6 +31,8 @@ export function HostPage() {
 
   const [selectedScore, setSelectedScore] = useState("avgScore");
   const [selectedHostId, setSelectedHostId] = useState(null); // State to store the selected host_id for the popup
+
+  const location = useLocation();
 
   // Fetch neighborhoods based on selected neighborhood group
   useEffect(() => {
@@ -57,6 +60,12 @@ export function HostPage() {
   useEffect(() => {
     fetchHosts();
   }, []); // Empty dependency array ensures this effect runs only once on component mount
+
+  useEffect(() => {
+    if (location.state?.openModal && location.state?.hostId) {
+      setSelectedHostId(location.state.hostId);
+    }
+  }, [location]);
 
   // Fetch hosts based on selected neighborhood and neighborhood group
   const fetchHosts = async () => {

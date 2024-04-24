@@ -159,7 +159,7 @@ const host_listing = async function (req, res) {
 
   connection.query(
     `
-    SELECT listing_id, listing_des, listing_url, host_name, host_url
+    SELECT listing_id, listing_des, listing_url, host_name, host_url, pic_url
     FROM airbnb JOIN host
     ON airbnb.host_id = host.host_id
     WHERE airbnb.host_id = '${hostId}'
@@ -343,7 +343,7 @@ const listing = async function (req, res) {
   connection.query(
     `
   
-    SELECT room_type, beds, bathrooms, listing_url, price, mini_nights, max_nights, accommodates
+    SELECT room_type, beds, bathrooms, listing_url, price, mini_nights, max_nights, accommodates, host.host_id
     FROM airbnb JOIN host ON airbnb.host_id=host.host_id
     WHERE listing_id = '${listingId}'
     
@@ -460,7 +460,6 @@ FROM arrest_list al JOIN location l ON al.location_id = l.location_id JOIN offen
   });
 };
 
-
 /* Route 9: GET /crimeDemographic */
 // Return top 10 demographic in certain region
 const crimeDemographic = async function (req, res) {
@@ -537,17 +536,17 @@ const top_5_neighbors = async function (req, res) {
     Limit 5;
     `,
     (err, data) => {
-    if (err || data.length === 0) {
-      console.log(err);
-      res.json([]);
-    } else {
-      const jsonArray = data.map((row) => ({
-        neighborhood: row.neighborhood,
-        neighborhood_group: row.neighborhood_group,
-      }));
-      res.json(jsonArray);
+      if (err || data.length === 0) {
+        console.log(err);
+        res.json([]);
+      } else {
+        const jsonArray = data.map((row) => ({
+          neighborhood: row.neighborhood,
+          neighborhood_group: row.neighborhood_group,
+        }));
+        res.json(jsonArray);
+      }
     }
-  }
   );
 };
 
@@ -573,7 +572,6 @@ const neighborhood_group_crime = async function (req, res) {
     }
   );
 };
-
 
 module.exports = {
   author,
