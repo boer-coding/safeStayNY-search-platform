@@ -26,6 +26,7 @@ import {
   PolarGrid,
   PolarAngleAxis,
   PolarRadiusAxis,
+  Legend
 } from "recharts";
 import { DataGrid } from "@mui/x-data-grid";
 import BarChartComponent from "../components/BarChart";
