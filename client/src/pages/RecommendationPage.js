@@ -59,11 +59,11 @@ export function RecommendationPage() {
 
   //handleChange
   const handleNeighborhoodGroupChange = (event) => {
+    // console.log("neighborhoodGroup changed");
     setNeighborhoodGroup(event.target.value);
   };
   const handleNeighborhoodChange = (event) => {
-    const value = event.target.value;
-    setNeighborhood(value === "Any" ? "Any" : value);
+    setNeighborhood(event.target.value);
   };
   const handleAccommodatesChange = (event) => {
     const value = event.target.value;
@@ -161,8 +161,7 @@ export function RecommendationPage() {
     )
       .then((res) => res.json())
       .then((resJson) => {
-        // DataGrid expects an array of objects with a unique id.
-        // To accomplish this, we use a map with spread syntax (https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Spread_syntax)
+        console.log(resJson);
         const recommendationData = resJson.map((a) => ({
           id: a.listing_id,
           ...a,
@@ -193,12 +192,19 @@ export function RecommendationPage() {
       ),
     },
     {
+      field: "neighborhoodGroup",
+      width: 300,
+      // renderCell: (params) => params.row.neighborhood,
+      renderCell: (params) => `${params.row.neighborhoodGroup}`,
+    },
+    {
       field: "neighborhood,",
       headerName: "Neighborhood",
       width: 300,
       // renderCell: (params) => params.row.neighborhood,
       renderCell: (params) => {
         console.log(params.row);
+        // const neighborhoodGroup = params.row.neighborhood_group || "Any";
         return (
           <NeighborhoodInfo
             neighborhood={params.row.neighborhood}
@@ -413,6 +419,7 @@ export function RecommendationPage() {
       {showResults && (
         <>
           <h2>Here is a list of stays ranked by crime rate:</h2>
+
           <DataGrid
             sx={{
               "& .MuiDataGrid-columnHeaderTitle": {

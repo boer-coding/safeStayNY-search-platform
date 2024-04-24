@@ -216,6 +216,7 @@ const recommendation = async function (req, res) {
           TotalArrests
   )
   SELECT
+      l.location_id,
       l.neighborhood_group,
       a.listing_id,
       a.listing_des,
@@ -399,7 +400,7 @@ const feature_listing = async function (req, res) {
   );
 };
 
-/* OLD-  use Route 8: /crime */
+/* OLD -  use Route 8: /crime */
 const crime = async function (req, res) {
   console.log("Received query params:", req.query);
   const { neighborhoodGroup = "Any", neighborhood = "Any" } = req.query;
@@ -445,6 +446,27 @@ FROM arrest_list al JOIN location l ON al.location_id = l.location_id JOIN suspe
   GROUP BY ofns_type
   LIMIT 10;`;
   console.log(query);
+
+  connection.query(query, params, (err, data) => {
+    if (err || data.length === 0) {
+      console.log(err);
+      res.json([]);
+    } else {
+      res.json(data);
+    }
+  });
+};
+
+/* Route 9: convert location_id to neighborhood and neighborhood_group*/
+const location = async function (req, res) {
+  console.log("Received query params:", req.query);
+  const { location_id = null } = req.query;
+
+  console.log("Received query params:", req.query);
+  let query = `SELECT l.neighborhood, l.neighborhood_group
+  FROM location l
+  WHERE l.location_id= '${location_id}'
+  `;
 
   connection.query(query, params, (err, data) => {
     if (err || data.length === 0) {
@@ -514,5 +536,6 @@ module.exports = {
   feature_listing,
   recommendation,
   neighborhoods,
+  location,
   crime,
 };
