@@ -145,7 +145,7 @@ export function CrimePage() {
     <div className="container">
       <div
         className="lower-left-table"
-        style={{ width: "100%", height: "600px" }}
+        style={{ width: "100%", height: "700px" }}
       >
         <h3>Neighborhood Group Crime Chart </h3>
         <div>
