@@ -29,7 +29,7 @@ import {
 } from "recharts";
 import { DataGrid } from "@mui/x-data-grid";
 import BarChartComponent from "../components/BarChart";
-
+import { useSearchParams } from "react-router-dom";
 
 // import HostListing from "../components/HostListing";
 
@@ -45,8 +45,14 @@ export function CrimePage() {
   const [neighborhoodData, setNeighborhoods] = useState([]);
 
   //necessary filters
-  const [neighborhoodGroup, setNeighborhoodGroup] = useState("Any");
-  const [neighborhood, setNeighborhood] = useState("Any");
+  const [searchParams] = useSearchParams();
+  const initialNeighborhoodGroup =
+    searchParams.get("neighborhoodGroup") || "Any";
+  const initialNeighborhood = searchParams.get("neighborhood") || "Any";
+  const [neighborhoodGroup, setNeighborhoodGroup] = useState(
+    initialNeighborhoodGroup
+  );
+  const [neighborhood, setNeighborhood] = useState(initialNeighborhood);
 
   //handleChange
   const handleNeighborhoodGroupChange = (event) => {
