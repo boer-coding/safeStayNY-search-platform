@@ -6,9 +6,23 @@
   height: 100vh; /* Full height of the viewport */
 }
 
+.upper-left-table {
+  grid-column: 1 / 2; /* Span one column */
+  grid-row: 1 / 2; /* Span one row */
+  background-color: rgb(247, 237, 147);
+  border: 1px solid gray;
+  padding: 20px;
+}
+
+.image-container {
+  margin-top: 30px;
+  max-width: 100%; /* 图像宽度最大为容器的100% */
+  max-height: 100%; /* 图像高度最大为容器的100% */
+}
+
 .lower-left-table {
   grid-column: 1 / 2; /* Span one column */
-  grid-row: 2 / 4; /* Span two rows */
+  grid-row: 2 / 3; /* Span two rows */
   background-color: lightgray;
   border: 1px solid gray;
   padding: 20px;
@@ -27,6 +41,7 @@
   border: 1px solid gray;
   padding: 20px;
 }
+
 
 .lower-table {
   grid-column: 2 / 3; /* Span one column */
@@ -59,13 +74,3 @@
   width: 400px;
   height: 400px;
 }
-
-.map-container {
-  margin-top: 20px;
-  background-color: aqua;
-  width: 1100px;
-  height: 500px
-}
-
-
-  
