@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Container, Divider } from "@mui/material";
+import { Container, Divider, Link } from "@mui/material";
 import { NavLink } from "react-router-dom";
 import Carousel from "../components/Carousel";
 import "../app.css";
@@ -52,7 +52,10 @@ export default function HomePage() {
       field: "neighborhood",
       headerName: "Neighborhood",
       renderCell: (row) => (
-        <a
+        <Link
+          style={{
+            textDecoration: "underline",
+          }}
           href={`https://en.wikipedia.org/wiki/${row.neighborhood.replace(
             " ",
             "_"
@@ -61,20 +64,23 @@ export default function HomePage() {
           rel="noopener noreferrer"
         >
           {row.neighborhood}
-        </a>
+        </Link>
       ),
     },
     {
       field: "neighborhood_group",
       headerName: "Neighborhood Group",
       renderCell: (row) => (
-        <a
+        <Link
+          style={{
+            textDecoration: "underline",
+          }}
           href={`https://en.wikipedia.org/wiki/${row.neighborhood_group}`}
           target="_blank"
           rel="noopener noreferrer"
         >
           {row.neighborhood_group}
-        </a>
+        </Link>
       ),
     },
   ];
@@ -124,7 +130,19 @@ export default function HomePage() {
       <h2>Top 5 safest Neighbors:&nbsp;</h2>
       <p>
         We selected popular and the safest neighborhoods for you! Check detailed
-        listings <NavLink to="/recommendations">here</NavLink>.
+        listings{" "}
+        {
+          <NavLink to="/recommendations">
+            <Link
+              style={{
+                textDecoration: "underline",
+              }}
+            >
+              here
+            </Link>
+          </NavLink>
+        }
+        .
       </p>
       <LazyTable
         route={`http://${config.server_host}:${config.server_port}/top_5_neighbors`}
