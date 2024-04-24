@@ -1,13 +1,10 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import {
   Button,
-  Checkbox,
   Container,
-  FormControlLabel,
   Grid,
   Link,
   Slider,
-  TextField,
   Select,
   MenuItem,
   FormControl,
@@ -15,17 +12,14 @@ import {
   Typography,
   Paper,
   Box,
-  useTheme,
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
-// import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
-// import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ListingCard from "../components/ListingCard";
 import NeighborhoodInfo from "../components/NeighborhoodInfo";
-// import { CrimePage } from "./CrimePage";
-// import BronxImage from "./public/feature_listing/Bronx.jpeg";
+import { useNavigate } from "react-router-dom";
 
 const config = require("../config.json");
+// const navigate = useNavigate();
 
 //query neighborhood group, nb, accommodate, days, room-type, bed, bath
 export function RecommendationPage() {
@@ -58,11 +52,11 @@ export function RecommendationPage() {
 
   //handleChange
   const handleNeighborhoodGroupChange = (event) => {
+    // console.log("neighborhoodGroup changed");
     setNeighborhoodGroup(event.target.value);
   };
   const handleNeighborhoodChange = (event) => {
-    const value = event.target.value;
-    setNeighborhood(value === "Any" ? "Any" : value);
+    setNeighborhood(event.target.value);
   };
   const handleAccommodatesChange = (event) => {
     const value = event.target.value;
@@ -89,6 +83,10 @@ export function RecommendationPage() {
     const value = event.target.value;
     setBathrooms(value === "8+" ? 8 : value);
   };
+
+  // const handleNeighborhoodClick = (locationId) => {
+  //   navigate(`/crime?locationId=${locationId}`);
+  // };
 
   //fetch neighborhoods base on neighborhood group
   const fetchNeighborhoods = async () => {
@@ -156,8 +154,7 @@ export function RecommendationPage() {
     )
       .then((res) => res.json())
       .then((resJson) => {
-        // DataGrid expects an array of objects with a unique id.
-        // To accomplish this, we use a map with spread syntax (https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Spread_syntax)
+        console.log(resJson);
         const recommendationData = resJson.map((a) => ({
           id: a.listing_id,
           ...a,
@@ -193,11 +190,11 @@ export function RecommendationPage() {
       width: 300,
       // renderCell: (params) => params.row.neighborhood,
       renderCell: (params) => {
-        console.log(params.row);
+        console.log(params.row.neighborhood_group);
         return (
           <NeighborhoodInfo
             neighborhood={params.row.neighborhood}
-            neighborhoodGroup={params.row.neighborhoodGroup}
+            neighborhoodGroup={params.row.neighborhood_group}
           />
         );
       },
@@ -408,6 +405,7 @@ export function RecommendationPage() {
       {showResults && (
         <>
           <h2>Here is a list of stays ranked by crime rate:</h2>
+
           <DataGrid
             sx={{
               "& .MuiDataGrid-columnHeaderTitle": {

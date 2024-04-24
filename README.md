@@ -2,7 +2,7 @@
 
 ### 4.15.2024
 
-athrala- Ying Zhang - implemented Recommendation Page v1
+athrala- Ying(Rita) Zhang - implemented Recommendation Page v1
 
 - implemented **`route /recommendation`**, **`RecommendationPage.js`**
 - 4 Essential filters: Neighborhood group, Neighborhood, Guests, and Stay length. Both Neighborhood group and Neighborhood default to 'Any', and will display the safest and cheapest airbnb listing by querying all listing in NYC. Guests default to 1 and Stay length default to 2.
@@ -11,7 +11,7 @@ athrala- Ying Zhang - implemented Recommendation Page v1
 
 ### 4.16.2024
 
-athrala- Ying Zhang - implemented Recommendation Page v2
+athrala- Ying(Rita) Zhang - implemented Recommendation Page v2
 
 - implemented **`route /neighborhoods`**
 - Neighborhood filter based on neighborhood group
@@ -20,7 +20,7 @@ athrala- Ying Zhang - implemented Recommendation Page v2
 
 ### 4.17.2024
 
-athrala- Ying Zhang - implemented Recommendation Page v3
+athrala- Ying(Rita) Zhang - implemented Recommendation Page v3
 
 - implemented **`route /listing`**, **`ListingCard.js`**, **`NeighborhoodInfo.js`**
 - update safety_score to crime_Rate
@@ -29,7 +29,7 @@ athrala- Ying Zhang - implemented Recommendation Page v3
 - edit host page UI
 - add link to neighborhood to redirect to crime page of selected neighborhood
 
-athrala- Ying Zhang - implemented Recommendation Page v4
+athrala- Ying(Rita) Zhang - implemented Recommendation Page v4
 
 - implemented **`route /feature_listing`**
 - /recommendation route query optimized
@@ -37,7 +37,13 @@ athrala- Ying Zhang - implemented Recommendation Page v4
 
 ### 4.22.2024
 
-athrala- Ying Zhang - implemented ListingCard v2
+athrala- Ying(Rita) Zhang - implemented ListingCard v2
 
 - remove host info, change to comprehensive listing details
-- enhance UI for ListingCard
+- enhance UI for ListingCard, Link, and HostPage
+
+### 4.23.2024
+
+athrala- Ying(Rita) Zhang - implemented Recommendation Page v5
+
+- bug fix redirect to crime page from recommendation page

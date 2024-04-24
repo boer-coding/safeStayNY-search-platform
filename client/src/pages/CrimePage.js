@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import './app.css';
+import "./app.css";
 import {
   Button,
   Checkbox,
@@ -15,11 +15,21 @@ import {
   InputLabel,
   Typography,
 } from "@mui/material";
-import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Rectangle, CartesianGrid, Tooltip, Legend } from 'recharts';
+import {
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  RadarChart,
+  Radar,
+  PolarGrid,
+  PolarAngleAxis,
+  PolarRadiusAxis,
+} from "recharts";
 import { DataGrid } from "@mui/x-data-grid";
 import BarChartComponent from "../components/BarChart";
-
-
+import { useSearchParams } from "react-router-dom";
 // import HostListing from "../components/HostListing";
 
 const config = require("../config.json");
@@ -35,17 +45,18 @@ export function CrimePage() {
   const [demoData, setdemoData] = useState([]);
 
   //necessary filters
-  const [neighborhoodGroup, setNeighborhoodGroup] = useState("Any");
-  const [neighborhood, setNeighborhood] = useState("Any");
-
+  const [searchParams] = useSearchParams();
+  const initialNeighborhoodGroup =
+    searchParams.get("neighborhoodGroup") || "Any";
+  const initialNeighborhood = searchParams.get("neighborhood") || "Any";
+  const [neighborhoodGroup, setNeighborhoodGroup] = useState(
+    initialNeighborhoodGroup
+  );
+  const [neighborhood, setNeighborhood] = useState(initialNeighborhood);
 
   //handleChange
   const handleNeighborhoodGroupChange = (event) => {
     setNeighborhoodGroup(event.target.value);
-    // If 'Any' is selected for neighborhoodGroup, set neighborhood to 'Any' as well
-    if (event.target.value === "Any") {
-      setNeighborhood("Any");
-    }
   };
   const handleNeighborhoodChange = (event) => {
     setNeighborhood(event.target.value);
@@ -53,8 +64,9 @@ export function CrimePage() {
 
   //fetch neighborhoods base on neighborhood group
   const fetchNeighborhoods = async () => {
-    const url = `http://${config.server_host}:${config.server_port}/neighborhoods?neighborhoodGroup=${encodeURIComponent(neighborhoodGroup)}`;
-    // const url = `http://${config.server_host}:${config.server_port}/neighborhoods`;
+    const url = `http://${config.server_host}:${
+      config.server_port
+    }/neighborhoods?neighborhoodGroup=${encodeURIComponent(neighborhoodGroup)}`;
 
     try {
       const response = await fetch(url);
@@ -71,23 +83,23 @@ export function CrimePage() {
 
   const groupCrimeData = [
     {
-      name: 'Queens',
+      name: "Queens",
       crime_count: 50965,
     },
     {
-      name: 'Bronx',
+      name: "Bronx",
       crime_count: 49361,
     },
     {
-      name: 'Manhattan',
-      crime_count: 53321
+      name: "Manhattan",
+      crime_count: 53321,
     },
     {
-      name: 'Staten Island',
+      name: "Staten Island",
       crime_count: 11194,
     },
     {
-      name: 'Brooklyn',
+      name: "Brooklyn",
       crime_count: 60379,
     },
   ];
@@ -96,15 +108,17 @@ export function CrimePage() {
   const search = () => {
     console.log("Search initiated with filters:", {
       neighborhoodGroup,
-      neighborhood
+      neighborhood,
     });
     const queryParams = new URLSearchParams({
       neighborhoodGroup,
-      neighborhood
+      neighborhood,
     });
 
     fetch(
-      `http://${config.server_host}:${config.server_port}/crime?${queryParams.toString()}`
+      `http://${config.server_host}:${
+        config.server_port
+      }/crime?${queryParams.toString()}`
     )
       .then((res) => res.json())
       .then((resJson) => {
@@ -158,26 +172,26 @@ export function CrimePage() {
         });
   };
 
-
-
   //fetch recs based on filter
   useEffect(() => {
     fetchNeighborhoods();
     search();
-  }, [
-    neighborhoodGroup,
-    neighborhood,
-
-  ]);
-
-
+  }, [neighborhoodGroup, neighborhood]);
 
   return (
     <div className="container">
-      <div className="lower-left-table" style={{ width: '100%', height: '400px' }}>
+      <div
+        className="lower-left-table"
+        style={{ width: "100%", height: "400px" }}
+      >
         <h3>Neighborhood Group Crime Chart </h3>
         <div>
-          <p>As you can see, Staten Island is the safest neighborhood group, while Brooklyn is the most dangerous one. So schedule your activities in Brooklyn during daylight hours as much as possible. Booking an Airbnb in Staten Island might be a good idea!</p>
+          <p>
+            As you can see, Staten Island is the safest neighborhood group,
+            while Brooklyn is the most dangerous one. So schedule your
+            activities in Brooklyn during daylight hours as much as possible.
+            Booking an Airbnb in Staten Island might be a good idea!
+          </p>
         </div>
         <BarChartComponent data={groupCrimeData} />
       </div>
@@ -260,9 +274,7 @@ export function CrimePage() {
         >
           Search
         </Button>
-
       </Container>
     </div>
   );
-
 }

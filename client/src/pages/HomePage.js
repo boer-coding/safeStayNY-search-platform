@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Container, Divider } from "@mui/material";
+import { Container, Divider, Link } from "@mui/material";
 import { NavLink } from "react-router-dom";
 import Carousel from "../components/Carousel";
 import { SliderData } from "../components/Data";
@@ -64,7 +64,7 @@ export default function HomePage() {
           {row.neighborhood_group}
         </a>
       ),
-    }
+    },
   ];
 
   return (
@@ -111,7 +111,8 @@ export default function HomePage() {
       {/* list saftest neighbors */}
       <h2>Top 5 Safetest Neighbors:&nbsp;</h2>
       <p>
-        We slected poppular and the safetest neighborhoods for you! Check detailed listings <NavLink to="/recommendations">here</NavLink>.
+        We selected poppular and the safetest neighborhoods for you! Check
+        detailed listings <NavLink to="/recommendations">here</NavLink>.
       </p>
       <LazyTable
         route={`http://${config.server_host}:${config.server_port}/top_5_neighbors`}
@@ -122,12 +123,11 @@ export default function HomePage() {
       <Divider />
       <Container class="map-container">
         <APIProvider apiKey="AIzaSyCYHonDUWTua7kF363vtOtnp1aYtoRrvBM">
-          <Map zoom={12} center={position[0]}>
-          </Map>
+          <Map zoom={12} center={position[0]}></Map>
         </APIProvider>
       </Container>
       {/* app authors */}
-      <p style={{ fontWeight: 'bold' }}>{appAuthor}</p>
+      <p style={{ fontWeight: "bold" }}>{appAuthor}</p>
     </Container>
   );
 }
