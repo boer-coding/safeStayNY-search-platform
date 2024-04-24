@@ -405,7 +405,9 @@ const crime = async function (req, res) {
   GROUP BY location_id
   ORDER BY count
 )SELECT l.location_id, al.ky_cd, ofns_type, \`rank\`, count(*) as offense_count, suspect.age_group,suspect.gender, suspect.race
-FROM arrest_list al JOIN location l ON al.location_id = l.location_id JOIN suspect ON suspect.type_id = al.type_id JOIN offense_description ON offense_description.ky_cd = al.ky_cd JOIN ranking ON l.location_id = ranking.location_id`;
+FROM arrest_list al JOIN location l ON al.location_id = l.location_id JOIN suspect ON suspect.type_id = al.type_id JOIN offense_description ON offense_description.ky_cd = al.ky_cd JOIN ranking ON l.location_id = ranking.location_id
+
+`;
 
   let params = [];
 
@@ -435,7 +437,8 @@ FROM arrest_list al JOIN location l ON al.location_id = l.location_id JOIN suspe
 
   // Add the GROUP BY clause
   query += `
-  GROUP BY ofns_type;`;
+  GROUP BY ofns_type
+  LIMIT 10;`;
   console.log(query);
 
   connection.query(query, params, (err, data) => {

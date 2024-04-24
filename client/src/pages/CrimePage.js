@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import './app.css'; 
+import './app.css';
 import {
   Button,
   Checkbox,
@@ -15,6 +15,7 @@ import {
   InputLabel,
   Typography,
 } from "@mui/material";
+import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis } from 'recharts';
 import { DataGrid } from "@mui/x-data-grid";
 // import HostListing from "../components/HostListing";
 
@@ -26,23 +27,13 @@ export function CrimePage() {
 
   //state hooks for fetching
   const [crimeData, setCrimeData] = useState([]);
+  const [barchartData, setbarchartData] = useState([]);
   const [neighborhoodData, setNeighborhoods] = useState([]);
 
   //necessary filters
   const [neighborhoodGroup, setNeighborhoodGroup] = useState("Any");
   const [neighborhood, setNeighborhood] = useState("Any");
-  //const [accommodates, setAccommodates] = useState(1);
-  //const [stayLength, setStayLength] = useState(2);
 
-  //additional filters
-  //const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
-  //const [roomType, setRoomType] = useState("");
-  //const [price, setPriceRange] = useState([0, 100000]);
-  //const [beds, setBeds] = useState("");
-  //const [bathrooms, setBathrooms] = useState("");
-
-  //redirects
-  //const [selectedRecommendationId, setSelectedRecommendationId] =    useState(null);
 
   //handleChange
   const handleNeighborhoodGroupChange = (event) => {
@@ -96,12 +87,23 @@ export function CrimePage() {
           id: a.location_id,
           ...a,
         }));
+
         setCrimeData(crimeDataJson);
+
+        const newData = crimeData.map((row) => ({
+          type: row.ofns_type,
+          value: row.offense_count
+        }));
+
+        setbarchartData(newData);
+
+
       })
       .catch((error) => {
         console.error("Failed to fetch recommendation", error);
       });
   };
+
 
 
   //fetch recs based on filter
@@ -111,59 +113,49 @@ export function CrimePage() {
   }, [
     neighborhoodGroup,
     neighborhood,
-    
+
   ]);
 
-  const columns = [
-    {
-      field: "listing_des",
-      headerName: "Recommended Stay",
-      width: 600,
-      renderCell: (params) => (
-        <Link
-          
-        >
-          {params.value}
-        </Link>
-      ),
-    },
-    {
-      field: "neighborhood,",
-      headerName: "Neighborhood",
-      width: 180,
-      renderCell: (params) => params.row.location_id,
-    },
-    {
-      field: "safety.safety_score",
-      headerName: "Safety",
-      width: 180,
-      renderCell: (params) => params.row.ofns_type,
-    },
-    {
-      field: "price,",
-      headerName: "Price",
-      width: 180,
-      renderCell: (params) => params.row.offense_count,
-    },
-  ];
+
 
   return (
     <div className="container">
       <div className="description">
-        
+
         <h2>Description</h2>
         <p>Here is description</p>
-        </div>
+      </div>
       <div className="upper-table">
         <h2>Top Crime type</h2>
-        
-        </div>
+        {
+          <BarChart data={barchartData}
+            layout='vertical'
+            margin={{ left: 40 }}
+          >
+            <XAxis type='category' dataKey='ofns_type' />
+            <YAxis />
+            <Bar dataKey='offense_count' stroke='#8884d8' fill='#8884d8' />
+          </BarChart>
+        }
+
+        <ResponsiveContainer height={250}>
+          <BarChart
+            data={barchartData}
+            layout='vertical'
+            margin={{ left: 40 }}
+          >
+            <XAxis type='number' domain={[0, 1]} />
+            <YAxis type='category' dataKey='name' />
+            <Bar dataKey='value' stroke='#8884d8' fill='#8884d8' />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
       <div className="lower-table">
         <h2>Demographic Statistics</h2>
 
 
       </div>
-  
+
       <Container>
         <h2>Filters</h2>
         <Grid container spacing={6}>
@@ -184,7 +176,7 @@ export function CrimePage() {
               </Select>
             </FormControl>
           </Grid>
-  
+
           <Grid item xs={3}>
             <FormControl fullWidth>
               <InputLabel>Neighborhood</InputLabel>
@@ -209,7 +201,7 @@ export function CrimePage() {
         >
           Search
         </Button>
-        
+
       </Container>
     </div>
   );
