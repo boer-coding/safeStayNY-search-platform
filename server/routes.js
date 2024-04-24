@@ -401,15 +401,15 @@ const feature_listing = async function (req, res) {
 
 /* Route 8: /crime */
 const crime = async function (req, res) {
-  console.log("Received query params:", req.query);
+  //console.log("Received query params:", req.query);
   const { neighborhoodGroup = "Any", neighborhood = "Any" } = req.query;
 
-  console.log("Received query params:", req.query);
+  //console.log("Received query params:", req.query);
   let query = `With ranking as (SELECT location_id, COUNT(*) as count, RANK() OVER (ORDER By COUNT(*)) AS \`rank\`
   FROM arrest_list
   GROUP BY location_id
   ORDER BY count
-)SELECT l.location_id, al.ky_cd, ofns_type, \`rank\`, count(*) as offense_count, suspect.age_group,suspect.gender, suspect.race
+)SELECT l.location_id, al.ky_cd, ofns_type, \`rank\`, count(*) as offense_count
 FROM arrest_list al JOIN location l ON al.location_id = l.location_id JOIN suspect ON suspect.type_id = al.type_id JOIN offense_description ON offense_description.ky_cd = al.ky_cd JOIN ranking ON l.location_id = ranking.location_id
 
 `;
@@ -418,7 +418,7 @@ FROM arrest_list al JOIN location l ON al.location_id = l.location_id JOIN suspe
 
   // Optional filters
   const optionalFilters = [];
-  console.log("neighborhoodGroup", neighborhoodGroup);
+  //console.log("neighborhoodGroup", neighborhoodGroup);
   if (neighborhoodGroup && neighborhoodGroup !== "Any") {
     optionalFilters.push(`WHERE l.neighborhood_group = ?`);
     params.push(neighborhoodGroup);
@@ -427,12 +427,12 @@ FROM arrest_list al JOIN location l ON al.location_id = l.location_id JOIN suspe
     optionalFilters.push(`l.neighborhood = ?`);
     params.push(neighborhood);
   }
-  console.log(
-    "optionalFilterlength: ",
-    optionalFilters.length,
-    " params: ",
-    params
-  );
+  // console.log(
+  //   "optionalFilterlength: ",
+  //   optionalFilters.length,
+  //   " params: ",
+  //   params
+  // );
 
   // Add the optional filters to the query if they exist
   if (optionalFilters.length > 0) {
@@ -443,8 +443,9 @@ FROM arrest_list al JOIN location l ON al.location_id = l.location_id JOIN suspe
   // Add the GROUP BY clause
   query += `
   GROUP BY ofns_type
+  ORDER BY offense_count DESC
   LIMIT 10;`;
-  console.log(query);
+  //console.log(query);
 
   connection.query(query, params, (err, data) => {
     if (err || data.length === 0) {
@@ -482,7 +483,6 @@ const top_5_neighbors = async function (req, res) {
   ];
   res.send(result);
 };
-
 const neighborhood_group_crime = async function (req, res) {
   connection.query(
     `
@@ -505,6 +505,60 @@ const neighborhood_group_crime = async function (req, res) {
   );
 };
 
+const crimeDemographic = async function (req, res) {
+  console.log("Received query params:", req.query);
+  const { neighborhoodGroup = "Any", neighborhood = "Any" } = req.query;
+
+  console.log("Received query params:", req.query);
+  let query = `SELECT suspect.type_id, CONCAT(age_group, ' ', gender, ' ', race) AS type, count(*) as count
+  FROM arrest_list JOIN suspect ON arrest_list.type_id = suspect.type_id JOIN location ON arrest_list.location_id = location.location_id
+
+`;
+
+  let params = [];
+
+  // Optional filters
+  const optionalFilters = [];
+  console.log("neighborhoodGroup", neighborhoodGroup);
+  const ngboolean = neighborhoodGroup && neighborhoodGroup !== "Any";
+  const nbboolean = neighborhood && neighborhood !== "Any";
+  if (ngboolean) {
+    optionalFilters.push(`WHERE location.neighborhood_group = ?`);
+    params.push(neighborhoodGroup);
+  }
+  if (nbboolean) {
+    optionalFilters.push(`location.neighborhood = ?`);
+    params.push(neighborhood);
+  }
+  console.log(
+    "optionalFilterlength: ",
+    optionalFilters.length,
+    " params: ",
+    params
+  );
+
+  // Add the optional filters to the query if they exist
+  if (optionalFilters.length > 0) {
+    query += ` 
+    ${optionalFilters.join(" AND ")}`;
+  }
+
+  // Add the GROUP BY clause
+  query += `
+  GROUP BY suspect.type_id
+ORDER BY COUNT DESC
+LIMIT 10;`;
+  console.log(query);
+
+  connection.query(query, params, (err, data) => {
+    if (err || data.length === 0) {
+      console.log(err);
+      res.json([]);
+    } else {
+      res.json(data);
+    }
+  });
+};
 module.exports = {
   author,
   top_5_neighbors,
@@ -516,4 +570,5 @@ module.exports = {
   neighborhoods,
   crime,
   neighborhood_group_crime,
+  crimeDemographic
 };

@@ -26,6 +26,7 @@ import {
   PolarGrid,
   PolarAngleAxis,
   PolarRadiusAxis,
+  Legend
 } from "recharts";
 import { DataGrid } from "@mui/x-data-grid";
 import BarChartComponent from "../components/BarChart";
@@ -42,6 +43,7 @@ export function CrimePage() {
   const [crimeData, setCrimeData] = useState([]);
   const [barchartData, setbarchartData] = useState([]);
   const [neighborhoodData, setNeighborhoods] = useState([]);
+  const [demoData, setdemoData] = useState([]);
 
   //necessary filters
   const [searchParams] = useSearchParams();
@@ -130,16 +132,45 @@ export function CrimePage() {
 
         setCrimeData(crimeDataJson);
 
-        const newData = crimeData.map((row) => ({
-          type: row.ofns_type,
-          value: row.offense_count,
-        }));
+        // const newData = crimeDataJson.map((row) => ({
+        //   type: row.ofns_type,
+        //   value: row.offense_count
+        // }));
+        // console.log(newData);
+        // setbarchartData(newData);
+        // console.log("bcd", barchartData);
 
-        setbarchartData(newData);
       })
       .catch((error) => {
         console.error("Failed to fetch recommendation", error);
       });
+      console.log(queryParams);
+      fetch(
+        `http://${config.server_host}:${config.server_port}/crimeDemographic?${queryParams.toString()}`
+      )
+        .then((res) => res.json())
+        .then((resJson) => {
+          // DataGrid expects an array of objects with a unique id.
+          // To accomplish this, we use a map with spread syntax (https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Spread_syntax)
+          const demoDataJson = resJson.map((a) => ({
+            id: a.type_id,
+            ...a,
+          }));
+  
+          setdemoData(demoDataJson);
+  
+          // const newData = crimeDataJson.map((row) => ({
+          //   type: row.ofns_type,
+          //   value: row.offense_count
+          // }));
+          // console.log(newData);
+          // setbarchartData(newData);
+          // console.log("bcd", barchartData);
+  
+        })
+        .catch((error) => {
+          console.error("Failed to fetch recommendation", error);
+        });
   };
 
   //fetch recs based on filter
@@ -167,24 +198,36 @@ export function CrimePage() {
       </div>
       <div className="upper-table">
         <h2>Top Crime type</h2>
-        {
-          <BarChart data={barchartData} layout="vertical" margin={{ left: 40 }}>
-            <XAxis type="category" dataKey="ofns_type" />
-            <YAxis />
-            <Bar dataKey="offense_count" stroke="#8884d8" fill="#8884d8" />
-          </BarChart>
-        }
 
-        <ResponsiveContainer height={250}>
-          <BarChart data={barchartData} layout="vertical" margin={{ left: 40 }}>
-            <XAxis type="number" domain={[0, 1]} />
-            <YAxis type="category" dataKey="name" />
-            <Bar dataKey="value" stroke="#8884d8" fill="#8884d8" />
+
+        <ResponsiveContainer width="100%" height={500}>
+          <BarChart data={crimeData}
+          width={50} height={80}
+          layout="vertical"
+          >
+            <YAxis dataKey="ofns_type" type = "category" fontSize={10} />
+
+            <XAxis type = "number"/>
+            <Legend />
+            <Bar dataKey="offense_count" fill="#8884d8" />
           </BarChart>
         </ResponsiveContainer>
       </div>
       <div className="lower-table">
         <h2>Demographic Statistics</h2>
+        <ResponsiveContainer width="100%" height={500}>
+          <BarChart data={demoData}
+          width={50} height={80}
+          layout="vertical"
+          >
+            <YAxis dataKey="type" type = "category" fontSize={10} />
+
+            <XAxis type = "number"/>
+            <Legend />
+            <Bar dataKey="count" fill="#8884d8" />
+          </BarChart>
+        </ResponsiveContainer>
+
       </div>
 
       <Container>
