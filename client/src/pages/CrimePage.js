@@ -32,6 +32,7 @@ export function CrimePage() {
   const [crimeData, setCrimeData] = useState([]);
   const [barchartData, setbarchartData] = useState([]);
   const [neighborhoodData, setNeighborhoods] = useState([]);
+  const [demoData, setdemoData] = useState([]);
 
   //necessary filters
   const [neighborhoodGroup, setNeighborhoodGroup] = useState("Any");
@@ -128,6 +129,33 @@ export function CrimePage() {
       .catch((error) => {
         console.error("Failed to fetch recommendation", error);
       });
+      console.log(queryParams);
+      fetch(
+        `http://${config.server_host}:${config.server_port}/crimeDemographic?${queryParams.toString()}`
+      )
+        .then((res) => res.json())
+        .then((resJson) => {
+          // DataGrid expects an array of objects with a unique id.
+          // To accomplish this, we use a map with spread syntax (https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Spread_syntax)
+          const demoDataJson = resJson.map((a) => ({
+            id: a.type_id,
+            ...a,
+          }));
+  
+          setdemoData(demoDataJson);
+  
+          // const newData = crimeDataJson.map((row) => ({
+          //   type: row.ofns_type,
+          //   value: row.offense_count
+          // }));
+          // console.log(newData);
+          // setbarchartData(newData);
+          // console.log("bcd", barchartData);
+  
+        })
+        .catch((error) => {
+          console.error("Failed to fetch recommendation", error);
+        });
   };
 
 
@@ -155,9 +183,6 @@ export function CrimePage() {
       </div>
       <div className="upper-table">
         <h2>Top Crime type</h2>
-        {
-
-        }
 
 
         <ResponsiveContainer width="100%" height={500}>
@@ -175,7 +200,18 @@ export function CrimePage() {
       </div>
       <div className="lower-table">
         <h2>Demographic Statistics</h2>
+        <ResponsiveContainer width="100%" height={500}>
+          <BarChart data={demoData}
+          width={50} height={80}
+          layout="vertical"
+          >
+            <YAxis dataKey="type" type = "category" fontSize={10} />
 
+            <XAxis type = "number"/>
+            <Legend />
+            <Bar dataKey="count" fill="#8884d8" />
+          </BarChart>
+        </ResponsiveContainer>
 
       </div>
 

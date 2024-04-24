@@ -19,6 +19,7 @@ app.get("/neighborhoods", routes.neighborhoods);
 app.get("/listing", routes.listing);
 app.get("/feature_listing", routes.feature_listing);
 app.get("/crime", routes.crime);
+app.get("/crimeDemographic", routes.crimeDemographic);
 
 app.listen(config.server_port, () => {
   console.log(
