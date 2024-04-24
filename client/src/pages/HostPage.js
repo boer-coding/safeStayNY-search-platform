@@ -58,7 +58,6 @@ export function HostPage() {
     fetchHosts();
   }, []); // Empty dependency array ensures this effect runs only once on component mount
 
-
   // Fetch hosts based on selected neighborhood and neighborhood group
   const fetchHosts = async () => {
     let url = `http://${config.server_host}:${config.server_port}/star_host`;
@@ -156,9 +155,8 @@ export function HostPage() {
     // Return the calculated composite score
     return parseFloat(avgScore.toFixed(2)); // Format the score to display only two decimal places
   };
-  
-    /* 45%, 8%, 5%*/
 
+  /* 45%, 8%, 5%*/
   const calculateComScore = (host) => {
     const { num, rating, accuracy, communication, clean, location, value } =
       host;

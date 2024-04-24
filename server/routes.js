@@ -176,6 +176,7 @@ const host_listing = async function (req, res) {
   );
 };
 
+/* helper function for Route 4, trim all parameters */
 const cleanParams = (params) => {
   let cleaned = {};
   for (let key in params) {
