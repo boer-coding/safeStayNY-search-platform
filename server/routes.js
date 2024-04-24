@@ -520,30 +520,38 @@ LIMIT 10;`;
 
 /* Route 10: /top_5_neighbors */
 const top_5_neighbors = async function (req, res) {
-  const result = [
-    {
-      neighborhood: "Belle Harbor",
-      neighborhood_group: "Queens",
-    },
-    {
-      neighborhood: "Lighthouse Hill",
-      neighborhood_group: "Staten Island",
-    },
-    {
-      neighborhood: "Breezy Point",
-      neighborhood_group: "Queens",
-    },
-    {
-      neighborhood: "Shore Acres",
-      neighborhood_group: "Staten Island",
-    },
-    {
-      neighborhood: "Fort Wadsworth",
-      neighborhood_group: "Staten Island",
-    },
-  ];
-  res.send(result);
+  connection.query(
+    `
+    With safetest_nb AS (
+      SELECT location_id,neighborhood,neighborhood_group, count AS crime_count
+      FROM crime_count
+      ORDER BY count
+      LIMIT 60
+    )
+  
+    SELECT s.neighborhood,s.neighborhood_group,s.crime_count ,COUNT(a.listing_id) AS num_listings
+    FROM safetest_nb s JOIN airbnb a ON s.location_id = a.location_id
+    GROUP BY s.neighborhood,s.neighborhood_group, s.crime_count
+    HAVING COUNT(a.listing_id) > 10
+    ORDER BY s.crime_count
+    Limit 5;
+    `,
+    (err, data) => {
+    if (err || data.length === 0) {
+      console.log(err);
+      res.json([]);
+    } else {
+      const jsonArray = data.map((row) => ({
+        neighborhood: row.neighborhood,
+        neighborhood_group: row.neighborhood_group,
+      }));
+      res.json(jsonArray);
+    }
+  }
+  );
 };
+
+/* Route 11: /neighborhood_group_crime */
 const neighborhood_group_crime = async function (req, res) {
   connection.query(
     `
