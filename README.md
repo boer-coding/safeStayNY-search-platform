@@ -1,15 +1,15 @@
 ## Dependencies:
 
-`npm install`
-`npm install recharts`
+`npm install`<br />
+`npm install recharts`<br />
 `npm install @mui/icons-material`
 
-## Instruction to build
+## Instruction to build: 
 
-In the project directory, you can run:
-`npm start`
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+In the project directory, you can run:<br />
+`npm start`<br />
+Runs the app in the development mode. <br />
+Open [http://localhost:3000](http://localhost:3000) to view it in your browser.<br />
 
 ## Work Progress:
 
