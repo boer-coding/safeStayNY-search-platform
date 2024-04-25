@@ -16,7 +16,7 @@ const BarChartComponent = ({ data }) => {
         }}
       >
         <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="name" />
+        <XAxis dataKey="neighborhood_group" />
         <YAxis domain={[0, 70000]}/>
         <Tooltip labelFormatter={(value) => `${value}：Crime Count`} />
         <Legend />
