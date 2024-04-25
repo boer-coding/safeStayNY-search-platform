@@ -26,7 +26,6 @@ const config = require("../config.json");
 
 //query neighborhood group, nb, accommodate, days, room-type, bed, bath
 export function CrimePage() {
-
   //state hooks for fetching
   const [crimeData, setCrimeData] = useState([]);
   const [neighborhoodData, setNeighborhoods] = useState([]);
@@ -81,18 +80,20 @@ export function CrimePage() {
       neighborhood,
     });
 
-  fetch(`http://${config.server_host}:${config.server_port}/crime/neighborhood_group`)
-    .then((res) => res.json())
-    .then((resJson) => {
-      const featuredListings = resJson.map((row) => ({
-        id: row.group_crime_id, 
-        ...row,
-      }));
-      setGroupCrimeData(featuredListings);
-    })
-    .catch(error => {
-      console.error('There was a problem with your fetch operation:', error);
-  });
+    fetch(
+      `http://${config.server_host}:${config.server_port}/crime/neighborhood_group`
+    )
+      .then((res) => res.json())
+      .then((resJson) => {
+        const featuredListings = resJson.map((row) => ({
+          id: row.group_crime_id,
+          ...row,
+        }));
+        setGroupCrimeData(featuredListings);
+      })
+      .catch((error) => {
+        console.error("There was a problem with your fetch operation:", error);
+      });
 
     fetch(
       `http://${config.server_host}:${

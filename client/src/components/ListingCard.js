@@ -8,16 +8,15 @@ import {
   Group,
   Event,
   Visibility,
+  Person2,
 } from "@mui/icons-material";
-import { NavLink } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
-import { formatDuration } from "../helpers/formatter";
-import HostListing from "./HostListing";
 const config = require("../config.json");
 
 export default function ListingCard({ listingId, handleClose }) {
   const [listingData, setListingData] = useState({});
-  const [showHostDetail, setShowHostDetail] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     console.log(listingId);
@@ -36,8 +35,12 @@ export default function ListingCard({ listingId, handleClose }) {
   }, [listingId]);
 
   const handleViewHost = () => {
-    setShowHostDetail(true);
+    navigate("/hosts", {
+      state: { hostId: listingData.host_id, openModal: true },
+    });
   };
+
+  const [isHovered, setIsHovered] = useState(false);
 
   //room type, beds, bath, url
   return (
@@ -117,18 +120,33 @@ export default function ListingCard({ listingId, handleClose }) {
             </strong>
           </Box>
         </p>
-        {/* <p>
-          <strong>
-            <strong />
-            <Link
-              href={listingData.host_url}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              View Host
-            </Link>
-          </strong>
-        </p> */}
+        <p>
+          <Box display="flex" alignItems="center" gap={1}>
+            <Person2 />
+            <strong>
+              <Button
+                onClick={handleViewHost}
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
+                style={{
+                  backgroundColor: "transparent",
+                  textDecoration: isHovered ? "underline" : "none",
+                  color: isHovered ? "#124116" : "#2e7031",
+
+                  padding: 0,
+                  minWidth: 0,
+                  boxShadow: "none",
+                  textTransform: "none",
+                  fontWeight: "bold",
+                  fontSize: "inherit",
+                }}
+                disableRipple
+              >
+                View Host
+              </Button>
+            </strong>
+          </Box>
+        </p>
         <div style={{ margin: 20 }}>{}</div>
         <Button
           onClick={handleClose}

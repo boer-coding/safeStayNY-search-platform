@@ -3,7 +3,7 @@ import { BarChart, Bar, Rectangle, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
 
 const BarChartComponent = ({ data }) => { 
   return (
-    <ResponsiveContainer width="90%" height="90%">
+    <ResponsiveContainer width="80%" height="80%">
       <BarChart
         width={50}
         height={20}

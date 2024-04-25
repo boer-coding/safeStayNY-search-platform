@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Box, Button, CircularProgress, Modal } from "@mui/material";
+import { Box, Button, CircularProgress, Modal, Link } from "@mui/material";
 const config = require("../config.json");
 
 export default function HostListing({ hostId, handleClose }) {
@@ -37,6 +37,8 @@ export default function HostListing({ hostId, handleClose }) {
   // Change page
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
+  console.log(listingData);
+
   return (
     <Modal
       open={true}
@@ -50,25 +52,41 @@ export default function HostListing({ hostId, handleClose }) {
       <Box
         p={3}
         style={{
-          background: "white",
+          background: "#e3f2fd",
           borderRadius: "16px",
           border: "2px solid #000",
           width: 600,
         }}
       >
-        <h2>
-          <a
-            href={
-              currentListings.length > 0 ? currentListings[0].host_url : "#"
-            }
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            {currentListings.length > 0
-              ? currentListings[0].host_name
-              : "Unknown"}
-          </a>{" "}
-          Listings
+        <h2 style={{ display: "flex", alignItems: "center" }}>
+          {/* Host image */}
+          {currentListings.length > 0 && (
+            <img
+              src={currentListings[0].pic_url}
+              alt="Host"
+              style={{
+                width: "30%",
+                height: "auto",
+                marginBottom: 20,
+                marginRight: 20,
+              }}
+            />
+          )}
+          {/* Host link */}
+          <div>
+            <Link
+              href={
+                currentListings.length > 0 ? currentListings[0].host_url : "#"
+              }
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {currentListings.length > 0
+                ? currentListings[0].host_name
+                : "Unknown"}
+            </Link>{" "}
+            Listings
+          </div>
         </h2>
 
         {loading ? (
@@ -78,14 +96,14 @@ export default function HostListing({ hostId, handleClose }) {
             {Array.isArray(currentListings) && currentListings.length > 0 ? (
               currentListings.map((listing) => (
                 <li key={listing.listing_id}>
-                  <a
+                  <Link
                     href={listing.listing_url}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
                     {listing.listing_des}
                     <br />
-                  </a>
+                  </Link>
                 </li>
               ))
             ) : (

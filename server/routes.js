@@ -159,7 +159,7 @@ const host_listing = async function (req, res) {
 
   connection.query(
     `
-    SELECT listing_id, listing_des, listing_url, host_name, host_url
+    SELECT listing_id, listing_des, listing_url, host_name, host_url, pic_url
     FROM airbnb JOIN host
     ON airbnb.host_id = host.host_id
     WHERE airbnb.host_id = '${hostId}'
@@ -343,7 +343,7 @@ const listing = async function (req, res) {
   connection.query(
     `
   
-    SELECT room_type, beds, bathrooms, listing_url, price, mini_nights, max_nights, accommodates
+    SELECT room_type, beds, bathrooms, listing_url, price, mini_nights, max_nights, accommodates, host.host_id
     FROM airbnb JOIN host ON airbnb.host_id=host.host_id
     WHERE listing_id = '${listingId}'
     
@@ -412,8 +412,8 @@ const crime = async function (req, res) {
   FROM arrest_list
   GROUP BY location_id
   ORDER BY count
-)SELECT l.location_id, al.ky_cd, ofns_type, \`rank\`, count(*) as offense_count
-FROM arrest_list al JOIN location l ON al.location_id = l.location_id JOIN suspect ON suspect.type_id = al.type_id JOIN offense_description ON offense_description.ky_cd = al.ky_cd JOIN ranking ON l.location_id = ranking.location_id
+)SELECT l.location_id, ofns_type, \`rank\`, count(*) as offense_count
+FROM arrest_list al JOIN location l ON al.location_id = l.location_id JOIN offense_description ON offense_description.ky_cd = al.ky_cd JOIN ranking ON l.location_id = ranking.location_id
 
 `;
 
@@ -459,7 +459,6 @@ FROM arrest_list al JOIN location l ON al.location_id = l.location_id JOIN suspe
     }
   });
 };
-
 
 /* Route 9: GET /crimeDemographic */
 // Return top 10 demographic in certain region
@@ -520,30 +519,38 @@ LIMIT 10;`;
 
 /* Route 10: /top_5_neighbors */
 const top_5_neighbors = async function (req, res) {
-  const result = [
-    {
-      neighborhood: "Belle Harbor",
-      neighborhood_group: "Queens",
-    },
-    {
-      neighborhood: "Lighthouse Hill",
-      neighborhood_group: "Staten Island",
-    },
-    {
-      neighborhood: "Breezy Point",
-      neighborhood_group: "Queens",
-    },
-    {
-      neighborhood: "Shore Acres",
-      neighborhood_group: "Staten Island",
-    },
-    {
-      neighborhood: "Fort Wadsworth",
-      neighborhood_group: "Staten Island",
-    },
-  ];
-  res.send(result);
+  connection.query(
+    `
+    With safetest_nb AS (
+      SELECT location_id,neighborhood,neighborhood_group, count AS crime_count
+      FROM crime_count
+      ORDER BY count
+      LIMIT 60
+    )
+  
+    SELECT s.neighborhood,s.neighborhood_group,s.crime_count ,COUNT(a.listing_id) AS num_listings
+    FROM safetest_nb s JOIN airbnb a ON s.location_id = a.location_id
+    GROUP BY s.neighborhood,s.neighborhood_group, s.crime_count
+    HAVING COUNT(a.listing_id) > 10
+    ORDER BY s.crime_count
+    Limit 5;
+    `,
+    (err, data) => {
+      if (err || data.length === 0) {
+        console.log(err);
+        res.json([]);
+      } else {
+        const jsonArray = data.map((row) => ({
+          neighborhood: row.neighborhood,
+          neighborhood_group: row.neighborhood_group,
+        }));
+        res.json(jsonArray);
+      }
+    }
+  );
 };
+
+/* Route 11: /neighborhood_group_crime */
 const neighborhood_group_crime = async function (req, res) {
   connection.query(
     `
@@ -565,7 +572,6 @@ const neighborhood_group_crime = async function (req, res) {
     }
   );
 };
-
 
 module.exports = {
   author,

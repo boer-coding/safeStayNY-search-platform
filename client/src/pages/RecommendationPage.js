@@ -84,10 +84,6 @@ export function RecommendationPage() {
     setBathrooms(value === "8+" ? 8 : value);
   };
 
-  // const handleNeighborhoodClick = (locationId) => {
-  //   navigate(`/crime?locationId=${locationId}`);
-  // };
-
   //fetch neighborhoods base on neighborhood group
   const fetchNeighborhoods = async () => {
     const url = `http://${config.server_host}:${
@@ -222,7 +218,7 @@ export function RecommendationPage() {
         />
       )}
       {/* {setNeighborhood && <href neighborhoodId={selectedNeighborhood} />} */}
-      <h2>Find Your Safe Stay at NY!</h2>
+      <h2>Find Your Safe Stay in NY!</h2>
       <Grid container spacing={6}>
         <Grid item xs={3}>
           <FormControl fullWidth>
