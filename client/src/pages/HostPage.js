@@ -144,6 +144,7 @@ export function HostPage() {
     }
   };
 
+  /* each factor 14.3% */
   const calculateAvgScore = (host) => {
     const { num, rating, accuracy, communication, clean, location, value } =
       host;
@@ -156,7 +157,7 @@ export function HostPage() {
     return parseFloat(avgScore.toFixed(2)); // Format the score to display only two decimal places
   };
 
-  /* 45%, 8%, 5%*/
+  /* main factor 45%, location 8%, each of other review 5%*/
   const calculateComScore = (host) => {
     const { num, rating, accuracy, communication, clean, location, value } =
       host;
