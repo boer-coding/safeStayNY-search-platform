@@ -1,22 +1,22 @@
-# SafeStayNY Search Platform🏙️🛏️🔍
+# SafeStayNY Search Platform
 
 [![Live](media/SafeStayNY.mp4)]
 
 ![SafeStayNY_cover](media/home.png)
 
-Welcome to SafeStayNY, your go-to platform for insights and recommendations on safety statistics, personalized host discovery, and Airbnb listings with safety scores in New York City.
+Welcome to SafeStayNY, your go-to platform for insights and recommendations on safety statistics, personalized host discovery, and Airbnb listings with safety scores in New York City. 🏙️🔍
 
-While traditional platforms like Airbnb focus on price and availability, many users want more—like knowing which neighborhoods are safe and which hosts are trustworthy for a better rental experience.
+While traditional platforms like Airbnb focus on price and availability, many users want more—like knowing which neighborhoods are safe 🛡️ and which hosts are trustworthy 🏠 for a better rental experience.
 
-Our platform meets these needs by analyzing recent crime data to evaluate neighborhood safety across NYC. We also highlight top hosts based on user preferences and generate tailored Airbnb listings that prioritize safety and your other specific criteria.
+Our platform meets these needs by analyzing recent crime data 📊 to evaluate neighborhood safety across NYC. We also highlight top hosts based on user preferences 🌟 and generate tailored Airbnb listings that prioritize safety and your other specific criteria. 🗺️🔑
 
 ---
 
 ## 🎬 Key Features:
 
-- **Crime Information:** View statistical data on top crime types and demographics, with filters to refine results for specific areas or the entire New York City region.
-- **Host Search:** Search or filter for trusted Airbnb hosts based on preferred neighborhoods, superhost status, and user-valued factors. Explore intuitive bar visuals and convenient links for further details.
-- **Airbnb Recommendations:** Get recommendations for safe accommodations in New York through various filters, including five featured listings with the lowest crime rates and prices in each Neighborhood Group.
+- **Crime Information:** View statistical data on top crime types and demographics, with filters to refine results for specific areas or the entire New York City region.📊🔍
+- **Host Search:** Search or filter for trusted Airbnb hosts based on preferred neighborhoods, superhost status, and user-valued factors. Explore intuitive bar visuals and convenient links for further details.🏠🌟
+- **Airbnb Recommendations:** Get recommendations for safe accommodations in New York through various filters, including five featured listings with the lowest crime rates and prices in each Neighborhood Group.🏙️🔑
 
 ## 🛠️ Project Architecture
 
