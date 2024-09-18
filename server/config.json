@@ -1,9 +1,9 @@
 {
-  "rds_host": "database-1.cz4qy8msi14x.us-east-1.rds.amazonaws.com",
+  "rds_host": "safestayny.c5s0ausek1tt.us-east-1.rds.amazonaws.com",
   "rds_port": "3306",
   "rds_user": "team550",
   "rds_password": "550teamproject",
-  "rds_db": "project",
+  "rds_db": "SAFESTAY",
   "server_host": "localhost",
   "server_port": "8080"
 }

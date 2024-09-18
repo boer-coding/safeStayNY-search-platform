@@ -2,7 +2,7 @@ create table host(
     host_id    int          not null primary key,
     host_name  varchar(70)  not null,
     join_since varchar(20)  not null,
-    super_host tinyint(1)   not null,
+    super_host TINYINT(1)   not null,
     host_url   varchar(200) not null,
     pic_url    varchar(300) not null
 );
