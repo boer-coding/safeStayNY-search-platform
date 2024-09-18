@@ -1,7 +1,9 @@
 # SafeStayNY Search Platform
 
-[![Live](media/SafeStayNY.mp4)]
+### Live Website:
+[![Live](https://img.shields.io/badge/Live-Site-blue)](https://boer-coding.github.io/SafeStayNY-Fullstack-SearchPlatform/)
 
+### Cover Image:
 ![SafeStayNY_cover](media/home.png)
 
 Welcome to SafeStayNY, your go-to platform for insights and recommendations on safety statistics, personalized host discovery, and Airbnb listings with safety scores in New York City. 🏙️🔍
