@@ -7,7 +7,7 @@
 ![SafeStayNY_cover](media/home.png) -->
 
 ### Live Video:
-![Watch Video](https://safestayny.vercel.app/video.mp4)
+[![SafeStayNY Cover](./client/public/home.png)](https://safestayny.vercel.app/video.mp4)
 
 Welcome to SafeStayNY, your go-to platform for insights and recommendations on safety statistics, personalized host discovery, and Airbnb listings with safety scores in New York City. 🏙️🔍
 
