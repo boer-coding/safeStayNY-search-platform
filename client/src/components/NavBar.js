@@ -2,9 +2,7 @@ import {
   AppBar,
   Container,
   Toolbar,
-  Typography,
-  IconButton,
-  Icon,
+  Typography
 } from "@mui/material";
 import { NavLink } from "react-router-dom";
 import logo from "../logo.svg";

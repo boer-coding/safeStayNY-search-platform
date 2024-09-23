@@ -1,6 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { CssBaseline, ThemeProvider } from "@mui/material";
-import { cyan } from "@mui/material/colors";
 import { createTheme } from "@mui/material/styles";
 
 import NavBar from "./components/NavBar";

@@ -1,25 +1,16 @@
-
+const mysql = require("mysql");
+const config = require("./config.json");
 
 /* Creates MySQL connection using database credential provided in config.json */
-const mysql = require('mysql');
-
 const connection = mysql.createConnection({
-  host: process.env.RDS_HOST || config.rds_host,
-  port: process.env.RDS_PORT || config.rds_port,
-  user: process.env.RDS_USER || config.rds_user,
-  password: process.env.RDS_PASSWORD || config.rds_password,
-  database: process.env.RDS_DB || config.rds_db,
+  host: config.rds_host,
+  user: config.rds_user,
+  password: config.rds_password,
+  port: config.rds_port,
+  database: config.rds_db,
   multipleStatements: true,
 });
-
-connection.connect((err) => {
-  if (err) {
-    console.error('Error connecting to the database:', err.message);
-  } else {
-    console.log('Successfully connected to the database');
-  }
-});
-
+connection.connect((err) => err && console.log(err));
 
 /* Route 1: GET /author/:type */
 const author = async function (req, res) {
