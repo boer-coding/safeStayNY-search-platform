@@ -24,10 +24,14 @@ app.get("/crime", routes.crime);
 app.get("/crime/neighborhood_group",routes.neighborhood_group_crime);
 app.get("/crimeDemographic", routes.crimeDemographic);
 
-app.listen(config.server_port, () => {
-  console.log(
-    `Server running at http://${config.server_host}:${config.server_port}/`
-  );
+// app.listen(config.server_port, () => {
+//   console.log(
+//     `Server running at http://${config.server_host}:${config.server_port}/`
+//   );
+// });
+const port = process.env.PORT || 8080;
+app.listen(port, () => {
+  console.log(`Server running at http://localhost:${port}/`);
 });
-
 module.exports = app;
+

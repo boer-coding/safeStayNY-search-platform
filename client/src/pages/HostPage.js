@@ -40,9 +40,7 @@ export function HostPage() {
       if (neighborhoodGroup !== "Any") {
         try {
           const response = await fetch(
-            `http://${config.server_host}:${
-              config.server_port
-            }/neighborhoods?neighborhoodGroup=${encodeURIComponent(
+            `https://safestay-3a936c97440e.herokuapp.com/neighborhoods?neighborhoodGroup=${encodeURIComponent(
               neighborhoodGroup
             )}`
           );
@@ -69,7 +67,7 @@ export function HostPage() {
 
   // Fetch hosts based on selected neighborhood and neighborhood group
   const fetchHosts = async () => {
-    let url = `http://${config.server_host}:${config.server_port}/star_host`;
+    let url = `https://safestay-3a936c97440e.herokuapp.com/star_host`;
 
     const queryParams = [];
 
@@ -111,7 +109,7 @@ export function HostPage() {
 
   // Fetch hosts based on selected neighborhood and neighborhood group
   const fetchHosts2 = async () => {
-    let url = `http://${config.server_host}:${config.server_port}/star_host`;
+    let url = `https://safestay-3a936c97440e.herokuapp.com/star_host`;
 
     const queryParams = [];
 

@@ -5,11 +5,9 @@ import Carousel from "../components/Carousel";
 import "../app.css";
 
 import LazyTable from "../components/LazyTable";
-const config = require("../config.json");
 
 export default function HomePage() {
   const [appAuthor, setAppAuthor] = useState("");
-  const position = { lat: 40.6970192, lng: -74.3093451 };
   const sliderData = [
     {
       name: "ny1",
@@ -38,7 +36,7 @@ export default function HomePage() {
   ];
 
   useEffect(() => {
-    fetch(`http://${config.server_host}:${config.server_port}/author/name`)
+    fetch(`https://safestay-3a936c97440e.herokuapp.com/author/name`)
       .then((res) => {
         return res.text();
       })
@@ -145,7 +143,7 @@ export default function HomePage() {
         .
       </p>
       <LazyTable
-        route={`http://${config.server_host}:${config.server_port}/top_5_neighbors`}
+        route={`https://safestay-3a936c97440e.herokuapp.com/top_5_neighbors`}
         columns={top5Neighbors}
         defaultPageSize={5}
         rowsPerPageOptions={[5]}

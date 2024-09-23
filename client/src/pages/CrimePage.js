@@ -22,7 +22,6 @@ import {
 import BarChartComponent from "../components/BarChart";
 import { useSearchParams } from "react-router-dom";
 
-const config = require("../config.json");
 
 //query neighborhood group, nb, accommodate, days, room-type, bed, bath
 export function CrimePage() {
@@ -52,9 +51,7 @@ export function CrimePage() {
 
   //fetch neighborhoods base on neighborhood group
   const fetchNeighborhoods = async () => {
-    const url = `http://${config.server_host}:${
-      config.server_port
-    }/neighborhoods?neighborhoodGroup=${encodeURIComponent(neighborhoodGroup)}`;
+    const url = `https://safestay-3a936c97440e.herokuapp.com/neighborhoods?neighborhoodGroup=${encodeURIComponent(neighborhoodGroup)}`;
 
     try {
       const response = await fetch(url);
@@ -81,7 +78,7 @@ export function CrimePage() {
     });
 
     fetch(
-      `http://${config.server_host}:${config.server_port}/crime/neighborhood_group`
+      `https://safestay-3a936c97440e.herokuapp.com/crime/neighborhood_group`
     )
       .then((res) => res.json())
       .then((resJson) => {
@@ -96,9 +93,7 @@ export function CrimePage() {
       });
 
     fetch(
-      `http://${config.server_host}:${
-        config.server_port
-      }/crime?${queryParams.toString()}`
+      `https://safestay-3a936c97440e.herokuapp.com/crime?${queryParams.toString()}`
     )
       .then((res) => res.json())
       .then((resJson) => {
@@ -116,9 +111,7 @@ export function CrimePage() {
       });
     console.log(queryParams);
     fetch(
-      `http://${config.server_host}:${
-        config.server_port
-      }/crimeDemographic?${queryParams.toString()}`
+      `https://safestay-3a936c97440e.herokuapp.com/crimeDemographic?${queryParams.toString()}`
     )
       .then((res) => res.json())
       .then((resJson) => {

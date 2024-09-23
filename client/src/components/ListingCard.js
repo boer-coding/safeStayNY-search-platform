@@ -12,8 +12,6 @@ import {
 } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 
-const config = require("../config.json");
-
 export default function ListingCard({ listingId, handleClose }) {
   const [listingData, setListingData] = useState({});
   const navigate = useNavigate();
@@ -21,7 +19,7 @@ export default function ListingCard({ listingId, handleClose }) {
   useEffect(() => {
     console.log(listingId);
     const fetchListing = async () => {
-      const url = `http://${config.server_host}:${config.server_port}/listing?listing_id=${listingId}`;
+      const url = `https://safestay-3a936c97440e.herokuapp.com/listing?listing_id=${listingId}`;
 
       try {
         const response = await fetch(url);
