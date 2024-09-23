@@ -2,9 +2,7 @@ import { useEffect, useState } from "react";
 import "../app.css";
 import {
   Button,
-  Checkbox,
   Container,
-  FormControlLabel,
   Grid,
   Select,
   MenuItem,
@@ -23,6 +21,11 @@ import BarChartComponent from "../components/BarChart";
 import { useSearchParams } from "react-router-dom";
 
 const config = require("../config.json");
+
+const serverUrl =
+  process.env.NODE_ENV === "production"
+    ? config.production_server_url // Your Heroku or other production URL
+    : `http://${config.local_server_host}:${config.local_server_port}`; 
 
 //query neighborhood group, nb, accommodate, days, room-type, bed, bath
 export function CrimePage() {
@@ -52,9 +55,8 @@ export function CrimePage() {
 
   //fetch neighborhoods base on neighborhood group
   const fetchNeighborhoods = async () => {
-    const url = `http://${config.server_host}:${
-      config.server_port
-    }/neighborhoods?neighborhoodGroup=${encodeURIComponent(neighborhoodGroup)}`;
+    const url = `${serverUrl}/neighborhoods?neighborhoodGroup=${encodeURIComponent(neighborhoodGroup)}`;
+
 
     try {
       const response = await fetch(url);
@@ -81,7 +83,7 @@ export function CrimePage() {
     });
 
     fetch(
-      `http://${config.server_host}:${config.server_port}/crime/neighborhood_group`
+      fetch(`${serverUrl}/crime/neighborhood_group`)
     )
       .then((res) => res.json())
       .then((resJson) => {
@@ -95,11 +97,8 @@ export function CrimePage() {
         console.error("There was a problem with your fetch operation:", error);
       });
 
-    fetch(
-      `http://${config.server_host}:${
-        config.server_port
-      }/crime?${queryParams.toString()}`
-    )
+      fetch(`${serverUrl}/crime?${queryParams.toString()}`)
+
       .then((res) => res.json())
       .then((resJson) => {
         // DataGrid expects an array of objects with a unique id.
@@ -115,11 +114,9 @@ export function CrimePage() {
         console.error("Failed to fetch recommendation", error);
       });
     console.log(queryParams);
-    fetch(
-      `http://${config.server_host}:${
-        config.server_port
-      }/crimeDemographic?${queryParams.toString()}`
-    )
+
+    fetch(`${serverUrl}/crimeDemographic?${queryParams.toString()}`)
+
       .then((res) => res.json())
       .then((resJson) => {
         // DataGrid expects an array of objects with a unique id.
