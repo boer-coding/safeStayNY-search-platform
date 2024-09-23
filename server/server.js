@@ -8,7 +8,7 @@ const app = express();
 // Enable CORS
 app.use(
   cors({
-    origin: '*',
+    origin: "https://safestayny.vercel.app", // Your Vercel frontend URL
   })
 );
 

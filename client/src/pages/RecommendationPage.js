@@ -20,7 +20,10 @@ import { useNavigate } from "react-router-dom";
 
 const config = require("../config.json");
 // const navigate = useNavigate();
-
+ const serverUrl =
+      process.env.NODE_ENV === "production"
+        ? config.production_server_url // Your Heroku or production URL (should start with https://)
+        : `http://${config.local_server_host}:${config.local_server_port}`;
 
 //query neighborhood group, nb, accommodate, days, room-type, bed, bath
 export function RecommendationPage() {
@@ -87,11 +90,9 @@ export function RecommendationPage() {
 
   //fetch neighborhoods base on neighborhood group
   const fetchNeighborhoods = async () => {
-    const serverUrl =
-  process.env.NODE_ENV === "production"
-    ? config.production_server_url // Your Heroku or other production URL
-    : `http://${config.local_server_host}:${config.local_server_port}`;
-
+  
+    const url = `${serverUrl}/neighborhoods?neighborhoodGroup=${encodeURIComponent(neighborhoodGroup)}`;
+  
     try {
       const response = await fetch(url);
       const data = await response.json();
@@ -104,11 +105,12 @@ export function RecommendationPage() {
       console.error("Failed to fetch neighborhood list", error);
     }
   };
+  
 
   //fetch one feature listing base on neighborhood group
   const fetchFeatureListing = async () => {
     fetch(`${serverUrl}/feature_listing`)
-      .then((res) => res.json())
+    .then((res) => res.json())
       .then((resJson) => {
         const featuredListings = resJson.flat().map((airbnb) => ({
           id: airbnb.listing_id,
