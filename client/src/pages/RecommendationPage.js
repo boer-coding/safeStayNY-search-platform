@@ -16,10 +16,11 @@ import {
 import { DataGrid } from "@mui/x-data-grid";
 import ListingCard from "../components/ListingCard";
 import NeighborhoodInfo from "../components/NeighborhoodInfo";
-import { useNavigate } from "react-router-dom";
 
 const config = require("../config.json");
-// const navigate = useNavigate();
+const serverUrl = process.env.NODE_ENV === "production" 
+    ? config.production_server_url 
+    : `http://${config.server_host}:${config.server_port}`;
 
 //query neighborhood group, nb, accommodate, days, room-type, bed, bath
 export function RecommendationPage() {
@@ -86,9 +87,7 @@ export function RecommendationPage() {
 
   //fetch neighborhoods base on neighborhood group
   const fetchNeighborhoods = async () => {
-    const url = `http://${config.server_host}:${
-      config.server_port
-    }/neighborhoods?neighborhoodGroup=${encodeURIComponent(neighborhoodGroup)}`;
+    const url = `${serverUrl}/neighborhoods?neighborhoodGroup=${encodeURIComponent(neighborhoodGroup)}`;
 
     try {
       const response = await fetch(url);
@@ -105,8 +104,8 @@ export function RecommendationPage() {
 
   //fetch one feature listing base on neighborhood group
   const fetchFeatureListing = async () => {
-    fetch(`http://${config.server_host}:${config.server_port}/feature_listing`)
-      .then((res) => res.json())
+    fetch(`${serverUrl}/feature_listing`)
+    .then((res) => res.json())
       .then((resJson) => {
         const featuredListings = resJson.flat().map((airbnb) => ({
           id: airbnb.listing_id,
@@ -144,10 +143,12 @@ export function RecommendationPage() {
       bathrooms,
     });
 
-    fetch(
-      `http://${config.server_host}:${config.server_port}/recommendations?
-        ${queryParams.toString()}`
-    )
+    // fetch(
+    //   `http://${config.server_host}:${config.server_port}/recommendations?
+    //     ${queryParams.toString()}`
+    // )
+    fetch(`${serverUrl}//recommendations?${queryParams.toString()}`)
+
       .then((res) => res.json())
       .then((resJson) => {
         console.log(resJson);
