@@ -9,9 +9,9 @@ app.use(
     origin: "*",
   })
 );
-app.get('/', (req, res) => {
-  res.send('Welcome to SafeStayNY API');
-});
+// app.get('/', (req, res) => {
+//   res.send('Welcome to SafeStayNY API');
+// });
 // We use express to define our various API endpoints and
 // provide their handlers that we implemented in routes.js
 app.get("/author/:type", routes.author);
