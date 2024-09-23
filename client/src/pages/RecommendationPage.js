@@ -18,9 +18,8 @@ import ListingCard from "../components/ListingCard";
 import NeighborhoodInfo from "../components/NeighborhoodInfo";
 
 const config = require("../config.json");
-const serverUrl = process.env.NODE_ENV === "production" 
-    ? config.production_server_url 
-    : `http://${config.server_host}:${config.server_port}`;
+const serverUrl = process.env.REACT_APP_SERVER_URL;
+
 
 //query neighborhood group, nb, accommodate, days, room-type, bed, bath
 export function RecommendationPage() {

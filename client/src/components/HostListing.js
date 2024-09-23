@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
 import { Box, Button, CircularProgress, Modal, Link } from "@mui/material";
 const config = require("../config.json");
-const serverUrl = process.env.NODE_ENV === "production" 
-    ? config.production_server_url 
-    : `http://${config.server_host}:${config.server_port}`;
+const serverUrl = process.env.REACT_APP_SERVER_URL;
+
 
 export default function HostListing({ hostId, handleClose }) {
   const [listingData, setListingData] = useState([]);
