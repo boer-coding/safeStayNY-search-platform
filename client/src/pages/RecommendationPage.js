@@ -21,6 +21,7 @@ import { useNavigate } from "react-router-dom";
 const config = require("../config.json");
 // const navigate = useNavigate();
 
+
 //query neighborhood group, nb, accommodate, days, room-type, bed, bath
 export function RecommendationPage() {
   const [pageSize, setPageSize] = useState(10);
@@ -86,9 +87,10 @@ export function RecommendationPage() {
 
   //fetch neighborhoods base on neighborhood group
   const fetchNeighborhoods = async () => {
-    const url = `http://${config.server_host}:${
-      config.server_port
-    }/neighborhoods?neighborhoodGroup=${encodeURIComponent(neighborhoodGroup)}`;
+    const serverUrl =
+  process.env.NODE_ENV === "production"
+    ? config.production_server_url // Your Heroku or other production URL
+    : `http://${config.local_server_host}:${config.local_server_port}`;
 
     try {
       const response = await fetch(url);
@@ -105,7 +107,7 @@ export function RecommendationPage() {
 
   //fetch one feature listing base on neighborhood group
   const fetchFeatureListing = async () => {
-    fetch(`http://${config.server_host}:${config.server_port}/feature_listing`)
+    fetch(`${serverUrl}/feature_listing`)
       .then((res) => res.json())
       .then((resJson) => {
         const featuredListings = resJson.flat().map((airbnb) => ({
@@ -144,10 +146,7 @@ export function RecommendationPage() {
       bathrooms,
     });
 
-    fetch(
-      `http://${config.server_host}:${config.server_port}/recommendations?
-        ${queryParams.toString()}`
-    )
+    fetch(`${serverUrl}/recommendations?${queryParams.toString()}`)
       .then((res) => res.json())
       .then((resJson) => {
         console.log(resJson);
