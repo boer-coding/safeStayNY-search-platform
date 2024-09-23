@@ -18,8 +18,6 @@ import HostListing from "../components/HostListing";
 import { useLocation } from "react-router-dom";
 
 const config = require("../config.json");
-const serverUrl = process.env.REACT_APP_SERVER_URL;
-
 
 export function HostPage() {
   const [pageSize, setPageSize] = useState(10);
@@ -41,15 +39,13 @@ export function HostPage() {
     const fetchNeighborhoods = async () => {
       if (neighborhoodGroup !== "Any") {
         try {
-          // const response = await fetch(
-          //   `http://${config.server_host}:${
-          //     config.server_port
-          //   }/neighborhoods?neighborhoodGroup=${encodeURIComponent(
-          //     neighborhoodGroup
-          //   )}`
-          // );
-          const response = await fetch(`${serverUrl}/neighborhoods?neighborhoodGroup=${encodeURIComponent(neighborhoodGroup)}`);
-
+          const response = await fetch(
+            `http://${config.server_host}:${
+              config.server_port
+            }/neighborhoods?neighborhoodGroup=${encodeURIComponent(
+              neighborhoodGroup
+            )}`
+          );
           const data = await response.json();
           setNeighborhoods(data);
         } catch (error) {
@@ -73,8 +69,7 @@ export function HostPage() {
 
   // Fetch hosts based on selected neighborhood and neighborhood group
   const fetchHosts = async () => {
-    // let url = `http://${config.server_host}:${config.server_port}/star_host`;
-    let url = `${serverUrl}/star_host`;
+    let url = `http://${config.server_host}:${config.server_port}/star_host`;
 
     const queryParams = [];
 
@@ -116,9 +111,7 @@ export function HostPage() {
 
   // Fetch hosts based on selected neighborhood and neighborhood group
   const fetchHosts2 = async () => {
-    // let url = `http://${config.server_host}:${config.server_port}/star_host`;
-    let url = `${serverUrl}/star_host`;
-
+    let url = `http://${config.server_host}:${config.server_port}/star_host`;
 
     const queryParams = [];
 

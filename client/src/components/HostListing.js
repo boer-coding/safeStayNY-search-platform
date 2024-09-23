@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
 import { Box, Button, CircularProgress, Modal, Link } from "@mui/material";
 const config = require("../config.json");
-const serverUrl = process.env.REACT_APP_SERVER_URL;
-
 
 export default function HostListing({ hostId, handleClose }) {
   const [listingData, setListingData] = useState([]);
@@ -14,8 +12,7 @@ export default function HostListing({ hostId, handleClose }) {
     const fetchListings = async () => {
       try {
         const response = await fetch(
-          // `http://${config.server_host}:${config.server_port}/host_listing?host_id=${hostId}`
-          `${serverUrl}/host_listing?host_id=${hostId}`
+          `http://${config.server_host}:${config.server_port}/host_listing?host_id=${hostId}`
         );
         const data = await response.json();
         setListingData(data);

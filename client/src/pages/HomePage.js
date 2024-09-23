@@ -6,12 +6,10 @@ import "../app.css";
 
 import LazyTable from "../components/LazyTable";
 const config = require("../config.json");
-const serverUrl = process.env.REACT_APP_SERVER_URL;
-
 
 export default function HomePage() {
   const [appAuthor, setAppAuthor] = useState("");
-  // const position = { lat: 40.6970192, lng: -74.3093451 };
+  const position = { lat: 40.6970192, lng: -74.3093451 };
   const sliderData = [
     {
       name: "ny1",
@@ -40,9 +38,7 @@ export default function HomePage() {
   ];
 
   useEffect(() => {
-    // fetch(`http://${config.server_host}:${config.server_port}/author/name`)
-    fetch(`${serverUrl}/author/name`)
-
+    fetch(`http://${config.server_host}:${config.server_port}/author/name`)
       .then((res) => {
         return res.text();
       })
@@ -149,8 +145,7 @@ export default function HomePage() {
         .
       </p>
       <LazyTable
-        // route={`http://${config.server_host}:${config.server_port}/top_5_neighbors`}
-        route={`${serverUrl}/top_5_neighbors`}
+        route={`http://${config.server_host}:${config.server_port}/top_5_neighbors`}
         columns={top5Neighbors}
         defaultPageSize={5}
         rowsPerPageOptions={[5]}

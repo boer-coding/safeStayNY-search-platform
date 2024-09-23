@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Box, Button, Modal, Link } from "@mui/material";
+import { Box, Button, ButtonGroup, Modal, Link } from "@mui/material";
 import {
   Hotel,
   Bed,
@@ -13,8 +13,6 @@ import {
 import { useNavigate } from "react-router-dom";
 
 const config = require("../config.json");
-const serverUrl = process.env.REACT_APP_SERVER_URL;
-
 
 export default function ListingCard({ listingId, handleClose }) {
   const [listingData, setListingData] = useState({});
@@ -23,8 +21,7 @@ export default function ListingCard({ listingId, handleClose }) {
   useEffect(() => {
     console.log(listingId);
     const fetchListing = async () => {
-      // const url = `http://${config.server_host}:${config.server_port}/listing?listing_id=${listingId}`;
-      const url = `${serverUrl}/listing?listing_id=${listingId}`;
+      const url = `http://${config.server_host}:${config.server_port}/listing?listing_id=${listingId}`;
 
       try {
         const response = await fetch(url);

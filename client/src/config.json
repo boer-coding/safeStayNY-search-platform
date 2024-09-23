@@ -1,6 +1,4 @@
 {
-  "production_server_url": "https://safestay-982bce443987.herokuapp.com/",
   "server_host": "localhost",
   "server_port": "8080"
 }
-
